@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Menu, X, Sun, Moon } from 'lucide-react';
 
-const Navbar = ({ onOpenContact }) => {
+const Navbar = ({ onOpenContact, onNavigate }) => {
     const [scrolled, setScrolled] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -39,18 +39,24 @@ const Navbar = ({ onOpenContact }) => {
     }, []);
 
     const navLinks = [
-        { name: 'Product & Service', href: '#product-service' },
-        { name: 'Better Tomorrow', href: '#better-tomorrow' },
-        { name: 'Why Choose Us?', href: '#why-choose-us' },
-        { name: 'Media & Events', href: '#media-events' },
-        { name: 'Blog', href: '#blog' }
+        { name: 'Product & Service', page: 'home', hash: '#product-service' },
+        { name: 'About Us', page: 'about', hash: '' },
+        { name: 'Why Choose Us?', page: 'home', hash: '#why-choose-us' },
+        { name: 'Media & Events', page: 'home', hash: '#media-events' },
+        { name: 'Blog', page: 'home', hash: '#blog' }
     ];
 
-    const handleNavClick = (e, href) => {
+    const handleNavClick = (e, link) => {
         e.preventDefault();
-        const element = document.querySelector(href);
-        if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
+        if (onNavigate) {
+            onNavigate(link.page, link.hash);
+        } else {
+            if (link.hash) {
+                const element = document.querySelector(link.hash);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
         }
         setMobileMenuOpen(false);
     };
@@ -61,7 +67,7 @@ const Navbar = ({ onOpenContact }) => {
                 <div className="nav-container">
                     {/* Logo */}
                     <div className="nav-logo">
-                        <a href="#">
+                        <a href="#" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('home'); }}>
                             <img src="/Logo.png" alt="Anwar Ispat Logo" style={{ height: 'clamp(30px, 5vw, 50px)', objectFit: 'contain' }} />
                         </a>
                     </div>
@@ -71,9 +77,9 @@ const Navbar = ({ onOpenContact }) => {
                         {navLinks.map((link) => (
                             <a
                                 key={link.name}
-                                href={link.href}
+                                href={link.hash || '#'}
                                 className="nav-link"
-                                onClick={(e) => handleNavClick(e, link.href)}
+                                onClick={(e) => handleNavClick(e, link)}
                             >
                                 {link.name}
                             </a>
@@ -132,9 +138,9 @@ const Navbar = ({ onOpenContact }) => {
                     {navLinks.map((link) => (
                         <a
                             key={link.name}
-                            href={link.href}
+                            href={link.hash || '#'}
                             className="mobile-link"
-                            onClick={(e) => handleNavClick(e, link.href)}
+                            onClick={(e) => handleNavClick(e, link)}
                         >
                             {link.name}
                         </a>
@@ -143,7 +149,11 @@ const Navbar = ({ onOpenContact }) => {
                         <a
                             href="#contact"
                             className="nav-contact-btn"
-                            onClick={() => setMobileMenuOpen(false)}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                onOpenContact();
+                                setMobileMenuOpen(false);
+                            }}
                             style={{ display: 'inline-block' }}
                         >
                             CONTACT

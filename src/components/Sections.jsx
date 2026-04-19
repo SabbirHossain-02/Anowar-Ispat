@@ -11,21 +11,21 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 const products = [
   {
     id: 1,
-    title: "500W Rebar (TMT)",
-    desc: "High-tensile, thermo-mechanically treated rebars designed with supreme atomic precision.",
-    img: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=500",
+    title: "Anwars 500CWR",
+    desc: "Premium grade 500CWR TMT rebars engineered for superior malleability and highest structural durability.",
+    img: "/product_image.png",
   },
   {
     id: 2,
-    title: "60 Grade Rebar",
-    desc: "Unmatched yield strength ensuring durability for extreme load-bearing superstructures.",
-    img: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&q=80&w=500",
+    title: "Anwars 500DWR",
+    desc: "High-tensile 500DWR rebars providing maximum strength and bendability for heavy-duty infrastructure.",
+    img: "/product_image.png",
   },
   {
     id: 3,
-    title: "Billet Solutions",
-    desc: "Raw, customized billet ingots casted perfectly to serve customized structural needs.",
-    img: "https://images.unsplash.com/photo-1620021307524-aa6120efbfec?auto=format&fit=crop&q=80&w=500",
+    title: "Anwars 420DWR",
+    desc: "Unmatched yield strength ensuring durability for extreme load-bearing superstructures.",
+    img: "/product_image.png",
   },
 ];
 
@@ -96,20 +96,20 @@ export const ProductService = () => {
             } else if (offset === 1) {
               style = {
                 transform:
-                  "translateX(60%) scale(0.8) translateZ(0) rotateY(-15deg)",
+                  "translateX(110%) scale(0.75) translateZ(-50px) rotateY(-20deg)",
                 zIndex: 2,
                 opacity: 0.6,
               };
             } else if (offset === -1) {
               style = {
                 transform:
-                  "translateX(-60%) scale(0.8) translateZ(0) rotateY(15deg)",
+                  "translateX(-110%) scale(0.75) translateZ(-50px) rotateY(20deg)",
                 zIndex: 2,
                 opacity: 0.6,
               };
             } else {
               style = {
-                transform: "translateX(0) scale(0.5) translateZ(-100px)",
+                transform: "translateX(0) scale(0.5) translateZ(-150px)",
                 zIndex: 1,
                 opacity: 0,
               };

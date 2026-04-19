@@ -1,26 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ANOWAR ISPAT | Forged in Motion</title>
-    <meta name="description" content="Anowar Ispat - Cinematic experience showing the transformation of steel from molten fire to the infrastructure of Bangladesh." />
-    <script>
-      (function() {
-        try {
-          var mode = localStorage.getItem('themeMode');
-          if (mode === 'dark') {
-            document.documentElement.classList.remove('light-mode');
-          } else {
-            document.documentElement.classList.add('light-mode');
-          }
-        } catch (e) {}
-      })();
-    </script>
-  </head>
-  <body class="light-mode">
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="shortcut icon" href="./public/anwar_favicon.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ANWAR ISPAT | Forged in Motion</title>
+  <meta name="description"
+    content="Anowar Ispat - Cinematic experience showing the transformation of steel from molten fire to the infrastructure of Bangladesh." />
+  <script>
+    (function () {
+      try {
+        var mode = localStorage.getItem('themeMode');
+        if (mode === 'dark') {
+          document.documentElement.classList.remove('light-mode');
+        } else {
+          document.documentElement.classList.add('light-mode');
+        }
+      } catch (e) { }
+    })();
+  </script>
+</head>
+
+<body class="light-mode">
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
 </html>

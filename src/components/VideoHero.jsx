@@ -2,35 +2,25 @@ import React, { useRef, useEffect, useState } from 'react'
 
 const slides = [
     {
-        video: "https://res.cloudinary.com/dxez9kmnn/video/upload/v1771962941/5462676-Uhd_3840_2160_30Fps_zx5w9l.mp4",
+        video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776601119/Hero_Slide_1_akmt2o.mp4",
         title: <>SHAPING THE <span className="accent-text">FUTURE</span></>,
         subtitle: "Unrelenting strength. Uncompromising quality. The structural backbone of tomorrow's infrastructure."
     },
     {
-        video: "https://res.cloudinary.com/dxez9kmnn/video/upload/v1771971121/13820828_3840_2160_30Fps_yoa2vx.mp4",
+        video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776602663/13820828_3840_2160_30Fps_pkmnv5.mp4",
         title: <>FORGED IN <span className="accent-text">FIRE</span></>,
         subtitle: "A cinematic journey of power, precision, and the steel that builds nations."
     },
     {
-        video: "https://res.cloudinary.com/dxez9kmnn/video/upload/v1771971106/6997856-Hd_1920_1080_25Fps_rseb5f.mp4",
+        video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776602664/5121751-Uhd_3840_2160_25Fps_dilffe.mp4",
         title: <>ENGINEERED FOR <span className="accent-text">ENDURANCE</span></>,
         subtitle: "Leading the industry with cutting-edge technology and engineering excellence."
     },
     {
-        video: "https://res.cloudinary.com/dxez9kmnn/video/upload/v1771971087/6997592-Hd_1920_1080_55Fps_cjabzd.mp4",
+        video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776603016/6997856-Hd_1920_1080_25Fps_tyjyst.mp4",
         title: <>SUSTAINABLE <span className="accent-text">PROGRESS</span></>,
         subtitle: "Committed to eco-friendly practices that power a greener tomorrow."
     },
-    {
-        video: "https://res.cloudinary.com/dxez9kmnn/video/upload/v1771971000/5115941-Uhd_3840_2160_30Fps_eccbw0.mp4",
-        title: <>UNYIELDING <span className="accent-text">POWER</span></>,
-        subtitle: "Delivering the most robust steel solutions for every monumental challenge."
-    },
-    {
-        video: "https://res.cloudinary.com/dxez9kmnn/video/upload/v1771970977/5055608-Uhd_3840_2160_25Fps_jw1b3e.mp4",
-        title: <>EMPOWERING <span className="accent-text">BANGLADESH</span></>,
-        subtitle: "The foundation of progress, elevating lives and advancing our nation's legacy."
-    }
 ];
 
 const VideoHero = () => {
@@ -40,7 +30,7 @@ const VideoHero = () => {
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentSlide((prev) => (prev + 1) % slides.length);
-        }, 5000);
+        }, 8000);
         return () => clearInterval(interval);
     }, []);
 
@@ -134,7 +124,7 @@ const VideoHero = () => {
                         transition: 'transform 0.3s ease'
                     }}
                 />
-                
+
                 <div style={{ position: 'relative', width: '100%' }}>
                     {slides.map((slide, index) => (
                         <div
