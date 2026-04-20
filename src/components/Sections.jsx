@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -31,6 +31,22 @@ const products = [
 
 export const ProductService = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  useEffect(() => {
+    if (selectedProduct) {
+      document.body.style.overflow = "hidden";
+      window.dispatchEvent(new CustomEvent('lenis-stop'));
+    } else {
+      document.body.style.overflow = "";
+      window.dispatchEvent(new CustomEvent('lenis-start'));
+    }
+    
+    return () => {
+      document.body.style.overflow = "";
+      window.dispatchEvent(new CustomEvent('lenis-start'));
+    };
+  }, [selectedProduct]);
 
   const nextSlide = () => {
     setActiveIndex((prev) => (prev + 1) % products.length);
@@ -118,9 +134,15 @@ export const ProductService = () => {
             return (
               <div
                 key={product.id}
-                className="carousel-card"
+                className={`carousel-card ${offset === 0 ? 'active' : ''}`}
                 style={style}
-                onClick={() => setActiveIndex(index)}
+                onClick={() => {
+                  if (offset === 0) {
+                    setSelectedProduct(product);
+                  } else {
+                    setActiveIndex(index);
+                  }
+                }}
               >
                 <img
                   src={product.img}
@@ -130,6 +152,27 @@ export const ProductService = () => {
                 <div className="carousel-content">
                   <h3 className="carousel-title">{product.title}</h3>
                   <p className="carousel-desc">{product.desc}</p>
+
+                  <div className="carousel-actions">
+                    <button 
+                      className="btn-learn-more"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedProduct(product);
+                      }}
+                    >
+                      Learn More
+                    </button>
+                    <button 
+                      className="btn-get-quote"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.dispatchEvent(new CustomEvent('open-quote'));
+                      }}
+                    >
+                      Get Quote
+                    </button>
+                  </div>
                 </div>
               </div>
             );
@@ -142,6 +185,56 @@ export const ProductService = () => {
             <button className="carousel-btn" onClick={nextSlide}>
               <ChevronRight size={24} />
             </button>
+          </div>
+        </div>
+      </div>
+
+      <div 
+        className={`product-modal-overlay ${selectedProduct ? "open" : ""}`}
+        onClick={() => setSelectedProduct(null)}
+      >
+        <div 
+          className="product-modal"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="product-modal-img-container">
+            <img 
+              src={selectedProduct?.img || "/product_image.png"} 
+              alt={selectedProduct?.title || "Product"} 
+              className="product-modal-img" 
+            />
+          </div>
+          <div className="product-modal-content">
+            <button 
+              className="product-modal-close"
+              onClick={() => setSelectedProduct(null)}
+            >
+              <X size={28} />
+            </button>
+            <h3 className="product-modal-title">{selectedProduct?.title}</h3>
+            <p className="product-modal-desc">{selectedProduct?.desc}</p>
+            
+            <div style={{ marginBottom: "1.5rem" }}>
+              <h4 style={{ color: "var(--accent)", marginBottom: "0.8rem", letterSpacing: "0.1em", fontSize: "0.9rem", fontFamily: "var(--font-heading)" }}>KEY SPECIFICATIONS</h4>
+              <ul className="product-spec-list">
+                <li>Ultimate Tensile Strength: 500 MPa</li>
+                <li>Excellent Weldability and Bendability</li>
+                <li>Earthquake Resistant Properties</li>
+                <li>Advanced Rib Design for better bonding</li>
+              </ul>
+            </div>
+            
+            <div className="product-modal-actions">
+              <button 
+                className="btn-get-quote" 
+                style={{ width: "100%", padding: "1rem", fontSize: "1rem", fontWeight: "700" }}
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent('open-quote'));
+                }}
+              >
+                REQUEST A QUOTE
+              </button>
+            </div>
           </div>
         </div>
       </div>

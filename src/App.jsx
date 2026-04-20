@@ -7,12 +7,14 @@ import Hero from './components/Hero'
 import { ProductService, AboutUs, WhyChooseUs, MediaEvents, Blog, Footer } from './components/Sections'
 import Navbar from './components/Navbar'
 import ContactModal from './components/ContactModal'
+import QuoteModal from './components/QuoteModal'
 import IntroLoader from './components/IntroLoader'
 import AboutUsPage from './pages/AboutUsPage'
 
 function App() {
     const lenisRef = useRef()
     const [isContactOpen, setIsContactOpen] = useState(false)
+    const [isQuoteOpen, setIsQuoteOpen] = useState(false)
     const [introDone, setIntroDone] = useState(false)
     const [currentPage, setCurrentPage] = useState('home')
 
@@ -58,19 +60,36 @@ function App() {
 
     useEffect(() => {
         if (lenisRef.current) {
-            if (isContactOpen || !introDone) {
+            if (isContactOpen || isQuoteOpen || !introDone) {
                 lenisRef.current.stop()
             } else {
                 lenisRef.current.start()
             }
         }
-    }, [isContactOpen, introDone])
+    }, [isContactOpen, isQuoteOpen, introDone])
+
+    useEffect(() => {
+        const handleStop = () => lenisRef.current?.stop();
+        const handleStart = () => lenisRef.current?.start();
+        const handleOpenQuote = () => setIsQuoteOpen(true);
+        
+        window.addEventListener('lenis-stop', handleStop);
+        window.addEventListener('lenis-start', handleStart);
+        window.addEventListener('open-quote', handleOpenQuote);
+        
+        return () => {
+            window.removeEventListener('lenis-stop', handleStop);
+            window.removeEventListener('lenis-start', handleStart);
+            window.removeEventListener('open-quote', handleOpenQuote);
+        };
+    }, []);
 
     return (
         <div className="app-container">
             {!introDone && <IntroLoader onComplete={() => setIntroDone(true)} />}
             <Navbar onOpenContact={() => setIsContactOpen(true)} onNavigate={handleNavigate} />
             <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
+            <QuoteModal isOpen={isQuoteOpen} onClose={() => setIsQuoteOpen(false)} />
 
             <div className="canvas-wrapper">
                 <Canvas

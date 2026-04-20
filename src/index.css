@@ -180,8 +180,8 @@ section {
 
 .carousel-card {
   position: absolute;
-  width: 300px;
-  height: 400px;
+  width: 380px;
+  height: 500px;
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -228,6 +228,178 @@ section {
   font-size: 0.85rem;
   color: var(--subtext);
   line-height: 1.5;
+}
+
+.carousel-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s ease;
+  transition-delay: 0.2s;
+  pointer-events: none;
+}
+
+.carousel-card.active .carousel-actions {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+.btn-learn-more, .btn-get-quote {
+  padding: 0.6rem 1.2rem;
+  font-family: var(--font-main);
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.btn-learn-more {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-learn-more:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #fff;
+}
+
+.btn-get-quote {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn-get-quote:hover {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  box-shadow: 0 0 15px rgba(227, 24, 45, 0.4);
+}
+
+/* Product Modal Styles */
+.product-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(11, 11, 11, 0.85);
+  backdrop-filter: blur(10px);
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.product-modal-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.product-modal {
+  width: 90%;
+  max-width: 900px;
+  background: rgba(20, 20, 20, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 4px solid var(--accent);
+  border-radius: 12px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  overflow: hidden;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(227, 24, 45, 0.1);
+  transform: translateY(30px) scale(0.95);
+  transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.product-modal-overlay.open .product-modal {
+  transform: translateY(0) scale(1);
+}
+
+.product-modal-img-container {
+  overflow: hidden;
+  background: #111;
+  position: relative;
+}
+
+.product-modal-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.product-modal-content {
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+.product-modal-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  color: var(--subtext);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.product-modal-close:hover {
+  color: var(--accent);
+  transform: rotate(90deg);
+}
+
+.product-modal-title {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+.product-modal-desc {
+  color: var(--subtext);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.product-spec-list {
+  list-style: none;
+  margin-bottom: 2.5rem;
+}
+
+.product-spec-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #ddd;
+  font-size: 0.9rem;
+  margin-bottom: 0.8rem;
+}
+
+.product-spec-list li::before {
+  content: '>';
+  color: var(--accent);
+  font-weight: bold;
+  font-family: monospace;
+}
+
+.product-modal-actions {
+  margin-top: auto;
 }
 
 .carousel-nav {
@@ -533,7 +705,7 @@ section {
   width: 90%;
   max-width: 1000px;
   position: relative;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: var(--font-main);
   /* Tech vibe */
 }
 
@@ -656,7 +828,7 @@ section {
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #fff;
   padding: 0.8rem;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: var(--font-main);
   font-size: 0.9rem;
   transition: border-color 0.3s ease, background 0.3s ease;
   outline: none;
@@ -857,6 +1029,7 @@ body.light-mode .mobile-link {
 
 body.light-mode .contact-modal {
   color: var(--text) !important;
+  background: rgba(245, 245, 247, 0.95) !important;
 }
 
 body.light-mode .contact-grid {
@@ -864,13 +1037,21 @@ body.light-mode .contact-grid {
 }
 
 body.light-mode .input-group input,
-body.light-mode .input-group textarea {
+body.light-mode .input-group textarea,
+body.light-mode .input-group select {
+  font-family: var(--font-main) !important;
   color: var(--text) !important;
   border-color: rgba(0, 0, 0, 0.2) !important;
 }
 
+body.light-mode .input-group label {
+  color: #1A1A1A !important;
+  font-weight: 800;
+}
+
 body.light-mode .input-group input:focus,
-body.light-mode .input-group textarea:focus {
+body.light-mode .input-group textarea:focus,
+body.light-mode .input-group select:focus {
   background: rgba(227, 24, 45, 0.05) !important;
 }
 
@@ -908,4 +1089,33 @@ body.light-mode button[style*="border: 1px solid rgba(255,255,255,0.2)"]:hover {
 body.light-mode img[alt="Anwar Ispat Logo"] {
   content: url('/logo-dark.png');
   filter: none !important;
+}
+
+body.light-mode .product-modal-overlay {
+  background: rgba(245, 245, 247, 0.85) !important;
+}
+
+body.light-mode .product-modal {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1), 0 0 30px rgba(227, 24, 45, 0.05) !important;
+}
+
+body.light-mode .product-modal-title {
+  color: var(--text) !important;
+}
+
+body.light-mode .product-spec-list li {
+  color: #333 !important;
+}
+
+body.light-mode .btn-learn-more {
+  background: rgba(0, 0, 0, 0.03) !important;
+  color: var(--text) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+body.light-mode .btn-learn-more:hover {
+  background: rgba(0, 0, 0, 0.08) !important;
+  border-color: rgba(0, 0, 0, 0.3) !important;
 }
