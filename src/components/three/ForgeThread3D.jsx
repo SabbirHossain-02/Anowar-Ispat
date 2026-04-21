@@ -112,9 +112,10 @@ export default function ForgeThread3D({ scrollProgress }) {
         if (tipRef.current && tipMaterialRef.current) {
             tipRef.current.position.y = tipY;
             
-            // Wobble intense when progress < 0.9, solidify at 1.0
-            // It solidifies into the tip of the pointer.
-            const wobbleIntensity = Math.max(0, 1 - progress * 1.1);
+            // We want sparking and red color to continue until near the end.
+            // Let's create a specific color/metal transition progress
+            const chromeProgress = Math.max(0, Math.min(1, (progress - 0.7) * 3.33));
+            const wobbleIntensity = Math.max(0, 1 - chromeProgress);
             const time = state.clock.getElapsedTime();
             
             tipRef.current.scale.set(
@@ -125,39 +126,31 @@ export default function ForgeThread3D({ scrollProgress }) {
             tipRef.current.rotation.x = time * 3;
             tipRef.current.rotation.y = time * 4;
             
-            // Tip dims when turning to steel
-            tipRef.current.scale.multiplyScalar(0.6 + 0.4 * wobbleIntensity); // shrink slightly when solid
+            tipRef.current.scale.multiplyScalar(0.6 + 0.4 * Math.max(0, 1 - chromeProgress)); 
             
-            if (wobbleIntensity === 0) {
-                 tipMaterialRef.current.emissive.setHex(0x000000);
-                 tipMaterialRef.current.color.copy(steelColor);
-                 tipMaterialRef.current.metalness = 1.0;
-                 tipMaterialRef.current.roughness = 0.1;
-                 tipMaterialRef.current.emissiveIntensity = 0;
-            } else {
-                 tipMaterialRef.current.emissive.set('#e3182d');
-                 tipMaterialRef.current.color.set('#e3182d');
-                 tipMaterialRef.current.metalness = 0.1;
-                 tipMaterialRef.current.roughness = 0.9;
-                 tipMaterialRef.current.emissiveIntensity = 4 * wobbleIntensity;
-            }
+            tipMaterialRef.current.color.lerpColors(new THREE.Color('#e3182d'), steelColor, chromeProgress);
+            tipMaterialRef.current.emissive.lerpColors(new THREE.Color('#e3182d'), new THREE.Color('#000000'), chromeProgress);
+            tipMaterialRef.current.emissiveIntensity = THREE.MathUtils.lerp(4.0, 0.0, chromeProgress);
+            tipMaterialRef.current.metalness = THREE.MathUtils.lerp(0.1, 1.0, chromeProgress);
+            tipMaterialRef.current.roughness = THREE.MathUtils.lerp(0.9, 0.1, chromeProgress);
         }
         
         // --- 3. Material Transition ---
+        const chromeProgress = Math.max(0, Math.min(1, (progress - 0.7) * 3.33));
         if (materialRef.current) {
-            materialRef.current.color.lerpColors(new THREE.Color('#e3182d'), steelColor, progress);
-            materialRef.current.emissive.lerpColors(new THREE.Color('#e3182d'), new THREE.Color('#000000'), progress);
-            materialRef.current.emissiveIntensity = THREE.MathUtils.lerp(3.0, 0.0, progress);
-            materialRef.current.metalness = THREE.MathUtils.lerp(0.1, 1.0, progress); // High metalness for full 3D shine
-            materialRef.current.roughness = THREE.MathUtils.lerp(0.9, 0.1, progress); // low roughness when metal
+            materialRef.current.color.lerpColors(new THREE.Color('#e3182d'), steelColor, chromeProgress);
+            materialRef.current.emissive.lerpColors(new THREE.Color('#e3182d'), new THREE.Color('#000000'), chromeProgress);
+            materialRef.current.emissiveIntensity = THREE.MathUtils.lerp(3.0, 0.0, chromeProgress);
+            materialRef.current.metalness = THREE.MathUtils.lerp(0.1, 1.0, chromeProgress);
+            materialRef.current.roughness = THREE.MathUtils.lerp(0.9, 0.1, chromeProgress);
         }
 
         // --- 4. Brutal Factory Sparks ---
         if (particlesRef.current) {
             const posArray = particlesRef.current.geometry.attributes.position.array;
             
-            // Amount of sparks gradually decreases to 0 as it turns into steel
-            const spawnChance = Math.max(0, 1 - progress * 1.5);
+            // Amount of sparks gradually decreases starting later
+            const spawnChance = Math.max(0, 1 - Math.max(0, progress - 0.5) * 2.5); // stays 1.0 until 0.5, then drops to 0 by 0.9
             
             for (let i = 0; i < particleCount; i++) {
                 const p = particleData[i];
@@ -194,7 +187,7 @@ export default function ForgeThread3D({ scrollProgress }) {
             particlesRef.current.geometry.attributes.position.needsUpdate = true;
             
             // Scale overall opacity down slightly across the transition bounds
-            particlesRef.current.material.opacity = Math.max(0, 1 - progress);
+            particlesRef.current.material.opacity = Math.max(0, 1 - Math.max(0, progress - 0.7) * 3);
         }
     });
 
@@ -207,7 +200,7 @@ export default function ForgeThread3D({ scrollProgress }) {
 
             {/* The Rod */}
             <mesh ref={rodRef} receiveShadow castShadow>
-                <cylinderGeometry args={[0.012, 0.012, 1, 32]} />
+                <cylinderGeometry args={[0.006, 0.006, 1, 32]} />
                 <meshStandardMaterial 
                     ref={materialRef} 
                     color="#e3182d"
@@ -225,7 +218,7 @@ export default function ForgeThread3D({ scrollProgress }) {
 
             {/* The Tip */}
             <mesh ref={tipRef} receiveShadow castShadow>
-                <icosahedronGeometry args={[0.025, 3]} />
+                <icosahedronGeometry args={[0.016, 3]} />
                 <meshStandardMaterial 
                     ref={tipMaterialRef}
                     color="#e3182d"

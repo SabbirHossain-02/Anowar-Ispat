@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, History, Globe, Zap, Shield, Target, Building2 } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { Canvas } from "@react-three/fiber";
 import ForgeThread3D from "./three/ForgeThread3D";
+import CoreStrengths3D from "./three/CoreStrengths3D";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -41,7 +42,7 @@ export const ProductService = () => {
       document.body.style.overflow = "";
       window.dispatchEvent(new CustomEvent('lenis-start'));
     }
-    
+
     return () => {
       document.body.style.overflow = "";
       window.dispatchEvent(new CustomEvent('lenis-start'));
@@ -154,7 +155,7 @@ export const ProductService = () => {
                   <p className="carousel-desc">{product.desc}</p>
 
                   <div className="carousel-actions">
-                    <button 
+                    <button
                       className="btn-learn-more"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -163,7 +164,7 @@ export const ProductService = () => {
                     >
                       Learn More
                     </button>
-                    <button 
+                    <button
                       className="btn-get-quote"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -189,23 +190,23 @@ export const ProductService = () => {
         </div>
       </div>
 
-      <div 
+      <div
         className={`product-modal-overlay ${selectedProduct ? "open" : ""}`}
         onClick={() => setSelectedProduct(null)}
       >
-        <div 
+        <div
           className="product-modal"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="product-modal-img-container">
-            <img 
-              src={selectedProduct?.img || "/product_image.png"} 
-              alt={selectedProduct?.title || "Product"} 
-              className="product-modal-img" 
+            <img
+              src={selectedProduct?.img || "/product_image.png"}
+              alt={selectedProduct?.title || "Product"}
+              className="product-modal-img"
             />
           </div>
           <div className="product-modal-content">
-            <button 
+            <button
               className="product-modal-close"
               onClick={() => setSelectedProduct(null)}
             >
@@ -213,7 +214,7 @@ export const ProductService = () => {
             </button>
             <h3 className="product-modal-title">{selectedProduct?.title}</h3>
             <p className="product-modal-desc">{selectedProduct?.desc}</p>
-            
+
             <div style={{ marginBottom: "1.5rem" }}>
               <h4 style={{ color: "var(--accent)", marginBottom: "0.8rem", letterSpacing: "0.1em", fontSize: "0.9rem", fontFamily: "var(--font-heading)" }}>KEY SPECIFICATIONS</h4>
               <ul className="product-spec-list">
@@ -223,10 +224,10 @@ export const ProductService = () => {
                 <li>Advanced Rib Design for better bonding</li>
               </ul>
             </div>
-            
+
             <div className="product-modal-actions">
-              <button 
-                className="btn-get-quote" 
+              <button
+                className="btn-get-quote"
                 style={{ width: "100%", padding: "1rem", fontSize: "1rem", fontWeight: "700" }}
                 onClick={() => {
                   window.dispatchEvent(new CustomEvent('open-quote'));
@@ -596,7 +597,7 @@ export const AboutUs = () => {
   );
 };
 
-const MilestoneCard = ({ index, title, desc, img, align, isVisible }) => {
+const MilestoneCard = ({ index, title, desc, icon: Icon, align, isVisible }) => {
   const isLeft = align === 'left';
   const translateX = isVisible ? '0' : (isLeft ? '-50px' : '50px');
   const opacity = isVisible ? 1 : 0;
@@ -617,11 +618,11 @@ const MilestoneCard = ({ index, title, desc, img, align, isVisible }) => {
       gap: '4rem',
     }}>
       {/* Text Content */}
-      <div style={{ 
-        flex: 1, 
-        textAlign: isLeft ? 'right' : 'left', 
-        display: 'flex', 
-        flexDirection: 'column', 
+      <div style={{
+        flex: 1,
+        textAlign: isLeft ? 'right' : 'left',
+        display: 'flex',
+        flexDirection: 'column',
         alignItems: isLeft ? 'flex-end' : 'flex-start',
         opacity: opacity,
         transform: `translateX(${isLeft ? '-100px' : '100px'}) translateY(${isVisible ? '0' : '20px'}) translateX(${isVisible ? (isLeft ? '100px' : '-100px') : '0'})`,
@@ -660,9 +661,9 @@ const MilestoneCard = ({ index, title, desc, img, align, isVisible }) => {
         }} />
       </div>
 
-      <div style={{ 
-        flex: 1, 
-        display: 'flex', 
+      <div style={{
+        flex: 1,
+        display: 'flex',
         justifyContent: isLeft ? 'flex-start' : 'flex-end',
         opacity: opacity,
         transform: `translateX(${isLeft ? '100px' : '-100px'}) translateY(${isVisible ? '0' : '20px'}) translateX(${isVisible ? (isLeft ? '-100px' : '100px') : '0'})`,
@@ -678,18 +679,26 @@ const MilestoneCard = ({ index, title, desc, img, align, isVisible }) => {
           overflow: 'hidden',
           background: 'var(--glass)',
           border: '1px solid var(--glass-border)',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.3)'
+          boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}>
-          <img src={img} alt={title} style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            transform: `scale(${isVisible ? 1 : 1.1})`,
-            transition: 'transform 1.2s ease',
-            filter: 'grayscale(0.5)'
-          }} />
-          {/* Inner overlay for aesthetic */}
-          <div style={{ position: 'absolute', inset: 0, background: 'var(--milestone-img-overlay, linear-gradient(to top, rgba(11,11,11,0.8), transparent))' }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'var(--milestone-img-overlay, linear-gradient(to top, rgba(11,11,11,0.8), transparent))', zIndex: 0 }} />
+          {Icon && (
+            <Icon 
+              size={140} 
+              strokeWidth={1}
+              color="var(--accent)"
+              style={{
+                zIndex: 1,
+                transform: `scale(${isVisible ? 1 : 0.8})`,
+                transition: 'all 1.2s cubic-bezier(0.19, 1, 0.22, 1)',
+                opacity: isVisible ? 1 : 0.2,
+                filter: isVisible ? 'drop-shadow(0 0 25px rgba(227, 24, 45, 0.5))' : 'none'
+              }}
+            />
+          )}
         </div>
       </div>
     </div>
@@ -703,22 +712,40 @@ export const WhyChooseUs = () => {
 
   const milestones = [
     {
-      title: "UNCOMPROMISING QUALITY",
-      desc: "Every inch of our 500W TMT rebars goes through extreme tensile and stress tests. Engineered to withstand the relentless forces of nature.",
-      img: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=600",
+      title: "190+ YEARS OF LEGACY",
+      desc: "Part of the prestigious Anwar Group, building trust in Bangladesh since 1834.",
+      icon: History,
       align: "left"
     },
     {
-      title: "ADVANCED METALLURGY",
-      desc: "Our state-of-the-art blast furnaces ensure precise alloy compositions, setting world-class industry benchmarks directly on the production floor.",
-      img: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&q=80&w=600",
+      title: "EUROPEAN TECHNOLOGY",
+      desc: "The only manufacturer in Bangladesh using patented TMT technology from Belgium for superior reinforcement.",
+      icon: Globe,
       align: "right"
     },
     {
-      title: "NATION-BUILDING LOGISTICS",
-      desc: "Managing heavy logistics to coordinate the seamless shipment of forged rebars to monumental structural projects across the country.",
-      img: "https://images.unsplash.com/photo-1545532594-918cecebb08b?auto=format&fit=crop&q=80&w=600",
+      title: "PIONEER IN INNOVATION",
+      desc: "The trailblazer in the Bangladesh steel industry, being the first to introduce 60-Grade reinforcement bars to the country.",
+      icon: Zap,
       align: "left"
+    },
+    {
+      title: "EARTHQUAKE RESISTANT",
+      desc: "Engineered with a high TS/YS ratio for maximum ductility, meeting strict BNBC and ACI safety codes.",
+      icon: Shield,
+      align: "right"
+    },
+    {
+      title: "PRECISION QUALITY",
+      desc: "Every batch is tested via Spectrometer (28-element analysis) to ensure 100% compliance with BSTI and ISO standards.",
+      icon: Target,
+      align: "left"
+    },
+    {
+      title: "NATION BUILDER",
+      desc: "A proven partner for Bangladesh's iconic mega-projects and thousands of individual homes.",
+      icon: Building2,
+      align: "right"
     }
   ];
 
@@ -730,18 +757,24 @@ export const WhyChooseUs = () => {
 
       // Calculate progress of the center thread relative to viewport
       const startReveal = viewportHeight * 0.8;
-      
+
       let progress = 0;
       if (rect.top <= startReveal) {
         progress = Math.min(100, Math.max(0, ((startReveal - rect.top) / (rect.height)) * 100));
       }
       setScrollProgress(progress);
 
-      // Trigger visibility based on thread progress
+      // Trigger visibility exactly when the tip hits the node (center of screen/startReveal)
       const newVisible = [];
-      if (progress > 20) newVisible.push(0);
-      if (progress > 50) newVisible.push(1);
-      if (progress > 80) newVisible.push(2);
+      const cards = sectionRef.current.querySelectorAll('.milestone-card');
+      cards.forEach((card, index) => {
+        const cardRect = card.getBoundingClientRect();
+        // Trigger slightly before or exactly when the central node hits the startReveal
+        if (cardRect.top + (cardRect.height / 2) <= startReveal + 100) {
+          newVisible.push(index);
+        }
+      });
+      
       setVisibleMilestones(newVisible);
     };
 
@@ -1154,8 +1187,8 @@ export const MediaEvents = () => {
               left: 0,
               width: "100%",
               height: "150px",
-              background:
-                "var(--mask-top, linear-gradient(to bottom, rgba(11,11,11,1), transparent))",
+              // background:
+              //   "var(--mask-top, linear-gradient(to bottom, rgba(11,11,11,1), transparent))",
               zIndex: 5,
               pointerEvents: "none",
             }}
@@ -1167,8 +1200,8 @@ export const MediaEvents = () => {
               left: 0,
               width: "100%",
               height: "150px",
-              background:
-                "var(--mask-bottom, linear-gradient(to top, rgba(11,11,11,1), transparent))",
+              // background:
+              //   "var(--mask-bottom, linear-gradient(to top, rgba(11,11,11,1), transparent))",
               zIndex: 5,
               pointerEvents: "none",
             }}
@@ -1753,3 +1786,74 @@ export const Footer = ({ onOpenContact }) => (
     </div>
   </footer>
 );
+
+export const CoreStrengths = () => {
+  const sectionRef = useRef(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <section ref={sectionRef} style={{
+      minHeight: '100vh',
+      width: '100%',
+      position: 'relative',
+      background: 'var(--bg-section, rgba(11, 11, 11, 0.7))',
+      backdropFilter: 'blur(30px)',
+      WebkitBackdropFilter: 'blur(30px)',
+      borderTop: '1px solid rgba(255, 60, 0, 0.1)',
+      borderBottom: '1px solid rgba(255, 60, 0, 0.1)',
+      zIndex: 10,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '8rem 5%'
+    }}>
+      {/* Background Ambience */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        background: 'radial-gradient(circle at center, rgba(227, 24, 45, 0.03) 0%, transparent 60%)',
+        pointerEvents: 'none',
+        zIndex: 1
+      }} />
+
+      {/* Fade Gradients for Seamless Merging */}
+      <div style={{
+        position: 'absolute',
+        top: 0, left: 0, right: 0, height: '150px',
+        background: 'linear-gradient(to bottom, var(--bg-main) 0%, transparent 100%)',
+        pointerEvents: 'none',
+        zIndex: 2
+      }} />
+      <div style={{
+        position: 'absolute',
+        bottom: 0, left: 0, right: 0, height: '150px',
+        background: 'linear-gradient(to top, var(--bg-main) 0%, transparent 100%)',
+        pointerEvents: 'none',
+        zIndex: 2
+      }} />
+
+      <div style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 3 }}>
+        <Canvas camera={{ position: [0, 4, 16], fov: 45 }}>
+          <CoreStrengths3D inView={inView} />
+        </Canvas>
+      </div>
+    </section>
+  );
+};
