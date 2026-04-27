@@ -86,7 +86,8 @@ const Planet = ({ data, index, total, inView }) => {
             {/* UI Label */}
             <Html 
                 position={[0, 0.5, 0]} 
-                center 
+                center
+                zIndexRange={[50, 0]}
                 style={{
                     transition: 'all 0.5s',
                     opacity: inView ? 1 : 0,
@@ -172,7 +173,7 @@ export default function CoreStrengths3D({ inView }) {
             ))}
 
             {/* Center Label */}
-            <Html center position={[0, 0, 1.5]} zIndexRange={[100, 0]}>
+            <Html center position={[0, 0, 1.5]} zIndexRange={[100, 100]}>
                 <div 
                     style={{
                         background: 'rgba(11, 11, 11, 0.85)',

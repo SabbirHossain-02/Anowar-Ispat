@@ -80,16 +80,13 @@ section {
   position: relative;
   width: 100%;
   min-height: 100vh;
-  padding: 4rem 10%;
+  padding: 120px 0 4rem 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   text-align: center;
   overflow: hidden;
   margin: 0;
-  padding-left: 0;
-  padding-right: 0;
 }
 
 .video-background {
@@ -125,6 +122,7 @@ section {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin: auto 0;
 }
 
 .video-hero-title {
@@ -139,14 +137,15 @@ section {
 }
 
 .hero {
-  justify-content: center;
   align-items: flex-start;
+  padding-top: 120px;
 }
 
 .hero-content {
   max-width: 50vw;
   z-index: 10;
   position: relative;
+  margin: auto 0;
 }
 
 .hero-title {
@@ -185,7 +184,7 @@ section {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 50vh;
+  height: clamp(280px, 60vh, 500px);
   perspective: 1200px;
   margin-top: 3rem;
   position: relative;
@@ -195,7 +194,7 @@ section {
 .carousel-card {
   position: absolute;
   width: min(380px, 85vw);
-  height: min(500px, 60vh);
+  height: clamp(280px, 60vh, 500px);
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -216,15 +215,16 @@ section {
 
 .carousel-img {
   width: 100%;
-  height: 60%;
+  flex: 1;
+  min-height: 0;
   object-fit: cover;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   background-color: #1a1a1a;
 }
 
 .carousel-content {
-  padding: 1.5rem;
-  flex: 1;
+  padding: clamp(1rem, 3vh, 1.5rem);
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -232,14 +232,14 @@ section {
 
 .carousel-title {
   font-family: var(--font-heading);
-  font-size: 1.2rem;
+  font-size: clamp(0.9rem, 3vh, 1.2rem);
   font-weight: 700;
-  margin-bottom: 0.5rem;
+  margin-bottom: clamp(0.2rem, 1vh, 0.5rem);
   color: #fff;
 }
 
 .carousel-desc {
-  font-size: 0.85rem;
+  font-size: clamp(0.7rem, 2vh, 0.85rem);
   color: var(--subtext);
   line-height: 1.5;
 }
@@ -248,7 +248,7 @@ section {
   display: flex;
   justify-content: center;
   gap: 1rem;
-  margin-top: 1.5rem;
+  margin-top: clamp(0.5rem, 2vh, 1.5rem);
   opacity: 0;
   transform: translateY(20px);
   transition: all 0.4s ease;
@@ -303,8 +303,9 @@ section {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
+  padding: 100px 5% 20px 5%;
   background: rgba(11, 11, 11, 0.85);
   backdrop-filter: blur(10px);
   z-index: 2000;
@@ -322,15 +323,17 @@ section {
 }
 
 .product-modal {
-  width: 90%;
+  width: 100%;
   max-width: 900px;
+  max-height: 100%;
   background: rgba(20, 20, 20, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-left: 4px solid var(--accent);
   border-radius: 12px;
   display: grid;
   grid-template-columns: 1.2fr 1fr;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(227, 24, 45, 0.1);
   transform: translateY(30px) scale(0.95);
   transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
@@ -354,7 +357,7 @@ section {
 }
 
 .product-modal-content {
-  padding: 3rem;
+  padding: clamp(1rem, 5vh, 3rem);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -363,8 +366,8 @@ section {
 
 .product-modal-close {
   position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
+  top: clamp(0.5rem, 2vh, 1.5rem);
+  right: clamp(0.5rem, 2vw, 1.5rem);
   background: none;
   border: none;
   color: var(--subtext);
@@ -379,21 +382,21 @@ section {
 
 .product-modal-title {
   font-family: var(--font-heading);
-  font-size: 2rem;
+  font-size: clamp(1.2rem, 4vh, 2rem);
   color: #fff;
-  margin-bottom: 1rem;
+  margin-bottom: clamp(0.5rem, 2vh, 1rem);
 }
 
 .product-modal-desc {
   color: var(--subtext);
-  font-size: 1rem;
+  font-size: clamp(0.8rem, 2vh, 1rem);
   line-height: 1.6;
-  margin-bottom: 2rem;
+  margin-bottom: clamp(1rem, 3vh, 2rem);
 }
 
 .product-spec-list {
   list-style: none;
-  margin-bottom: 2.5rem;
+  margin-bottom: clamp(1rem, 4vh, 2.5rem);
 }
 
 .product-spec-list li {
@@ -401,8 +404,8 @@ section {
   align-items: center;
   gap: 0.5rem;
   color: #ddd;
-  font-size: 0.9rem;
-  margin-bottom: 0.8rem;
+  font-size: clamp(0.75rem, 1.8vh, 0.9rem);
+  margin-bottom: clamp(0.4rem, 1vh, 0.8rem);
 }
 
 .product-spec-list li::before {
@@ -1193,15 +1196,28 @@ body.light-mode .btn-learn-more:hover {
 /* --- Global Responsive Adjustments --- */
 @media (max-width: 768px) {
   section {
-    padding: 4rem 5%;
+    padding: 120px 5% 4rem 5%;
   }
 
   .video-hero {
-    padding: 4rem 5%;
+    padding: 120px 5% 4rem 5%;
   }
 
   .hero {
     align-items: center;
+  }
+
+  .product-modal {
+    grid-template-columns: 1fr;
+  }
+
+  .product-modal-img-container {
+    min-height: 250px;
+    max-height: 35vh;
+  }
+
+  .product-modal-content {
+    padding: 1.5rem;
   }
 
   .hero-content {

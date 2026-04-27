@@ -36,7 +36,7 @@ export const ProductService = () => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    const handleResize = () => setIsMobile(window.innerWidth < 900 || window.innerHeight < 500);
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -70,10 +70,11 @@ export const ProductService = () => {
       id="product-service"
       style={{
         minHeight: "100vh",
-        justifyContent: "center",
+        justifyContent: "flex-start",
         alignItems: "center",
         padding: "0 5%",
         paddingTop: "80px",
+        paddingBottom: "120px",
       }}
     >
       <div
@@ -83,6 +84,7 @@ export const ProductService = () => {
           position: "relative",
           width: "100%",
           maxWidth: "1200px",
+          margin: "auto 0",
         }}
       >
         <h2
