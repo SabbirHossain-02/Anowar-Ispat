@@ -109,7 +109,7 @@ const Navbar = ({ onOpenContact, onNavigate }) => {
                                 className="search-input"
                                 placeholder="Search..."
                                 style={{
-                                    width: searchOpen ? '150px' : '0',
+                                    width: searchOpen ? (window.innerWidth < 400 ? '100px' : '150px') : '0',
                                     opacity: searchOpen ? 1 : 0,
                                     pointerEvents: searchOpen ? 'all' : 'none'
                                 }}

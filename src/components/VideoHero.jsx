@@ -40,6 +40,9 @@ const VideoHero = () => {
             const { clientX, clientY } = e;
             const { innerWidth, innerHeight } = window;
 
+            const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            if (isTouchDevice || innerWidth < 768) return;
+
             // Calculate mouse position relative to center of screen (-1 to 1)
             const xPos = (clientX / innerWidth - 0.5) * 2;
             const yPos = (clientY / innerHeight - 0.5) * 2;
@@ -147,9 +150,10 @@ const VideoHero = () => {
                             </h1>
                             <p className="video-hero-subtitle" style={{
                                 marginTop: '1.5rem',
-                                maxWidth: '600px',
+                                maxWidth: 'min(600px, 90vw)',
+                                padding: '0 1rem',
                                 color: 'var(--subtext)',
-                                fontSize: '1.2rem',
+                                fontSize: 'clamp(0.9rem, 3vw, 1.2rem)',
                                 transform: 'translateZ(20px)', // Lowest pop out
                                 textAlign: 'center',
                                 marginInline: 'auto'

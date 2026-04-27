@@ -1,0 +1,69 @@
+# Goal Description
+
+The project is currently tailored for larger screens and fails to respond elegantly to medium, small laptop, and mobile screens. The objective is to make the entire "Anwar Ishpat" frontend responsive without losing its premium, 3D, and cinematic aesthetic. We will achieve this through CSS media queries, responsive inline styles, and conditional rendering where appropriate.
+
+## User Review Required
+
+> [!IMPORTANT]
+> The 3D carousel in the **Product & Service** section and the **Blog** section currently use complex `translateZ` and `translateX` transforms. On mobile, these can cause elements to overflow the screen or overlap excessively. I plan to reduce the scale and translation distances on smaller screens to keep the 3D effect while fitting the viewport. 
+> Does this approach sound good, or would you prefer a simpler 2D slider for mobile devices?
+
+## Proposed Changes
+
+---
+
+### Global Styles & CSS (`src/index.css`)
+
+Update global padding, typography limits, and component-specific CSS to stack elements cleanly on smaller screens.
+
+#### [MODIFY] src/index.css
+- **Sections**: Update `.section` default padding from `padding: 4rem 10%` to adapt via media query (`padding: 4rem 5%` on mobile).
+- **Carousel**: Modify `.carousel-card` fixed width (`380px` -> `min(380px, 85vw)`) and height (`500px` -> `min(500px, 60vh)`).
+- **Modals**: 
+  - Update `.product-modal` to stack `grid-template-columns: 1fr` on screens `< 900px`.
+  - Adjust `.product-modal-img-container` height on mobile.
+- **Contact Modal**: Refine `.contact-grid` and `.form-cell` padding for mobile screens.
+
+---
+
+### Hero Sections
+
+Adjust the layout restrictions that prevent the hero text from scaling properly.
+
+#### [MODIFY] src/components/Hero.jsx
+- Change the `maxWidth: '50vw'` on `.hero-content` to `maxWidth: '100%'` or `90vw` on mobile screens to allow the text to utilize the full width.
+
+#### [MODIFY] src/components/VideoHero.jsx
+- The 3D mouse rotation effect (`rotateX`, `rotateY`) behaves unexpectedly on touch devices. We will disable or scale down the effect for touch devices / smaller screens.
+- Ensure the `video-hero-subtitle` scales correctly on mobile (adjust `maxWidth` and `padding`).
+
+---
+
+### Sections (`src/components/Sections.jsx`)
+
+Address the hardcoded layouts, 3D transforms, and grid layouts that break on smaller viewports.
+
+#### [MODIFY] src/components/Sections.jsx
+- **ProductService**:
+  - Adjust the inline styles for the `carousel-card` `transform` property to use smaller `translateX` and `translateZ` values on screens `< 768px`.
+- **AboutUs**:
+  - The sticky pinned grid (`1fr 1fr`) has mobile overrides in a `<style jsx>` block that force images to absolute positions with `60vh`. We will refine this so the text is fully readable on mobile and the images serve as a proper background or stack neatly without overlap.
+- **WhyChooseUs**:
+  - Update `.central-thread-container` width from `600px` to `100%` on mobile to prevent horizontal overflow.
+  - Refine the `.milestone-card` mobile layout to ensure proper spacing between the icon, the central dot, and the text.
+- **MediaEvents**:
+  - Change `BroadcastCard` `minWidth: "400px"` to `minWidth: "100%"` so it fits within mobile screens.
+  - Reduce the marquee container height from `80vh` to a more manageable height (e.g., `50vh`) on mobile.
+- **Blog (InsightCarouselCard)**:
+  - Adjust the `translateX(60%)` and `translateZ(-100px)` transforms for the side cards. On mobile, `60%` pushes cards off-screen. We will reduce this to keep them partially visible without horizontal scrolling issues.
+
+## Verification Plan
+
+### Automated/Manual Verification
+- I will run the dev server and use the browser tool to view the site at various viewport widths:
+  - Mobile: 375px (iPhone width)
+  - Tablet: 768px (iPad width)
+  - Small Laptop: 1024px
+- Verify that there is no horizontal scrolling.
+- Verify that all modals (Product, Quote, Contact) are fully accessible and readable on mobile.
+- Verify that the 3D carousels (Products, Insights) function without breaking the layout on mobile.
