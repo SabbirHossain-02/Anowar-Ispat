@@ -33,6 +33,14 @@ const products = [
 export const ProductService = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (selectedProduct) {
@@ -104,32 +112,44 @@ export const ProductService = () => {
             if (offset > 1) offset -= products.length;
 
             let style = {};
-            if (offset === 0) {
-              style = {
-                transform: "translateX(0) scale(1) translateZ(50px)",
-                zIndex: 3,
-                opacity: 1,
-              };
-            } else if (offset === 1) {
-              style = {
-                transform:
-                  "translateX(110%) scale(0.75) translateZ(-50px) rotateY(-20deg)",
-                zIndex: 2,
-                opacity: 0.6,
-              };
-            } else if (offset === -1) {
-              style = {
-                transform:
-                  "translateX(-110%) scale(0.75) translateZ(-50px) rotateY(20deg)",
-                zIndex: 2,
-                opacity: 0.6,
-              };
+            if (isMobile) {
+              if (offset === 0) {
+                style = { transform: "translateX(0) scale(1)", zIndex: 3, opacity: 1 };
+              } else if (offset === 1) {
+                style = { transform: "translateX(95%) scale(0.9)", zIndex: 2, opacity: 0.5 };
+              } else if (offset === -1) {
+                style = { transform: "translateX(-95%) scale(0.9)", zIndex: 2, opacity: 0.5 };
+              } else {
+                style = { transform: "translateX(0) scale(0.5)", zIndex: 1, opacity: 0 };
+              }
             } else {
-              style = {
-                transform: "translateX(0) scale(0.5) translateZ(-150px)",
-                zIndex: 1,
-                opacity: 0,
-              };
+              if (offset === 0) {
+                style = {
+                  transform: "translateX(0) scale(1) translateZ(50px)",
+                  zIndex: 3,
+                  opacity: 1,
+                };
+              } else if (offset === 1) {
+                style = {
+                  transform:
+                    "translateX(110%) scale(0.75) translateZ(-50px) rotateY(-20deg)",
+                  zIndex: 2,
+                  opacity: 0.6,
+                };
+              } else if (offset === -1) {
+                style = {
+                  transform:
+                    "translateX(-110%) scale(0.75) translateZ(-50px) rotateY(20deg)",
+                  zIndex: 2,
+                  opacity: 0.6,
+                };
+              } else {
+                style = {
+                  transform: "translateX(0) scale(0.5) translateZ(-150px)",
+                  zIndex: 1,
+                  opacity: 0,
+                };
+              }
             }
 
             return (
@@ -329,7 +349,7 @@ export const AboutUs = () => {
       ref={sectionRef}
       style={{
         height: "100vh",
-        width: "100vw",
+        width: "100%",
         position: "relative",
         overflow: "hidden",
         background: "var(--primary)",
@@ -686,8 +706,8 @@ const MilestoneCard = ({ index, title, desc, icon: Icon, align, isVisible }) => 
         }}>
           <div style={{ position: 'absolute', inset: 0, background: 'var(--milestone-img-overlay, linear-gradient(to top, rgba(11,11,11,0.8), transparent))', zIndex: 0 }} />
           {Icon && (
-            <Icon 
-              size={140} 
+            <Icon
+              size={140}
               strokeWidth={1}
               color="var(--accent)"
               style={{
@@ -774,7 +794,7 @@ export const WhyChooseUs = () => {
           newVisible.push(index);
         }
       });
-      
+
       setVisibleMilestones(newVisible);
     };
 
@@ -1251,6 +1271,15 @@ const InsightCarouselCard = ({
   index,
   currentIndex,
 }) => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Calculate relative position to active card
   const isActive = index === currentIndex;
   const isPrev = index === (currentIndex - 1 + 3) % 3;
@@ -1262,18 +1291,22 @@ const InsightCarouselCard = ({
   let filter = "grayscale(100%) blur(5px)";
 
   if (isActive) {
-    transform = "translateX(0) translateZ(50px) rotateY(0deg) scale(1)";
+    transform = isMobile
+      ? "translateX(0) scale(1)"
+      : "translateX(0) translateZ(50px) rotateY(0deg) scale(1)";
     opacity = 1;
     zIndex = 10;
     filter = "grayscale(0%) blur(0px)";
   } else if (isPrev) {
-    transform =
-      "translateX(-60%) translateZ(-100px) rotateY(25deg) scale(0.85)";
+    transform = isMobile
+      ? "translateX(-95%) scale(0.9)"
+      : "translateX(-60%) translateZ(-100px) rotateY(25deg) scale(0.85)";
     opacity = 0.5;
     zIndex = 5;
   } else if (isNext) {
-    transform =
-      "translateX(60%) translateZ(-100px) rotateY(-25deg) scale(0.85)";
+    transform = isMobile
+      ? "translateX(95%) scale(0.9)"
+      : "translateX(60%) translateZ(-100px) rotateY(-25deg) scale(0.85)";
     opacity = 0.5;
     zIndex = 5;
   }
@@ -1288,7 +1321,7 @@ const InsightCarouselCard = ({
         margin: "0 auto",
         width: "90%",
         maxWidth: "600px",
-        height: "450px",
+        height: "min(450px, 60vh)",
         background: `linear-gradient(var(--insight-overlay-1, rgba(11, 11, 11, 0.4)), var(--insight-overlay-2, rgba(11, 11, 11, 0.95))), url(${img}) center/cover`,
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
