@@ -119,8 +119,8 @@ const VideoHero = () => {
                     src="/Logo.png"
                     alt="Anwar Ispat Logo"
                     style={{
-                        marginBottom: '2rem',
-                        height: 'clamp(50px, 12vh, 100px)',
+                        marginBottom: 'clamp(0.5rem, 3vh, 2rem)',
+                        height: 'clamp(40px, min(8vw, 12vh), 100px)',
                         objectFit: 'contain',
                         filter: 'drop-shadow(0 0 45px rgba(227, 24, 45, 1))',
                         transform: 'translateZ(60px)', // Pop out further than text
@@ -149,11 +149,11 @@ const VideoHero = () => {
                                 {slide.title}
                             </h1>
                             <p className="video-hero-subtitle" style={{
-                                marginTop: '1.5rem',
+                                marginTop: 'clamp(0.5rem, 2vh, 1.5rem)',
                                 maxWidth: 'min(600px, 90vw)',
                                 padding: '0 1rem',
                                 color: 'var(--subtext)',
-                                fontSize: 'clamp(0.9rem, 3vw, 1.2rem)',
+                                fontSize: 'clamp(0.8rem, min(3vw, 4vh), 1.2rem)',
                                 transform: 'translateZ(20px)', // Lowest pop out
                                 textAlign: 'center',
                                 marginInline: 'auto'

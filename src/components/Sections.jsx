@@ -1321,9 +1321,8 @@ const InsightCarouselCard = ({
         left: 0,
         right: 0,
         margin: "0 auto",
-        width: "90%",
-        maxWidth: "600px",
-        height: "min(450px, 60vh)",
+        width: "clamp(280px, min(90vw, 90vh), 600px)",
+        height: "clamp(220px, min(50vw, 50vh), 380px)",
         background: `linear-gradient(var(--insight-overlay-1, rgba(11, 11, 11, 0.4)), var(--insight-overlay-2, rgba(11, 11, 11, 0.95))), url(${img}) center/cover`,
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
@@ -1331,7 +1330,7 @@ const InsightCarouselCard = ({
           ? "1px solid rgba(227, 24, 45, 0.5)"
           : "1px solid rgba(255, 255, 255, 0.1)",
         borderRadius: "16px",
-        padding: "3rem",
+        padding: "clamp(1rem, min(4vw, 4vh), 3rem)",
         display: "flex",
         flexDirection: "column",
         justifyContent: "flex-end",
@@ -1357,10 +1356,10 @@ const InsightCarouselCard = ({
           style={{
             display: "inline-block",
             fontFamily: "monospace",
-            fontSize: "0.8rem",
+            fontSize: "clamp(0.6rem, 2vmin, 0.8rem)",
             color: isActive ? "var(--accent)" : "rgba(255,255,255,0.5)",
             letterSpacing: "0.2em",
-            marginBottom: "1rem",
+            marginBottom: "clamp(0.5rem, 2vh, 1rem)",
             textTransform: "uppercase",
             transition: "all 0.5s ease",
           }}
@@ -1370,8 +1369,8 @@ const InsightCarouselCard = ({
         <h3
           style={{
             fontFamily: "var(--font-heading)",
-            fontSize: " clamp(1.5rem, 3vw, 2.2rem)",
-            marginBottom: "1.5rem",
+            fontSize: "clamp(1.1rem, 5vmin, 2.2rem)",
+            marginBottom: "clamp(0.5rem, 2vh, 1.5rem)",
             color: "#fff",
             lineHeight: "1.2",
             textShadow: "0 4px 20px rgba(0,0,0,0.8)",
@@ -1389,14 +1388,14 @@ const InsightCarouselCard = ({
             transform: isActive ? "translateY(0)" : "translateY(20px)",
             transition: "all 0.5s ease 0.2s",
             borderTop: "1px solid rgba(255,255,255,0.1)",
-            paddingTop: "1.5rem",
+            paddingTop: "clamp(0.8rem, 2vh, 1.5rem)",
           }}
         >
           <span
             style={{
               fontFamily: "monospace",
               color: "var(--subtext)",
-              fontSize: "0.85rem",
+              fontSize: "clamp(0.7rem, 2vmin, 0.85rem)",
             }}
           >
             TIME: {readTime}
@@ -1406,8 +1405,8 @@ const InsightCarouselCard = ({
             className="magnetic-btn"
             style={{
               margin: 0,
-              padding: "0.8rem 1.5rem",
-              fontSize: "0.8rem",
+              padding: "clamp(0.5rem, 1.5vh, 0.8rem) clamp(1rem, 3vmin, 1.5rem)",
+              fontSize: "clamp(0.6rem, 2vmin, 0.8rem)",
               borderRadius: "4px",
               background: "transparent",
               border: "1px solid var(--accent)",
@@ -1476,7 +1475,7 @@ export const Blog = () => {
         WebkitBackdropFilter: "blur(30px)",
         position: "relative",
         zIndex: 10,
-        padding: "8rem 0", // Removed horizontal padding to let carousel bleed
+        padding: "clamp(4rem, 10vh, 8rem) 0", // Removed horizontal padding to let carousel bleed
         overflow: "hidden",
       }}
     >
@@ -1485,7 +1484,7 @@ export const Blog = () => {
         style={{
           textAlign: "center",
           maxWidth: "800px",
-          margin: "0 auto 4rem auto",
+          margin: "0 auto clamp(2rem, 5vh, 4rem) auto",
           position: "relative",
           zIndex: 20,
           padding: "0 5%",
@@ -1520,7 +1519,7 @@ export const Blog = () => {
       <div
         style={{
           position: "relative",
-          height: "550px",
+          height: "clamp(300px, min(60vw, 60vh), 480px)",
           width: "100%",
           perspective: "1500px",
           display: "flex",
