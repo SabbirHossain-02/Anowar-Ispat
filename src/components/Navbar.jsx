@@ -43,7 +43,7 @@ const Navbar = ({ onOpenContact, onNavigate }) => {
         { name: 'About Us', page: 'about', hash: '' },
         { name: 'Why Choose Us?', page: 'home', hash: '#why-choose-us' },
         { name: 'Media & Events', page: 'home', hash: '#media-events' },
-        { name: 'Blog', page: 'home', hash: '#blog' }
+        { name: 'Our Projects', page: 'home', hash: '#project-showcase' }
     ];
 
     const handleNavClick = (e, link) => {
