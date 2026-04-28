@@ -10,6 +10,7 @@ import Navbar from './components/Navbar'
 import ContactModal from './components/ContactModal'
 import QuoteModal from './components/QuoteModal'
 import IntroLoader from './components/IntroLoader'
+import FloatingQuoteBtn from './components/FloatingQuoteBtn'
 import AboutUsPage from './pages/AboutUsPage'
 import ProductsPage from './pages/ProductsPage'
 
@@ -137,6 +138,7 @@ function App() {
                 </Routes>
             </main>
 
+            <FloatingQuoteBtn />
             <Footer onOpenContact={() => setIsContactOpen(true)} />
         </div>
     )
