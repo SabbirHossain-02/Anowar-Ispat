@@ -9,7 +9,7 @@ import CoreStrengths3D from "./three/CoreStrengths3D";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-const products = [
+export const products = [
   {
     id: 1,
     title: "Anwars 500CWR",

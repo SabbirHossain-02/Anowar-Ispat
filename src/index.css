@@ -222,11 +222,13 @@ section {
   transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   cursor: pointer;
+  scale: 1;
 }
 
 .carousel-card:hover {
   border-color: rgba(227, 24, 45, 0.5);
   box-shadow: 0 15px 40px rgba(227, 24, 45, 0.2);
+  scale: 1.03;
 }
 
 .carousel-img {
@@ -236,6 +238,11 @@ section {
   object-fit: cover;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   background-color: #1a1a1a;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.carousel-card:hover .carousel-img {
+  transform: scale(1.1);
 }
 
 .carousel-content {

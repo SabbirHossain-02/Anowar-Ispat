@@ -39,7 +39,7 @@ const Navbar = ({ onOpenContact, onNavigate }) => {
     }, []);
 
     const navLinks = [
-        { name: 'Product & Service', page: 'home', hash: '#product-service' },
+        { name: 'Product & Service', page: 'products', hash: '' },
         { name: 'About Us', page: 'about', hash: '' },
         { name: 'Why Choose Us?', page: 'home', hash: '#why-choose-us' },
         { name: 'Media & Events', page: 'home', hash: '#media-events' },

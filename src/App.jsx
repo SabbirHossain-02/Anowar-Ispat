@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import Lenis from 'lenis'
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import Scene from './components/three/Scene'
 import VideoHero from './components/VideoHero'
 import Hero from './components/Hero'
@@ -10,25 +11,40 @@ import ContactModal from './components/ContactModal'
 import QuoteModal from './components/QuoteModal'
 import IntroLoader from './components/IntroLoader'
 import AboutUsPage from './pages/AboutUsPage'
+import ProductsPage from './pages/ProductsPage'
 
 function App() {
     const lenisRef = useRef()
     const [isContactOpen, setIsContactOpen] = useState(false)
     const [isQuoteOpen, setIsQuoteOpen] = useState(false)
     const [introDone, setIntroDone] = useState(false)
-    const [currentPage, setCurrentPage] = useState('home')
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const handleNavigate = (page, hash) => {
-        setCurrentPage(page);
-        if (hash) {
+        const path = page === 'home' ? '/' : `/${page}`;
+        
+        if (location.pathname !== path) {
+            navigate(path);
             setTimeout(() => {
+                if (hash) {
+                    const element = document.querySelector(hash);
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth' });
+                    }
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            }, 100);
+        } else {
+            if (hash) {
                 const element = document.querySelector(hash);
                 if (element) {
                     element.scrollIntoView({ behavior: 'smooth' });
                 }
-            }, 100);
-        } else {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         }
     };
 
@@ -102,21 +118,23 @@ function App() {
             </div>
 
             <main>
-                {currentPage === 'home' ? (
-                    <>
-                        <VideoHero />
-                        <Hero />
-                        <ProductService />
-                        <AboutUs />
-                        <WhyChooseUs />
-                        <CoreStrengths />
-                        <ProjectShowcase />
-                        <MediaEvents />
-                        <Blog />
-                    </>
-                ) : (
-                    <AboutUsPage />
-                )}
+                <Routes>
+                    <Route path="/" element={
+                        <>
+                            <VideoHero />
+                            <Hero />
+                            <ProductService />
+                            <AboutUs />
+                            <WhyChooseUs />
+                            <CoreStrengths />
+                            <ProjectShowcase />
+                            <MediaEvents />
+                            <Blog />
+                        </>
+                    } />
+                    <Route path="/about" element={<AboutUsPage />} />
+                    <Route path="/products" element={<ProductsPage />} />
+                </Routes>
             </main>
 
             <Footer onOpenContact={() => setIsContactOpen(true)} />
