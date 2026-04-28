@@ -15,6 +15,7 @@ const QuoteModal = ({ isOpen, onClose }) => {
         if (!modalRef.current) return;
 
         if (isOpen) {
+            window.dispatchEvent(new CustomEvent('lenis-stop'));
             gsap.set(modalRef.current, { display: 'flex' });
             gsap.set(contentRef.current, { y: -50, opacity: 0 });
             gsap.set(gridLinesRef.current, { scaleX: 0, scaleY: 0 });
@@ -43,6 +44,7 @@ const QuoteModal = ({ isOpen, onClose }) => {
             }, '-=0.3');
 
         } else {
+            window.dispatchEvent(new CustomEvent('lenis-start'));
             gsap.to(modalRef.current, {
                 background: 'transparent',
                 backdropFilter: 'blur(0px)',
@@ -65,7 +67,7 @@ const QuoteModal = ({ isOpen, onClose }) => {
     };
 
     return (
-        <div ref={modalRef} className="contact-modal" style={{ zIndex: 3000, overflowY: 'auto' }}>
+        <div ref={modalRef} className="contact-modal" style={{ zIndex: 3000, overflowY: 'auto' }} data-lenis-prevent="true">
             <button onClick={onClose} className="close-modal-btn" style={{ position: 'fixed' }}>
                 <X size={32} />
             </button>

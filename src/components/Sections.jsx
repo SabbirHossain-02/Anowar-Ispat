@@ -588,26 +588,36 @@ export const AboutUs = () => {
 
       <style jsx>{`
         @media (max-width: 900px) {
-          /* Handle responsive layout for sticky section */
-          #about-us > div {
-            grid-template-columns: 1fr !important;
+          #about-us {
+            height: auto !important;
+            min-height: 100vh !important;
           }
-          /* Push text down so images are visible under */
+          #about-us > div {
+            display: flex !important;
+            flex-direction: column-reverse !important;
+          }
+          /* Text container */
           #about-us > div > div:first-child {
-            padding-top: 60vh !important;
+            height: auto !important;
+            padding: 4rem 5% !important;
             justify-content: flex-start !important;
           }
-          /* Ensure images don't stretch fully on moible causing overlay */
+          /* VISION & LEADERSHIP title */
+          #about-us > div > div:first-child > p {
+            position: relative !important;
+            top: auto !important;
+            margin-bottom: 2rem !important;
+          }
+          /* Image container */
           #about-us > div > div:last-child {
-            position: absolute !important;
+            position: relative !important;
             width: 100% !important;
-            height: 60vh !important;
+            height: 50vh !important;
           }
           .about-us-shadow-overlay {
             background: linear-gradient(
               to bottom,
-              var(--primary) 0%,
-              transparent 20%,
+              transparent 0%,
               transparent 80%,
               var(--primary) 100%
             ) !important;
@@ -878,8 +888,8 @@ export const WhyChooseUs = () => {
         __html: `
                 @media (max-width: 900px) {
                     .central-thread-container {
-                        left: 20px !important;
-                        transform: none !important;
+                        left: calc(5% + 20px) !important;
+                        transform: translateX(-50%) !important;
                     }
                     .milestone-card {
                         flex-direction: column !important;
@@ -918,9 +928,9 @@ const BroadcastCard = ({ date, title, desc, img, isHovering, onHover }) => {
         WebkitBackdropFilter: "blur(10px)",
         border: "1px solid rgba(255, 255, 255, 0.05)",
         borderLeft: "4px solid rgba(255, 255, 255, 0.1)",
-        padding: "1.5rem",
-        minWidth: "400px",
-        height: "140px",
+        padding: "clamp(1rem, 3vw, 1.5rem)",
+        minWidth: "min(400px, 100%)",
+        height: "clamp(120px, 15vh, 140px)",
         width: "100%",
         cursor: "pointer",
         transition: "all 0.4s cubic-bezier(0.19, 1, 0.22, 1)",
@@ -945,9 +955,9 @@ const BroadcastCard = ({ date, title, desc, img, isHovering, onHover }) => {
     >
       <div
         style={{
-          flex: "0 0 100px",
+          flex: "0 0 clamp(70px, 20vw, 100px)",
           height: "100%",
-          marginRight: "1.5rem",
+          marginRight: "clamp(0.8rem, 3vw, 1.5rem)",
           overflow: "hidden",
           borderRadius: "4px",
         }}
@@ -972,6 +982,7 @@ const BroadcastCard = ({ date, title, desc, img, isHovering, onHover }) => {
           flexDirection: "column",
           justifyContent: "center",
           flex: 1,
+          minWidth: 0,
         }}
       >
         <p
@@ -1109,19 +1120,20 @@ export const MediaEvents = () => {
       ></div>
 
       <div
+        className="media-events-container"
         style={{
           maxWidth: "1400px",
           width: "100%",
           margin: "0 auto",
           display: "flex",
           flexWrap: "wrap",
-          gap: "4rem",
+          gap: "clamp(2rem, 5vw, 4rem)",
           alignItems: "center",
           height: "100%",
         }}
       >
         {/* Left side text content */}
-        <div style={{ flex: "1 1 400px", zIndex: 2 }}>
+        <div className="media-text-content" style={{ flex: "1 1 min(400px, 100%)", zIndex: 2 }}>
           <div
             style={{
               display: "flex",
@@ -1192,9 +1204,10 @@ export const MediaEvents = () => {
 
         {/* Right side Marquee Scroller */}
         <div
+          className="marquee-container"
           style={{
-            flex: "1 1 500px",
-            height: "80vh",
+            flex: "1 1 min(500px, 100%)",
+            height: "clamp(400px, 60vh, 80vh)",
             position: "relative",
             perspective: "1000px",
             display: "flex",
@@ -1232,6 +1245,7 @@ export const MediaEvents = () => {
           <div
             className="broadcast-marquee"
             style={{
+              width: "100%",
               display: "flex",
               flexDirection: "column",
               gap: "1rem",
@@ -1258,6 +1272,37 @@ export const MediaEvents = () => {
           }
           100% {
             transform: rotateY(-15deg) rotateX(5deg) translateY(-50%);
+          }
+        }
+        @keyframes scrollUpMobile {
+          0% {
+            transform: translateY(0);
+          }
+          100% {
+            transform: translateY(-50%);
+          }
+        }
+        @media (max-width: 900px) {
+          #media-events {
+            padding: 6rem 5% !important;
+            height: auto !important;
+          }
+          .media-events-container {
+            height: auto !important;
+            flex-direction: column !important;
+            gap: 2rem !important;
+          }
+          .media-text-content {
+            margin-bottom: 2rem;
+          }
+          .marquee-container {
+            perspective: none !important;
+            height: 60vh !important;
+            width: 100% !important;
+          }
+          .broadcast-marquee {
+            transform: none !important;
+            animation: scrollUpMobile 20s linear infinite !important;
           }
         }
       `}</style>

@@ -1,5 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Outfit:wght@300;500;800&display=swap');
 
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
 :root {
   --primary: #0B0B0B;
   --secondary: #2A2A2A;
@@ -696,7 +712,7 @@ section {
   display: none;
   /* toggled by GSAP */
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   background: transparent;
   color: #fff;
 }
