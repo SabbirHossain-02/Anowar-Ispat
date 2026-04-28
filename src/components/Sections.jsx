@@ -1050,6 +1050,226 @@ const BroadcastCard = ({ date, title, desc, img, isHovering, onHover }) => {
   );
 };
 
+export const ProjectShowcase = () => {
+  const projects = [
+    { title: "Padma Bridge", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777390678/Padma_Bridge_fnueme.mp4", desc: "A monumental infrastructure achievement connecting the nation." },
+    { title: "Rooppur Power Plant", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777390681/Rooppur_en98hz.mp4", desc: "Bangladesh's first nuclear power plant, empowering the future." },
+    { title: "Mayor Hanif Flyover", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777394650/mayor_hanif_msgq9d.mp4", desc: "Revolutionizing urban transit and reducing city congestion." },
+    { title: "Purbachal Express Highway", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777394690/Purbachal_Express_Highway_compressed_gxuze8.mp4", desc: "A massive arterial highway facilitating rapid economic growth." },
+    { title: "Airport 3rd Terminal", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777395501/Airport_3rd_Terminal_brxz6w.mp4", desc: "State-of-the-art aviation hub elevating global connectivity." },
+    { title: "Shahjalal Fertilizer Factory", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777395915/Shahjalal_Fertiliser_Factory_gefg5s.mp4", desc: "A critical industrial mega-project ensuring agricultural self-reliance." },
+    { title: "Hotel Intercontinental", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777396432/Hotel_Intercontinental_k6assz.mp4", desc: "Iconic luxury and heritage built on unwavering structural strength." },
+    { title: "City Center Dhaka", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777396567/City_Center_Dhaka_jzcyar.mp4", desc: "The tallest skyscraper defining the modern skyline of the capital." }
+  ];
+
+  return (
+    <section
+      id="project-showcase"
+      style={{
+        minHeight: "100vh",
+        background: "var(--bg-section, rgba(11, 11, 11, 0.7))",
+        backdropFilter: "blur(30px)",
+        WebkitBackdropFilter: "blur(30px)",
+        borderTop: "1px solid rgba(255, 60, 0, 0.1)",
+        padding: "8rem 5%",
+        position: "relative",
+        zIndex: 10,
+      }}
+    >
+      <div style={{ textAlign: "center", marginBottom: "4rem" }}>
+        <p
+          style={{
+            fontFamily: "monospace",
+            color: "var(--accent)",
+            letterSpacing: "0.2em",
+            marginBottom: "1rem",
+            fontSize: "0.9rem",
+          }}
+        >
+          NATION BUILDERS
+        </p>
+        <h2
+          style={{
+            fontSize: "clamp(2.5rem, 5vw, 4.5rem)",
+            color: "var(--text)",
+            lineHeight: 1.1,
+            textTransform: "uppercase",
+            fontFamily: "var(--font-heading)",
+          }}
+        >
+          MEGA <span className="accent-text">PROJECTS</span>
+        </h2>
+      </div>
+
+      <div
+        className="project-grid"
+        style={{
+          display: "grid",
+          gap: "1.5rem",
+          width: "100%",
+          maxWidth: "1400px",
+          margin: "0 auto",
+        }}
+      >
+        {projects.map((proj, idx) => (
+          <div
+            key={idx}
+            className="project-card"
+            style={{
+              position: "relative",
+              overflow: "hidden",
+              borderRadius: "12px",
+              aspectRatio: "16/9",
+              cursor: "pointer",
+              border: "1px solid rgba(255, 255, 255, 0.05)",
+            }}
+          >
+            <video
+              src={proj.video}
+              autoPlay
+              loop
+              muted
+              playsInline
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                filter: "grayscale(80%) brightness(0.6)",
+                transition: "all 0.5s ease",
+              }}
+              className="project-video"
+            />
+            <div
+              className="project-overlay"
+              style={{
+                position: "absolute",
+                inset: 0,
+                background: "linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 60%)",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "flex-end",
+                padding: "1.5rem",
+                transition: "all 0.3s ease",
+              }}
+            >
+              <h3
+                style={{
+                  color: "#fff",
+                  fontSize: "clamp(1rem, 2vw, 1.3rem)",
+                  fontFamily: "var(--font-heading)",
+                  marginBottom: "0.5rem",
+                  textTransform: "uppercase",
+                  transform: "translateY(10px)",
+                  transition: "transform 0.4s ease",
+                }}
+                className="project-title"
+              >
+                {proj.title}
+              </h3>
+              <p
+                style={{
+                  color: "var(--subtext)",
+                  fontSize: "clamp(0.75rem, 1.5vw, 0.85rem)",
+                  opacity: 0,
+                  transform: "translateY(10px)",
+                  transition: "all 0.4s ease 0.1s",
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden"
+                }}
+                className="project-desc"
+              >
+                {proj.desc}
+              </p>
+            </div>
+            <div 
+              className="project-glow"
+              style={{
+                position: 'absolute',
+                inset: 0,
+                border: '2px solid var(--accent)',
+                borderRadius: '12px',
+                opacity: 0,
+                transition: 'opacity 0.4s ease',
+                pointerEvents: 'none'
+              }}
+            />
+          </div>
+        ))}
+      </div>
+
+      <style jsx>{`
+        .project-grid {
+          grid-template-columns: repeat(4, 1fr);
+        }
+        
+        .project-card:hover .project-video {
+          filter: grayscale(0%) brightness(1) !important;
+          transform: scale(1.05);
+        }
+        
+        .project-card:hover .project-overlay {
+          background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(227,24,45,0.2) 100%) !important;
+        }
+        
+        .project-card:hover .project-title {
+          transform: translateY(0) !important;
+          color: var(--accent) !important;
+        }
+        
+        .project-card:hover .project-desc {
+          opacity: 1 !important;
+          transform: translateY(0) !important;
+          color: #fff !important;
+        }
+
+        .project-card:hover .project-glow {
+          opacity: 1 !important;
+        }
+
+        body.light-mode .project-card {
+          border-color: rgba(0,0,0,0.1) !important;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        body.light-mode .project-card:not(:hover) .project-title {
+          color: #ffffff !important;
+        }
+
+        body.light-mode .project-card:not(:hover) .project-desc {
+          color: #A1A1A6 !important;
+        }
+        @media (max-width: 1200px) {
+          .project-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+          }
+        }
+        @media (max-width: 900px) {
+          .project-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+        }
+        @media (max-width: 600px) {
+          .project-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .project-card .project-video {
+             filter: grayscale(0%) brightness(0.8) !important;
+          }
+          .project-card .project-desc {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+          }
+          .project-card .project-title {
+            transform: translateY(0) !important;
+          }
+        }
+      `}</style>
+    </section>
+  );
+};
+
 export const MediaEvents = () => {
   const [isHovered, setIsHovered] = useState(false);
 

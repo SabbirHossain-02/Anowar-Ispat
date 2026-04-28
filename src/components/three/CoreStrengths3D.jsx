@@ -175,14 +175,8 @@ export default function CoreStrengths3D({ inView }) {
             {/* Center Label */}
             <Html center position={[0, 0, 1.5]} zIndexRange={[100, 100]}>
                 <div 
+                    className="core-strength-card"
                     style={{
-                        background: 'rgba(11, 11, 11, 0.85)',
-                        backdropFilter: 'blur(10px)',
-                        padding: '1.5rem 2.5rem',
-                        borderRadius: '8px',
-                        border: '1px solid rgba(227, 24, 45, 0.3)',
-                        boxShadow: '0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(227, 24, 45, 0.1)',
-                        textAlign: 'center',
                         opacity: inView ? 1 : 0,
                         transform: `scale(${inView ? 1 : 0.8})`,
                         transition: 'all 1s cubic-bezier(0.19, 1, 0.22, 1) 1s',
@@ -191,7 +185,7 @@ export default function CoreStrengths3D({ inView }) {
                     }}
                 >
                     <h3 style={{ color: 'var(--subtext)', fontSize: '0.9rem', letterSpacing: '0.2em', marginBottom: '0.5rem', fontFamily: 'monospace' }}>WHY CHOOSE</h3>
-                    <h1 style={{ color: '#fff', fontSize: '2.5rem', fontWeight: '900', letterSpacing: '0.05em', lineHeight: 1, fontFamily: 'var(--font-heading)' }}>
+                    <h1 style={{ color: 'var(--text)', fontSize: '2.5rem', fontWeight: '900', letterSpacing: '0.05em', lineHeight: 1, fontFamily: 'var(--font-heading)' }}>
                         ANWAR <span style={{ color: 'var(--accent)' }}>ISPAT</span>
                     </h1>
                     <p style={{ color: 'var(--text)', fontSize: '1rem', marginTop: '0.5rem', fontWeight: 600 }}>THE BEST?</p>

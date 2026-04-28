@@ -933,6 +933,16 @@ section {
   }
 }
 
+.core-strength-card {
+  background: rgba(11, 11, 11, 0.85);
+  backdrop-filter: blur(10px);
+  padding: 1.5rem 2.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba(227, 24, 45, 0.3);
+  box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(227, 24, 45, 0.1);
+  text-align: center;
+}
+
 /* --- LIGHT MODE CORE OVERRIDES --- */
 body.light-mode {
   --primary: #F2F2F5;
@@ -994,6 +1004,11 @@ body.light-mode .forge-card {
   background: #ffffff !important;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
   border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+body.light-mode .core-strength-card {
+  background: rgba(255, 255, 255, 0.85) !important;
+  box-shadow: 0 0 30px rgba(0,0,0,0.1), inset 0 0 20px rgba(227, 24, 45, 0.05) !important;
 }
 
 body.light-mode .carousel-img {
