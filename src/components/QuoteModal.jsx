@@ -134,7 +134,7 @@ const QuoteModal = ({ isOpen, onClose }) => {
                                 </select>
                             </div>
 
-                            <div style={{ display: 'flex', gap: '1rem' }}>
+                            <div className="form-row">
                                 <div className="input-group" style={{ flex: 1 }} ref={el => addToRefs(el, textStaggerRef)}>
                                     <label>QUANTITY (TON)</label>
                                     <input type="number" placeholder="Enter Ton" />
@@ -158,7 +158,7 @@ const QuoteModal = ({ isOpen, onClose }) => {
                             02. <span className="accent-text">Contact Information</span>
                         </h3>
                         <div className="command-form">
-                            <div style={{ display: 'flex', gap: '1rem' }}>
+                            <div className="form-row">
                                 <div className="input-group" style={{ flex: 1 }} ref={el => addToRefs(el, textStaggerRef)}>
                                     <label>BUSINESS NAME</label>
                                     <input type="text" placeholder="Business Name" />
@@ -169,7 +169,7 @@ const QuoteModal = ({ isOpen, onClose }) => {
                                 </div>
                             </div>
 
-                            <div style={{ display: 'flex', gap: '1rem' }}>
+                            <div className="form-row">
                                 <div className="input-group" style={{ flex: 1 }} ref={el => addToRefs(el, textStaggerRef)}>
                                     <label>EMAIL ADDRESS</label>
                                     <input type="email" placeholder="Enter your email" />
@@ -185,7 +185,7 @@ const QuoteModal = ({ isOpen, onClose }) => {
                                 <input type="text" placeholder="Address" />
                             </div>
 
-                            <div style={{ display: 'flex', gap: '1rem' }}>
+                            <div className="form-row">
                                 <div className="input-group" style={{ flex: 1 }} ref={el => addToRefs(el, textStaggerRef)}>
                                     <label>POLICE STATION</label>
                                     <input type="text" placeholder="Enter police station" />
@@ -241,6 +241,11 @@ const QuoteModal = ({ isOpen, onClose }) => {
                     color: var(--text);
                 }
                 
+                .form-row {
+                    display: flex;
+                    gap: 1rem;
+                }
+                
                 @media (max-width: 900px) {
                     .quote-grid {
                         grid-template-columns: 1fr !important;
@@ -252,6 +257,10 @@ const QuoteModal = ({ isOpen, onClose }) => {
                     }
                     .quote-grid .v-line.center {
                         display: none;
+                    }
+                    .form-row {
+                        flex-direction: column;
+                        gap: 0;
                     }
                 }
             `}
