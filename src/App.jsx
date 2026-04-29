@@ -13,6 +13,7 @@ import IntroLoader from './components/IntroLoader'
 import FloatingQuoteBtn from './components/FloatingQuoteBtn'
 import AboutUsPage from './pages/AboutUsPage'
 import ProductsPage from './pages/ProductsPage'
+import ProjectsPage from './pages/ProjectsPage'
 
 function App() {
     const lenisRef = useRef()
@@ -135,6 +136,7 @@ function App() {
                     } />
                     <Route path="/about" element={<AboutUsPage />} />
                     <Route path="/products" element={<ProductsPage />} />
+                    <Route path="/projects" element={<ProjectsPage />} />
                 </Routes>
             </main>
 
