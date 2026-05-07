@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ANWAR ISPAT — COMMAND CENTER</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --accent: #E3182D;
+    --accent-dim: rgba(227,24,45,0.15);
+    --accent-glow: rgba(227,24,45,0.4);
+    --bg: #0a0a0a;
+    --bg2: #111111;
+    --bg3: #181818;
+    --border: rgba(255,255,255,0.07);
+    --border-accent: rgba(227,24,45,0.3);
+    --text: #f0f0f0;
+    --subtext: #888;
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --info: #3b82f6;
+    --font-head: 'Bebas Neue', sans-serif;
+    --font-body: 'Barlow', sans-serif;
+    --font-cond: 'Barlow Condensed', sans-serif;
+    --font-mono: 'Share Tech Mono', monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--font-body); overflow: hidden; }
+
+  /* SCANLINE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 9999;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+    pointer-events: none;
+  }
+
+  /* LOGIN SCREEN */
+  #login-screen {
+    position: fixed; inset: 0; z-index: 1000;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg);
+  }
+  #login-screen::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 50%, rgba(227,24,45,0.08) 0%, transparent 70%);
+  }
+  .login-box {
+    position: relative;
+    width: 420px;
+    padding: 3rem;
+    border: 1px solid var(--border-accent);
+    background: var(--bg2);
+  }
+  .login-box::before, .login-box::after {
+    content: '';
+    position: absolute;
+    width: 20px; height: 20px;
+    border-color: var(--accent);
+    border-style: solid;
+  }
+  .login-box::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+  .login-box::after { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+  .login-logo { font-family: var(--font-head); font-size: 2.5rem; letter-spacing: 0.05em; margin-bottom: 0.2rem; }
+  .login-logo span { color: var(--accent); }
+  .login-sub { font-family: var(--font-mono); font-size: 0.7rem; color: var(--subtext); letter-spacing: 0.2em; margin-bottom: 2.5rem; }
+  .login-label { font-family: var(--font-mono); font-size: 0.7rem; color: var(--subtext); letter-spacing: 0.15em; margin-bottom: 0.5rem; }
+  .login-input {
+    width: 100%; background: var(--bg3); border: 1px solid var(--border);
+    color: var(--text); padding: 0.8rem 1rem;
+    font-family: var(--font-mono); font-size: 0.9rem;
+    margin-bottom: 1.2rem; outline: none;
+    transition: border-color 0.2s;
+  }
+  .login-input:focus { border-color: var(--accent); }
+  .login-btn {
+    width: 100%; padding: 1rem; background: var(--accent);
+    color: #fff; border: none; cursor: pointer;
+    font-family: var(--font-head); font-size: 1.2rem; letter-spacing: 0.1em;
+    transition: all 0.2s; position: relative; overflow: hidden;
+  }
+  .login-btn:hover { background: #c0121f; }
+  .login-btn::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+    transform: translateX(-100%); transition: transform 0.5s;
+  }
+  .login-btn:hover::after { transform: translateX(100%); }
+  .login-error { color: var(--accent); font-family: var(--font-mono); font-size: 0.75rem; margin-top: 0.8rem; display: none; }
+
+  /* MAIN LAYOUT */
+  #app { display: none; height: 100vh; overflow: hidden; }
+  .layout { display: grid; grid-template-columns: 260px 1fr; grid-template-rows: 60px 1fr; height: 100vh; }
+
+  /* TOPBAR */
+  .topbar {
+    grid-column: 1 / -1;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .topbar::after {
+    content: ''; position: absolute; bottom: 0; left: 0;
+    width: 100%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+  .topbar-logo { font-family: var(--font-head); font-size: 1.4rem; letter-spacing: 0.1em; }
+  .topbar-logo span { color: var(--accent); }
+  .topbar-tag { font-family: var(--font-mono); font-size: 0.65rem; color: var(--subtext); letter-spacing: 0.2em; }
+  .topbar-right { display: flex; align-items: center; gap: 1.5rem; }
+  .live-dot { display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-mono); font-size: 0.7rem; color: var(--success); }
+  .live-dot::before { content: ''; width: 7px; height: 7px; background: var(--success); border-radius: 50%; animation: blink 2s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .logout-btn {
+    background: transparent; border: 1px solid var(--border-accent);
+    color: var(--accent); padding: 0.4rem 1rem;
+    font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .logout-btn:hover { background: var(--accent-dim); }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    padding: 1.5rem 0;
+    overflow-y: auto;
+  }
+  .sidebar-section { padding: 0 1rem; margin-bottom: 0.5rem; }
+  .sidebar-section-title {
+    font-family: var(--font-mono); font-size: 0.6rem; color: var(--subtext);
+    letter-spacing: 0.2em; padding: 0.5rem 0.5rem; text-transform: uppercase;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 0.8rem;
+    padding: 0.75rem 1rem; cursor: pointer;
+    font-family: var(--font-cond); font-size: 0.9rem; letter-spacing: 0.05em;
+    color: var(--subtext); border-left: 2px solid transparent;
+    transition: all 0.2s; border-radius: 0 4px 4px 0;
+    text-transform: uppercase;
+  }
+  .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+  .nav-item.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-dim); }
+  .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .nav-badge {
+    margin-left: auto; background: var(--accent); color: #fff;
+    font-size: 0.65rem; font-family: var(--font-mono);
+    padding: 0.1rem 0.4rem; border-radius: 2px; min-width: 20px; text-align: center;
+  }
+
+  /* MAIN CONTENT */
+  .main { background: var(--bg); overflow-y: auto; padding: 2rem; }
+
+  /* PAGES */
+  .page { display: none; }
+  .page.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+  /* PAGE HEADER */
+  .page-header { margin-bottom: 2rem; }
+  .page-header-top { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  .page-title { font-family: var(--font-head); font-size: 2.5rem; letter-spacing: 0.05em; line-height: 1; }
+  .page-title span { color: var(--accent); }
+  .page-subtitle { font-family: var(--font-mono); font-size: 0.7rem; color: var(--subtext); letter-spacing: 0.15em; margin-top: 0.4rem; }
+
+  /* BUTTONS */
+  .btn-primary {
+    background: var(--accent); color: #fff; border: none;
+    padding: 0.7rem 1.5rem; cursor: pointer;
+    font-family: var(--font-cond); font-size: 0.9rem; letter-spacing: 0.1em;
+    text-transform: uppercase; transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+  }
+  .btn-primary:hover { background: #c0121f; }
+  .btn-ghost {
+    background: transparent; color: var(--subtext); border: 1px solid var(--border);
+    padding: 0.6rem 1.2rem; cursor: pointer;
+    font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.1em;
+    transition: all 0.2s;
+  }
+  .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+  .btn-danger {
+    background: transparent; color: var(--accent); border: 1px solid var(--border-accent);
+    padding: 0.4rem 0.8rem; cursor: pointer;
+    font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.05em;
+    transition: all 0.2s;
+  }
+  .btn-danger:hover { background: var(--accent-dim); }
+
+  /* STATS GRID */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
+  .stat-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    padding: 1.5rem; position: relative; overflow: hidden;
+  }
+  .stat-card::before {
+    content: ''; position: absolute; bottom: 0; left: 0;
+    width: 100%; height: 2px; background: var(--accent);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.3s;
+  }
+  .stat-card:hover::before { transform: scaleX(1); }
+  .stat-label { font-family: var(--font-mono); font-size: 0.65rem; color: var(--subtext); letter-spacing: 0.2em; margin-bottom: 0.8rem; }
+  .stat-value { font-family: var(--font-head); font-size: 2.8rem; color: var(--text); line-height: 1; }
+  .stat-value span { color: var(--accent); }
+  .stat-sub { font-family: var(--font-mono); font-size: 0.65rem; color: var(--subtext); margin-top: 0.5rem; }
+  .stat-icon { position: absolute; top: 1rem; right: 1rem; opacity: 0.07; }
+  .stat-icon svg { width: 40px; height: 40px; }
+
+  /* GRID / TABLE */
+  .data-grid { background: var(--bg2); border: 1px solid var(--border); }
+  .data-grid-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .data-grid-title { font-family: var(--font-cond); font-size: 1rem; letter-spacing: 0.1em; text-transform: uppercase; }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    text-align: left; padding: 0.8rem 1rem;
+    font-family: var(--font-mono); font-size: 0.65rem; color: var(--subtext);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+  }
+  td { padding: 0.9rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.85rem; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .td-img { width: 50px; height: 50px; object-fit: cover; border: 1px solid var(--border); }
+  .td-img-placeholder { width: 50px; height: 50px; background: var(--bg3); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; }
+
+  /* STATUS BADGES */
+  .badge {
+    display: inline-block; padding: 0.2rem 0.6rem;
+    font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.1em;
+    text-transform: uppercase; border-radius: 2px;
+  }
+  .badge-pending { background: rgba(245,158,11,0.15); color: var(--warning); border: 1px solid rgba(245,158,11,0.3); }
+  .badge-reviewing { background: rgba(59,130,246,0.15); color: var(--info); border: 1px solid rgba(59,130,246,0.3); }
+  .badge-completed { background: rgba(34,197,94,0.15); color: var(--success); border: 1px solid rgba(34,197,94,0.3); }
+  .badge-live { background: rgba(34,197,94,0.15); color: var(--success); border: 1px solid rgba(34,197,94,0.3); }
+  .badge-local { background: rgba(59,130,246,0.15); color: var(--info); border: 1px solid rgba(59,130,246,0.3); }
+  .badge-intl { background: rgba(227,24,45,0.15); color: var(--accent); border: 1px solid rgba(227,24,45,0.3); }
+  .badge-archive { background: rgba(255,255,255,0.05); color: var(--subtext); border: 1px solid var(--border); }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 500;
+    background: rgba(0,0,0,0.85); backdrop-filter: blur(4px);
+    align-items: center; justify-content: center; padding: 2rem;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg2); border: 1px solid var(--border-accent);
+    width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto;
+    position: relative;
+  }
+  .modal::before, .modal::after {
+    content: ''; position: absolute;
+    width: 16px; height: 16px;
+    border-color: var(--accent); border-style: solid;
+  }
+  .modal::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+  .modal::after { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+  .modal-header {
+    padding: 1.5rem; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-title { font-family: var(--font-head); font-size: 1.5rem; letter-spacing: 0.05em; }
+  .modal-title span { color: var(--accent); }
+  .modal-close { background: none; border: none; color: var(--subtext); cursor: pointer; font-size: 1.2rem; line-height: 1; }
+  .modal-close:hover { color: var(--text); }
+  .modal-body { padding: 1.5rem; }
+
+  /* FORM */
+  .form-group { margin-bottom: 1.2rem; }
+  .form-label { font-family: var(--font-mono); font-size: 0.65rem; color: var(--subtext); letter-spacing: 0.15em; margin-bottom: 0.5rem; display: block; }
+  .form-input, .form-select, .form-textarea {
+    width: 100%; background: var(--bg3); border: 1px solid var(--border);
+    color: var(--text); padding: 0.8rem 1rem;
+    font-family: var(--font-body); font-size: 0.9rem; outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+  .form-textarea { resize: vertical; min-height: 100px; }
+  .form-select option { background: var(--bg3); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .file-upload-area {
+    border: 1px dashed var(--border); padding: 2rem; text-align: center;
+    cursor: pointer; transition: all 0.2s; background: var(--bg3);
+  }
+  .file-upload-area:hover { border-color: var(--accent); background: var(--accent-dim); }
+  .file-upload-area p { font-family: var(--font-mono); font-size: 0.75rem; color: var(--subtext); margin-top: 0.5rem; }
+  .file-preview { max-width: 100%; max-height: 150px; margin-top: 1rem; border: 1px solid var(--border); }
+  .modal-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 1rem; }
+
+  /* QUOTATION DETAIL */
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .detail-item { padding: 0.8rem; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); }
+  .detail-item:nth-child(even) { border-right: none; }
+  .detail-key { font-family: var(--font-mono); font-size: 0.6rem; color: var(--subtext); letter-spacing: 0.15em; margin-bottom: 0.3rem; }
+  .detail-val { font-size: 0.9rem; color: var(--text); }
+
+  /* EMPTY STATE */
+  .empty-state { text-align: center; padding: 4rem 2rem; }
+  .empty-state-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.2; }
+  .empty-state p { font-family: var(--font-mono); font-size: 0.75rem; color: var(--subtext); letter-spacing: 0.1em; }
+
+  /* TOAST */
+  #toast {
+    position: fixed; bottom: 2rem; right: 2rem; z-index: 9000;
+    background: var(--bg2); border: 1px solid var(--border);
+    padding: 1rem 1.5rem; font-family: var(--font-mono); font-size: 0.8rem;
+    border-left: 3px solid var(--success);
+    transform: translateX(120%); transition: transform 0.3s ease;
+    max-width: 300px;
+  }
+  #toast.show { transform: translateX(0); }
+  #toast.error { border-left-color: var(--accent); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+  /* LOADING */
+  .loading { display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-mono); font-size: 0.75rem; color: var(--subtext); padding: 2rem; }
+  .spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">ANWAR <span>ISPAT</span></div>
+    <div class="login-sub">// COMMAND CENTER ACCESS</div>
+    <div class="login-label">USERNAME</div>
+    <input class="login-input" type="text" id="login-user" placeholder="Enter username" autocomplete="off" />
+    <div class="login-label">PASSWORD</div>
+    <input class="login-input" type="password" id="login-pass" placeholder="••••••••••••" />
+    <button class="login-btn" onclick="doLogin()">AUTHORIZE ACCESS</button>
+    <div class="login-error" id="login-err">⚠ INVALID CREDENTIALS</div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div class="layout">
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div>
+        <div class="topbar-logo">ANWAR <span>ISPAT</span></div>
+        <div class="topbar-tag">// ADMIN COMMAND CENTER</div>
+      </div>
+      <div class="topbar-right">
+        <div class="live-dot">SYSTEM ONLINE</div>
+        <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--subtext)" id="topbar-time"></div>
+        <button class="logout-btn" onclick="doLogout()">LOGOUT</button>
+      </div>
+    </header>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">// NAVIGATION</div>
+        <div class="nav-item active" onclick="showPage('dashboard')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">// CONTENT</div>
+        <div class="nav-item" onclick="showPage('products')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          Products
+        </div>
+        <div class="nav-item" onclick="showPage('media')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+          Media & Events
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">// ORDERS</div>
+        <div class="nav-item" onclick="showPage('quotations')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Quotations
+          <span class="nav-badge" id="pending-count">0</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="page-header">
+          <div class="page-title">COMMAND <span>CENTER</span></div>
+          <div class="page-subtitle">// OPERATIONAL OVERVIEW — ANWAR ISPAT</div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">// TOTAL PRODUCTS</div>
+            <div class="stat-value" id="stat-products">—</div>
+            <div class="stat-sub">ACTIVE IN CATALOG</div>
+            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">// MEDIA POSTS</div>
+            <div class="stat-value" id="stat-media">—</div>
+            <div class="stat-sub">PUBLISHED EVENTS</div>
+            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">// TOTAL QUOTATIONS</div>
+            <div class="stat-value" id="stat-quotes">—</div>
+            <div class="stat-sub">ALL TIME REQUESTS</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">// PENDING REVIEW</div>
+            <div class="stat-value"><span id="stat-pending">—</span></div>
+            <div class="stat-sub">AWAITING ACTION</div>
+          </div>
+        </div>
+
+        <div class="data-grid">
+          <div class="data-grid-header">
+            <div class="data-grid-title">Recent Quotations</div>
+            <button class="btn-ghost" onclick="showPage('quotations')">VIEW ALL</button>
+          </div>
+          <table>
+            <thead><tr><th>REF</th><th>BUSINESS</th><th>PRODUCT</th><th>DISTRICT</th><th>STATUS</th><th>DATE</th></tr></thead>
+            <tbody id="recent-quotes-body"><tr><td colspan="6"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PRODUCTS -->
+      <div class="page" id="page-products">
+        <div class="page-header">
+          <div class="page-header-top">
+            <div>
+              <div class="page-title">PRODUCT <span>CATALOG</span></div>
+              <div class="page-subtitle">// MANAGE PRODUCT LISTINGS</div>
+            </div>
+            <button class="btn-primary" onclick="openProductModal()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              ADD PRODUCT
+            </button>
+          </div>
+        </div>
+        <div class="data-grid">
+          <div class="data-grid-header">
+            <div class="data-grid-title">All Products</div>
+          </div>
+          <table>
+            <thead><tr><th>IMAGE</th><th>PRODUCT NAME</th><th>DESCRIPTION</th><th>ACTIONS</th></tr></thead>
+            <tbody id="products-body"><tr><td colspan="4"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- MEDIA -->
+      <div class="page" id="page-media">
+        <div class="page-header">
+          <div class="page-header-top">
+            <div>
+              <div class="page-title">MEDIA <span>&amp; EVENTS</span></div>
+              <div class="page-subtitle">// BROADCAST FEED MANAGEMENT</div>
+            </div>
+            <button class="btn-primary" onclick="openMediaModal()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              POST EVENT
+            </button>
+          </div>
+        </div>
+        <div class="data-grid">
+          <div class="data-grid-header">
+            <div class="data-grid-title">All Posts</div>
+          </div>
+          <table>
+            <thead><tr><th>IMAGE</th><th>TITLE</th><th>DATE</th><th>CATEGORY</th><th>ACTIONS</th></tr></thead>
+            <tbody id="media-body"><tr><td colspan="5"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- QUOTATIONS -->
+      <div class="page" id="page-quotations">
+        <div class="page-header">
+          <div class="page-title">QUOTATION <span>REQUESTS</span></div>
+          <div class="page-subtitle">// INCOMING CUSTOMER REQUESTS</div>
+        </div>
+        <div class="data-grid">
+          <div class="data-grid-header">
+            <div class="data-grid-title">All Quotations</div>
+          </div>
+          <table>
+            <thead><tr><th>REF #</th><th>BUSINESS</th><th>CONTACT</th><th>PRODUCT</th><th>QTY</th><th>DISTRICT</th><th>STATUS</th><th>DATE</th><th>ACTION</th></tr></thead>
+            <tbody id="quotations-body"><tr><td colspan="9"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- PRODUCT MODAL -->
+<div class="modal-overlay" id="product-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">ADD <span>PRODUCT</span></div>
+      <button class="modal-close" onclick="closeModal('product-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="product-id" />
+      <div class="form-group">
+        <label class="form-label">PRODUCT NAME</label>
+        <input class="form-input" id="product-title" placeholder="e.g. Anwars 500CWR" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">DESCRIPTION</label>
+        <textarea class="form-textarea" id="product-desc" placeholder="Product description..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">PRODUCT IMAGE</label>
+        <div class="file-upload-area" onclick="document.getElementById('product-file').click()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <p>CLICK TO UPLOAD IMAGE</p>
+        </div>
+        <input type="file" id="product-file" accept="image/*" style="display:none" onchange="previewFile(this,'product-preview')" />
+        <img id="product-preview" class="file-preview" style="display:none" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('product-modal')">CANCEL</button>
+      <button class="btn-primary" onclick="saveProduct()">SAVE PRODUCT</button>
+    </div>
+  </div>
+</div>
+
+<!-- MEDIA MODAL -->
+<div class="modal-overlay" id="media-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">POST <span>EVENT</span></div>
+      <button class="modal-close" onclick="closeModal('media-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">TITLE</label>
+        <input class="form-input" id="media-title" placeholder="Event title..." />
+      </div>
+      <div class="form-group">
+        <label class="form-label">DESCRIPTION</label>
+        <textarea class="form-textarea" id="media-desc" placeholder="Short description..."></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">DATE (e.g. 24 FEB 2026)</label>
+          <input class="form-input" id="media-date" placeholder="DD MMM YYYY" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">CATEGORY</label>
+          <select class="form-select" id="media-category">
+            <option value="LIVE">LIVE</option>
+            <option value="LOCAL">LOCAL</option>
+            <option value="INTL">INTL</option>
+            <option value="ARCHIVE">ARCHIVE</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">EVENT IMAGE</label>
+        <div class="file-upload-area" onclick="document.getElementById('media-file').click()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <p>CLICK TO UPLOAD IMAGE</p>
+        </div>
+        <input type="file" id="media-file" accept="image/*" style="display:none" onchange="previewFile(this,'media-preview')" />
+        <img id="media-preview" class="file-preview" style="display:none" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('media-modal')">CANCEL</button>
+      <button class="btn-primary" onclick="saveMedia()">PUBLISH EVENT</button>
+    </div>
+  </div>
+</div>
+
+<!-- QUOTATION DETAIL MODAL -->
+<div class="modal-overlay" id="quote-modal">
+  <div class="modal" style="max-width:700px">
+    <div class="modal-header">
+      <div class="modal-title">QUOTATION <span>DETAIL</span></div>
+      <button class="modal-close" onclick="closeModal('quote-modal')">✕</button>
+    </div>
+    <div class="modal-body" id="quote-detail-body"></div>
+    <div class="modal-footer">
+      <select class="form-select" id="quote-status-select" style="width:auto;padding:0.6rem 1rem">
+        <option value="pending">PENDING</option>
+        <option value="reviewing">REVIEWING</option>
+        <option value="completed">COMPLETED</option>
+      </select>
+      <button class="btn-primary" onclick="updateQuoteStatus()">UPDATE STATUS</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const API = 'http://172.31.92.141:5000/api';
+let token = localStorage.getItem('ai_token');
+let currentQuoteId = null;
+
+// TIME
+setInterval(() => {
+  const el = document.getElementById('topbar-time');
+  if(el) el.textContent = new Date().toLocaleTimeString('en-GB');
+}, 1000);
+
+// AUTH
+async function doLogin() {
+  const username = document.getElementById('login-user').value.trim();
+  const password = document.getElementById('login-pass').value.trim();
+  if(!username || !password) return;
+  try {
+    const res = await fetch(`${API}/auth/login`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({username, password})
+    });
+    const data = await res.json();
+    if(data.token) {
+      token = data.token;
+      localStorage.setItem('ai_token', token);
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      loadAll();
+    } else {
+      document.getElementById('login-err').style.display = 'block';
+    }
+  } catch(e) {
+    document.getElementById('login-err').style.display = 'block';
+  }
+}
+
+document.getElementById('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+function doLogout() {
+  localStorage.removeItem('ai_token');
+  token = null;
+  location.reload();
+}
+
+// Check existing token
+if(token) {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  loadAll();
+}
+
+// NAVIGATION
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if(name === 'products') loadProducts();
+  if(name === 'media') loadMedia();
+  if(name === 'quotations') loadQuotations();
+}
+
+async function loadAll() {
+  loadDashboard();
+  loadProducts();
+  loadMedia();
+  loadQuotations();
+}
+
+// DASHBOARD
+async function loadDashboard() {
+  try {
+    const [products, media, quotes] = await Promise.all([
+      fetch(`${API}/products`).then(r=>r.json()),
+      fetch(`${API}/media`).then(r=>r.json()),
+      fetch(`${API}/quotations`, {headers:{Authorization:`Bearer ${token}`}}).then(r=>r.json())
+    ]);
+    document.getElementById('stat-products').textContent = products.length;
+    document.getElementById('stat-media').textContent = media.length;
+    document.getElementById('stat-quotes').textContent = quotes.length;
+    const pending = quotes.filter(q=>q.status==='pending').length;
+    document.getElementById('stat-pending').textContent = pending;
+    document.getElementById('pending-count').textContent = pending;
+
+    const tbody = document.getElementById('recent-quotes-body');
+    const recent = quotes.slice(0,5);
+    if(recent.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="empty-state-icon">📋</div><p>NO QUOTATIONS YET</p></div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = recent.map(q => `
+      <tr>
+        <td style="font-family:var(--font-mono);font-size:0.7rem;color:var(--subtext)">#${String(q.id).padStart(4,'0')}</td>
+        <td>${q.business_name || '—'}</td>
+        <td>${q.product_name || '—'}</td>
+        <td>${q.district || '—'}</td>
+        <td><span class="badge badge-${q.status}">${q.status.toUpperCase()}</span></td>
+        <td style="font-family:var(--font-mono);font-size:0.75rem;color:var(--subtext)">${new Date(q.created_at).toLocaleDateString('en-GB')}</td>
+      </tr>`).join('');
+  } catch(e) { console.error(e); }
+}
+
+// PRODUCTS
+async function loadProducts() {
+  const tbody = document.getElementById('products-body');
+  try {
+    const data = await fetch(`${API}/products`).then(r=>r.json());
+    if(data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4"><div class="empty-state"><div class="empty-state-icon">📦</div><p>NO PRODUCTS YET — ADD YOUR FIRST PRODUCT</p></div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.map(p => `
+      <tr>
+        <td>${p.image_url ? `<img class="td-img" src="${API.replace('/api','')}${p.image_url}" />` : `<div class="td-img-placeholder"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`}</td>
+        <td style="font-weight:600">${p.title}</td>
+        <td style="color:var(--subtext);max-width:300px;font-size:0.8rem">${p.description || '—'}</td>
+        <td>
+          <div style="display:flex;gap:0.5rem">
+            <button class="btn-ghost" onclick="editProduct(${p.id},'${encodeURIComponent(p.title)}','${encodeURIComponent(p.description||'')}','${p.image_url||''}')">EDIT</button>
+            <button class="btn-danger" onclick="deleteProduct(${p.id})">DELETE</button>
+          </div>
+        </td>
+      </tr>`).join('');
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="4" style="color:var(--accent);font-family:var(--font-mono);font-size:0.75rem;padding:2rem">ERROR LOADING DATA</td></tr>'; }
+}
+
+function openProductModal(id='', title='', desc='', img='') {
+  document.getElementById('product-id').value = id;
+  document.getElementById('product-title').value = decodeURIComponent(title);
+  document.getElementById('product-desc').value = decodeURIComponent(desc);
+  document.getElementById('product-preview').style.display = 'none';
+  document.getElementById('product-modal').classList.add('open');
+}
+
+function editProduct(id, title, desc, img) {
+  openProductModal(id, title, desc, img);
+  if(img) {
+    const prev = document.getElementById('product-preview');
+    prev.src = API.replace('/api','') + img;
+    prev.style.display = 'block';
+  }
+}
+
+async function saveProduct() {
+  const id = document.getElementById('product-id').value;
+  const title = document.getElementById('product-title').value.trim();
+  const description = document.getElementById('product-desc').value.trim();
+  const file = document.getElementById('product-file').files[0];
+  if(!title) return showToast('Product name is required', true);
+
+  const formData = new FormData();
+  formData.append('title', title);
+  formData.append('description', description);
+  if(file) formData.append('image', file);
+
+  const url = id ? `${API}/products/${id}` : `${API}/products`;
+  const method = id ? 'PUT' : 'POST';
+
+  try {
+    await fetch(url, { method, headers:{Authorization:`Bearer ${token}`}, body: formData });
+    closeModal('product-modal');
+    loadProducts();
+    loadDashboard();
+    showToast(id ? 'Product updated' : 'Product added');
+  } catch(e) { showToast('Error saving product', true); }
+}
+
+async function deleteProduct(id) {
+  if(!confirm('Delete this product?')) return;
+  await fetch(`${API}/products/${id}`, {method:'DELETE', headers:{Authorization:`Bearer ${token}`}});
+  loadProducts(); loadDashboard(); showToast('Product deleted');
+}
+
+// MEDIA
+async function loadMedia() {
+  const tbody = document.getElementById('media-body');
+  try {
+    const data = await fetch(`${API}/media`).then(r=>r.json());
+    if(data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="empty-state-icon">📰</div><p>NO EVENTS YET — POST YOUR FIRST EVENT</p></div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.map(m => `
+      <tr>
+        <td>${m.image_url ? `<img class="td-img" src="${API.replace('/api','')}${m.image_url}" />` : `<div class="td-img-placeholder"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`}</td>
+        <td style="font-weight:600;max-width:250px">${m.title}</td>
+        <td style="font-family:var(--font-mono);font-size:0.75rem;color:var(--subtext)">${m.event_date || '—'}</td>
+        <td><span class="badge badge-${(m.category||'local').toLowerCase()}">${m.category || 'LOCAL'}</span></td>
+        <td><button class="btn-danger" onclick="deleteMedia(${m.id})">DELETE</button></td>
+      </tr>`).join('');
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="5" style="color:var(--accent);font-family:var(--font-mono);font-size:0.75rem;padding:2rem">ERROR LOADING DATA</td></tr>'; }
+}
+
+function openMediaModal() {
+  document.getElementById('media-title').value = '';
+  document.getElementById('media-desc').value = '';
+  document.getElementById('media-date').value = '';
+  document.getElementById('media-preview').style.display = 'none';
+  document.getElementById('media-modal').classList.add('open');
+}
+
+async function saveMedia() {
+  const title = document.getElementById('media-title').value.trim();
+  const description = document.getElementById('media-desc').value.trim();
+  const event_date = document.getElementById('media-date').value.trim();
+  const category = document.getElementById('media-category').value;
+  const file = document.getElementById('media-file').files[0];
+  if(!title) return showToast('Title is required', true);
+
+  const formData = new FormData();
+  formData.append('title', title);
+  formData.append('description', description);
+  formData.append('event_date', event_date);
+  formData.append('category', category);
+  if(file) formData.append('image', file);
+
+  try {
+    await fetch(`${API}/media`, {method:'POST', headers:{Authorization:`Bearer ${token}`}, body: formData});
+    closeModal('media-modal');
+    loadMedia(); loadDashboard();
+    showToast('Event published');
+  } catch(e) { showToast('Error publishing event', true); }
+}
+
+async function deleteMedia(id) {
+  if(!confirm('Delete this event?')) return;
+  await fetch(`${API}/media/${id}`, {method:'DELETE', headers:{Authorization:`Bearer ${token}`}});
+  loadMedia(); loadDashboard(); showToast('Event deleted');
+}
+
+// QUOTATIONS
+async function loadQuotations() {
+  const tbody = document.getElementById('quotations-body');
+  try {
+    const data = await fetch(`${API}/quotations`, {headers:{Authorization:`Bearer ${token}`}}).then(r=>r.json());
+    if(data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><div class="empty-state-icon">📋</div><p>NO QUOTATIONS YET</p></div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.map(q => `
+      <tr>
+        <td style="font-family:var(--font-mono);font-size:0.7rem;color:var(--subtext)">#${String(q.id).padStart(4,'0')}</td>
+        <td style="font-weight:600">${q.business_name || '—'}</td>
+        <td style="font-size:0.8rem;color:var(--subtext)">${q.full_name || '—'}<br><span style="font-family:var(--font-mono);font-size:0.65rem">${q.mobile || ''}</span></td>
+        <td style="font-size:0.8rem">${q.product_name || '—'}</td>
+        <td style="font-family:var(--font-mono);font-size:0.75rem">${q.quantity_ton ? q.quantity_ton+'T' : ''} ${q.quantity_pcs ? q.quantity_pcs+'PCS' : ''}</td>
+        <td style="font-size:0.8rem">${q.district || '—'}</td>
+        <td><span class="badge badge-${q.status}">${q.status.toUpperCase()}</span></td>
+        <td style="font-family:var(--font-mono);font-size:0.7rem;color:var(--subtext)">${new Date(q.created_at).toLocaleDateString('en-GB')}</td>
+        <td><button class="btn-ghost" onclick="viewQuote(${q.id})">VIEW</button></td>
+      </tr>`).join('');
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="9" style="color:var(--accent);font-family:var(--font-mono);font-size:0.75rem;padding:2rem">ERROR LOADING DATA</td></tr>'; }
+}
+
+async function viewQuote(id) {
+  currentQuoteId = id;
+  try {
+    const data = await fetch(`${API}/quotations`, {headers:{Authorization:`Bearer ${token}`}}).then(r=>r.json());
+    const q = data.find(x => x.id === id);
+    if(!q) return;
+    document.getElementById('quote-status-select').value = q.status;
+    document.getElementById('quote-detail-body').innerHTML = `
+      <div style="margin-bottom:1rem">
+        <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--subtext);letter-spacing:0.15em;margin-bottom:0.3rem">// REFERENCE</div>
+        <div style="font-family:var(--font-head);font-size:2rem">#${String(q.id).padStart(4,'0')}</div>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--subtext);letter-spacing:0.15em;margin-bottom:0.8rem">01. PRODUCT INFORMATION</div>
+      <div class="detail-grid" style="margin-bottom:1.5rem;border:1px solid var(--border)">
+        <div class="detail-item"><div class="detail-key">PRODUCT</div><div class="detail-val">${q.product_name||'—'}</div></div>
+        <div class="detail-item"><div class="detail-key">SIZE</div><div class="detail-val">${q.size_mm||'—'}</div></div>
+        <div class="detail-item"><div class="detail-key">QTY (TON)</div><div class="detail-val">${q.quantity_ton||'—'}</div></div>
+        <div class="detail-item"><div class="detail-key">QTY (PCS)</div><div class="detail-val">${q.quantity_pcs||'—'}</div></div>
+        ${q.additional_products ? `<div class="detail-item" style="grid-column:1/-1"><div class="detail-key">ADDITIONAL PRODUCTS</div><div class="detail-val">${q.additional_products}</div></div>` : ''}
+      </div>
+      <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--subtext);letter-spacing:0.15em;margin-bottom:0.8rem">02. CONTACT INFORMATION</div>
+      <div class="detail-grid" style="border:1px solid var(--border)">
+        <div class="detail-item"><div class="detail-key">BUSINESS</div><div class="detail-val">${q.business_name||'—'}</div></div>
+        <div class="detail-item"><div class="detail-key">FULL NAME</div><div class="detail-val">${q.full_name||'—'}</div></div>
+        <div class="detail-item"><div class="detail-key">EMAIL</div><div class="detail-val">${q.email||'—'}</div></div>
+        <div class="detail-item"><div class="detail-key">MOBILE</div><div class="detail-val">${q.mobile||'—'}</div></div>
+        <div class="detail-item" style="grid-column:1/-1"><div class="detail-key">ADDRESS</div><div class="detail-val">${q.address||'—'}</div></div>
+        <div class="detail-item"><div class="detail-key">POLICE STATION</div><div class="detail-val">${q.police_station||'—'}</div></div>
+        <div class="detail-item"><div class="detail-key">DISTRICT</div><div class="detail-val">${q.district||'—'}</div></div>
+        ${q.message ? `<div class="detail-item" style="grid-column:1/-1"><div class="detail-key">MESSAGE</div><div class="detail-val">${q.message}</div></div>` : ''}
+      </div>`;
+    document.getElementById('quote-modal').classList.add('open');
+  } catch(e) { showToast('Error loading quotation', true); }
+}
+
+async function updateQuoteStatus() {
+  const status = document.getElementById('quote-status-select').value;
+  await fetch(`${API}/quotations/${currentQuoteId}/status`, {
+    method:'PUT', headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},
+    body: JSON.stringify({status})
+  });
+  closeModal('quote-modal');
+  loadQuotations(); loadDashboard();
+  showToast('Status updated');
+}
+
+// HELPERS
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function previewFile(input, previewId) {
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById(previewId);
+    img.src = e.target.result; img.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+function showToast(msg, isError=false) {
+  const t = document.getElementById('toast');
+  t.textContent = isError ? '⚠ ' + msg : '✓ ' + msg;
+  t.className = 'show' + (isError ? ' error' : '');
+  setTimeout(() => t.className = '', 3000);
+}
+</script>
+</body>
+</html>

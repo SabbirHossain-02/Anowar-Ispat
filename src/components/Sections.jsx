@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+﻿import React, { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, X, History, Globe, Zap, Shield, Target, Building2 } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -9,31 +9,35 @@ import CoreStrengths3D from "./three/CoreStrengths3D";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-export const products = [
-  {
-    id: 1,
-    title: "Anwars 500CWR",
-    desc: "Premium grade 500CWR TMT rebars engineered for superior malleability and highest structural durability.",
-    img: "/product_image.png",
-  },
-  {
-    id: 2,
-    title: "Anwars 500DWR",
-    desc: "High-tensile 500DWR rebars providing maximum strength and bendability for heavy-duty infrastructure.",
-    img: "/product_image.png",
-  },
-  {
-    id: 3,
-    title: "Anwars 420DWR",
-    desc: "Unmatched yield strength ensuring durability for extreme load-bearing superstructures.",
-    img: "/product_image.png",
-  },
-];
+// Static export kept empty — real data comes from API inside ProductService
+export const products = [];
 
 export const ProductService = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
+
+  // ── API: load products from backend ──────────────────────────────────────
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    fetch("http://172.31.92.141:5000/api/products")
+      .then((r) => r.json())
+      .then((data) => {
+        setProducts(
+          data.map((p) => ({
+            id: p.id,
+            title: p.title,
+            desc: p.description || "",
+            img: p.image_url
+              ? p.image_url
+              : "/product_image.png",
+          }))
+        );
+      })
+      .catch(() => {});
+  }, []);
+  // ─────────────────────────────────────────────────────────────────────────
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 900 || window.innerHeight < 500);
@@ -107,109 +111,115 @@ export const ProductService = () => {
           infrastructure.
         </p>
 
-        <div className="carousel-container">
-          {products.map((product, index) => {
-            let offset = index - activeIndex;
-            if (offset < -1) offset += products.length;
-            if (offset > 1) offset -= products.length;
+        {products.length === 0 ? (
+          <div style={{ color: "var(--subtext)", marginTop: "4rem", fontSize: "1rem" }}>
+            Loading products...
+          </div>
+        ) : (
+          <div className="carousel-container">
+            {products.map((product, index) => {
+              let offset = index - activeIndex;
+              if (offset < -1) offset += products.length;
+              if (offset > 1) offset -= products.length;
 
-            let style = {};
-            if (isMobile) {
-              if (offset === 0) {
-                style = { transform: "translateX(0) scale(1)", zIndex: 3, opacity: 1 };
-              } else if (offset === 1) {
-                style = { transform: "translateX(95%) scale(0.9)", zIndex: 2, opacity: 0.5 };
-              } else if (offset === -1) {
-                style = { transform: "translateX(-95%) scale(0.9)", zIndex: 2, opacity: 0.5 };
+              let style = {};
+              if (isMobile) {
+                if (offset === 0) {
+                  style = { transform: "translateX(0) scale(1)", zIndex: 3, opacity: 1 };
+                } else if (offset === 1) {
+                  style = { transform: "translateX(95%) scale(0.9)", zIndex: 2, opacity: 0.5 };
+                } else if (offset === -1) {
+                  style = { transform: "translateX(-95%) scale(0.9)", zIndex: 2, opacity: 0.5 };
+                } else {
+                  style = { transform: "translateX(0) scale(0.5)", zIndex: 1, opacity: 0 };
+                }
               } else {
-                style = { transform: "translateX(0) scale(0.5)", zIndex: 1, opacity: 0 };
+                if (offset === 0) {
+                  style = {
+                    transform: "translateX(0) scale(1) translateZ(50px)",
+                    zIndex: 3,
+                    opacity: 1,
+                  };
+                } else if (offset === 1) {
+                  style = {
+                    transform:
+                      "translateX(110%) scale(0.75) translateZ(-50px) rotateY(-20deg)",
+                    zIndex: 2,
+                    opacity: 0.6,
+                  };
+                } else if (offset === -1) {
+                  style = {
+                    transform:
+                      "translateX(-110%) scale(0.75) translateZ(-50px) rotateY(20deg)",
+                    zIndex: 2,
+                    opacity: 0.6,
+                  };
+                } else {
+                  style = {
+                    transform: "translateX(0) scale(0.5) translateZ(-150px)",
+                    zIndex: 1,
+                    opacity: 0,
+                  };
+                }
               }
-            } else {
-              if (offset === 0) {
-                style = {
-                  transform: "translateX(0) scale(1) translateZ(50px)",
-                  zIndex: 3,
-                  opacity: 1,
-                };
-              } else if (offset === 1) {
-                style = {
-                  transform:
-                    "translateX(110%) scale(0.75) translateZ(-50px) rotateY(-20deg)",
-                  zIndex: 2,
-                  opacity: 0.6,
-                };
-              } else if (offset === -1) {
-                style = {
-                  transform:
-                    "translateX(-110%) scale(0.75) translateZ(-50px) rotateY(20deg)",
-                  zIndex: 2,
-                  opacity: 0.6,
-                };
-              } else {
-                style = {
-                  transform: "translateX(0) scale(0.5) translateZ(-150px)",
-                  zIndex: 1,
-                  opacity: 0,
-                };
-              }
-            }
 
-            return (
-              <div
-                key={product.id}
-                className={`carousel-card ${offset === 0 ? 'active' : ''}`}
-                style={style}
-                onClick={() => {
-                  if (offset === 0) {
-                    setSelectedProduct(product);
-                  } else {
-                    setActiveIndex(index);
-                  }
-                }}
-              >
-                <img
-                  src={product.img}
-                  alt={product.title}
-                  className="carousel-img"
-                />
-                <div className="carousel-content">
-                  <h3 className="carousel-title">{product.title}</h3>
-                  <p className="carousel-desc">{product.desc}</p>
+              return (
+                <div
+                  key={product.id}
+                  className={`carousel-card ${offset === 0 ? 'active' : ''}`}
+                  style={style}
+                  onClick={() => {
+                    if (offset === 0) {
+                      setSelectedProduct(product);
+                    } else {
+                      setActiveIndex(index);
+                    }
+                  }}
+                >
+                  <img
+                    src={product.img}
+                    alt={product.title}
+                    className="carousel-img"
+                  />
+                  <div className="carousel-content">
+                    <h3 className="carousel-title">{product.title}</h3>
+                    <p className="carousel-desc">{product.desc}</p>
 
-                  <div className="carousel-actions">
-                    <button
-                      className="btn-learn-more"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedProduct(product);
-                      }}
-                    >
-                      Learn More
-                    </button>
-                    <button
-                      className="btn-get-quote"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        window.dispatchEvent(new CustomEvent('open-quote'));
-                      }}
-                    >
-                      Get Quote
-                    </button>
+                    <div className="carousel-actions">
+                      <button
+                        className="btn-learn-more"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedProduct(product);
+                        }}
+                      >
+                        Learn More
+                      </button>
+                      <button
+                        className="btn-get-quote"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.dispatchEvent(new CustomEvent('open-quote'));
+                        }}
+                      >
+                        Get Quote
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
 
-          <div className="carousel-nav">
-            <button className="carousel-btn" onClick={prevSlide}>
-              <ChevronLeft size={24} />
-            </button>
-            <button className="carousel-btn" onClick={nextSlide}>
-              <ChevronRight size={24} />
-            </button>
+            <div className="carousel-nav">
+              <button className="carousel-btn" onClick={prevSlide}>
+                <ChevronLeft size={24} />
+              </button>
+              <button className="carousel-btn" onClick={nextSlide}>
+                <ChevronRight size={24} />
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <div
@@ -285,9 +295,6 @@ export const AboutUs = () => {
         },
       });
 
-      // 1. Initial State: Founder is fully visible. Text 1 is visible.
-
-      // 2. Animate out Founder image slightly and fade it
       tl.to(
         founderImgRef.current,
         {
@@ -299,7 +306,6 @@ export const AboutUs = () => {
         0,
       );
 
-      // 3. Fade out Text 1
       tl.to(
         textRef1.current,
         {
@@ -310,7 +316,6 @@ export const AboutUs = () => {
         0,
       );
 
-      // 4. Bring in MD image from bottom
       tl.fromTo(
         mdImgRef.current,
         {
@@ -327,7 +332,6 @@ export const AboutUs = () => {
         0.5,
       );
 
-      // 5. Fade in Text 2
       tl.fromTo(
         textRef2.current,
         {
@@ -355,7 +359,7 @@ export const AboutUs = () => {
         position: "relative",
         overflow: "hidden",
         background: "var(--primary)",
-        padding: 0, // Reset padding for full bleed
+        padding: 0,
         display: "flex",
         alignItems: "center",
       }}
@@ -372,7 +376,6 @@ export const AboutUs = () => {
           maxWidth: "100%",
         }}
       >
-        {/* Left Side: Sticky Text Container */}
         <div
           style={{
             display: "flex",
@@ -400,7 +403,6 @@ export const AboutUs = () => {
           </p>
 
           <div style={{ position: "relative", width: "100%", height: "300px" }}>
-            {/* Text 1: Founder */}
             <div
               ref={textRef1}
               style={{ position: "absolute", top: 0, left: 0, width: "100%" }}
@@ -454,7 +456,6 @@ export const AboutUs = () => {
               </p>
             </div>
 
-            {/* Text 2: MD */}
             <div
               ref={textRef2}
               style={{
@@ -516,11 +517,9 @@ export const AboutUs = () => {
           </div>
         </div>
 
-        {/* Right Side: Cinematic Image Stack */}
         <div
           style={{ position: "relative", height: "100%", overflow: "hidden" }}
         >
-          {/* Shadow overlay to blend edges */}
           <div
             className="about-us-shadow-overlay"
             style={{
@@ -567,11 +566,10 @@ export const AboutUs = () => {
               objectFit: "cover",
               objectPosition: "center 20%",
               filter: "grayscale(100%) contrast(1.2)",
-              opacity: 0, // Starts hidden via GSAP
+              opacity: 0,
             }}
           />
 
-          {/* Accent glowing gradient overlay on images */}
           <div
             style={{
               position: "absolute",
@@ -596,19 +594,16 @@ export const AboutUs = () => {
             display: flex !important;
             flex-direction: column-reverse !important;
           }
-          /* Text container */
           #about-us > div > div:first-child {
             height: auto !important;
             padding: 4rem 5% !important;
             justify-content: flex-start !important;
           }
-          /* VISION & LEADERSHIP title */
           #about-us > div > div:first-child > p {
             position: relative !important;
             top: auto !important;
             margin-bottom: 2rem !important;
           }
-          /* Image container */
           #about-us > div > div:last-child {
             position: relative !important;
             width: 100% !important;
@@ -649,7 +644,6 @@ const MilestoneCard = ({ index, title, desc, icon: Icon, align, isVisible }) => 
       zIndex: 2,
       gap: '4rem',
     }}>
-      {/* Text Content */}
       <div style={{
         flex: 1,
         textAlign: isLeft ? 'right' : 'left',
@@ -669,7 +663,6 @@ const MilestoneCard = ({ index, title, desc, icon: Icon, align, isVisible }) => 
         </p>
       </div>
 
-      {/* Center Node / Dot */}
       <div style={{
         width: '40px',
         height: '40px',
@@ -700,7 +693,7 @@ const MilestoneCard = ({ index, title, desc, icon: Icon, align, isVisible }) => 
         opacity: opacity,
         transform: `translateX(${isLeft ? '100px' : '-100px'}) translateY(${isVisible ? '0' : '20px'}) translateX(${isVisible ? (isLeft ? '-100px' : '100px') : '0'})`,
         filter: filter,
-        transition: 'all 1s cubic-bezier(0.19, 1, 0.22, 1) 0.1s' // Slight delay for image
+        transition: 'all 1s cubic-bezier(0.19, 1, 0.22, 1) 0.1s'
       }}>
         <div style={{
           position: 'relative',
@@ -786,8 +779,6 @@ export const WhyChooseUs = () => {
       if (!sectionRef.current) return;
       const rect = sectionRef.current.getBoundingClientRect();
       const viewportHeight = window.innerHeight;
-
-      // Calculate progress of the center thread relative to viewport
       const startReveal = viewportHeight * 0.8;
 
       let progress = 0;
@@ -796,12 +787,10 @@ export const WhyChooseUs = () => {
       }
       setScrollProgress(progress);
 
-      // Trigger visibility exactly when the tip hits the node (center of screen/startReveal)
       const newVisible = [];
       const cards = sectionRef.current.querySelectorAll('.milestone-card');
       cards.forEach((card, index) => {
         const cardRect = card.getBoundingClientRect();
-        // Trigger slightly before or exactly when the central node hits the startReveal
         if (cardRect.top + (cardRect.height / 2) <= startReveal + 100) {
           newVisible.push(index);
         }
@@ -829,9 +818,7 @@ export const WhyChooseUs = () => {
       position: 'relative',
       zIndex: 10,
       padding: '8rem 5%',
-      // REMOVED overflow: 'hidden' to allow sparks and global layouts.
     }}>
-      {/* Ambient background glow */}
       <div style={{
         position: 'absolute',
         top: '50%',
@@ -845,14 +832,13 @@ export const WhyChooseUs = () => {
         zIndex: 1
       }} />
 
-      {/* Central Glowing Thread Container */}
       <div className="central-thread-container" style={{
         position: 'absolute',
-        top: '15rem', // below header
+        top: '15rem',
         bottom: '10rem',
         left: '50%',
         transform: 'translateX(-50%)',
-        width: '600px', // wide width for rendering massive sparks without cutoff
+        width: '600px',
         zIndex: 3,
         pointerEvents: 'none'
       }}>
@@ -1035,15 +1021,9 @@ const BroadcastCard = ({ date, title, desc, img, isHovering, onHover }) => {
 
       <style jsx>{`
         @keyframes blink {
-          0% {
-            opacity: 1;
-          }
-          50% {
-            opacity: 0.3;
-          }
-          100% {
-            opacity: 1;
-          }
+          0% { opacity: 1; }
+          50% { opacity: 0.3; }
+          100% { opacity: 1; }
         }
       `}</style>
     </div>
@@ -1077,193 +1057,47 @@ export const ProjectShowcase = () => {
       }}
     >
       <div style={{ textAlign: "center", marginBottom: "4rem" }}>
-        <p
-          style={{
-            fontFamily: "monospace",
-            color: "var(--accent)",
-            letterSpacing: "0.2em",
-            marginBottom: "1rem",
-            fontSize: "0.9rem",
-          }}
-        >
+        <p style={{ fontFamily: "monospace", color: "var(--accent)", letterSpacing: "0.2em", marginBottom: "1rem", fontSize: "0.9rem" }}>
           NATION BUILDERS
         </p>
-        <h2
-          style={{
-            fontSize: "clamp(2.5rem, 5vw, 4.5rem)",
-            color: "var(--text)",
-            lineHeight: 1.1,
-            textTransform: "uppercase",
-            fontFamily: "var(--font-heading)",
-          }}
-        >
+        <h2 style={{ fontSize: "clamp(2.5rem, 5vw, 4.5rem)", color: "var(--text)", lineHeight: 1.1, textTransform: "uppercase", fontFamily: "var(--font-heading)" }}>
           MEGA <span className="accent-text">PROJECTS</span>
         </h2>
       </div>
 
       <div
         className="project-grid"
-        style={{
-          display: "grid",
-          gap: "1.5rem",
-          width: "100%",
-          maxWidth: "1400px",
-          margin: "0 auto",
-        }}
+        style={{ display: "grid", gap: "1.5rem", width: "100%", maxWidth: "1400px", margin: "0 auto" }}
       >
         {projects.map((proj, idx) => (
-          <div
-            key={idx}
-            className="project-card"
-            style={{
-              position: "relative",
-              overflow: "hidden",
-              borderRadius: "12px",
-              aspectRatio: "16/9",
-              cursor: "pointer",
-              border: "1px solid rgba(255, 255, 255, 0.05)",
-            }}
-          >
-            <video
-              src={proj.video}
-              autoPlay
-              loop
-              muted
-              playsInline
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                filter: "grayscale(80%) brightness(0.6)",
-                transition: "all 0.5s ease",
-              }}
-              className="project-video"
-            />
-            <div
-              className="project-overlay"
-              style={{
-                position: "absolute",
-                inset: 0,
-                background: "linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 60%)",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "flex-end",
-                padding: "1.5rem",
-                transition: "all 0.3s ease",
-              }}
-            >
-              <h3
-                style={{
-                  color: "#fff",
-                  fontSize: "clamp(1rem, 2vw, 1.3rem)",
-                  fontFamily: "var(--font-heading)",
-                  marginBottom: "0.5rem",
-                  textTransform: "uppercase",
-                  transform: "translateY(10px)",
-                  transition: "transform 0.4s ease",
-                }}
-                className="project-title"
-              >
-                {proj.title}
-              </h3>
-              <p
-                style={{
-                  color: "var(--subtext)",
-                  fontSize: "clamp(0.75rem, 1.5vw, 0.85rem)",
-                  opacity: 0,
-                  transform: "translateY(10px)",
-                  transition: "all 0.4s ease 0.1s",
-                  display: "-webkit-box",
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden"
-                }}
-                className="project-desc"
-              >
-                {proj.desc}
-              </p>
+          <div key={idx} className="project-card" style={{ position: "relative", overflow: "hidden", borderRadius: "12px", aspectRatio: "16/9", cursor: "pointer", border: "1px solid rgba(255, 255, 255, 0.05)" }}>
+            <video src={proj.video} autoPlay loop muted playsInline style={{ width: "100%", height: "100%", objectFit: "cover", filter: "grayscale(80%) brightness(0.6)", transition: "all 0.5s ease" }} className="project-video" />
+            <div className="project-overlay" style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 60%)", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: "1.5rem", transition: "all 0.3s ease" }}>
+              <h3 style={{ color: "#fff", fontSize: "clamp(1rem, 2vw, 1.3rem)", fontFamily: "var(--font-heading)", marginBottom: "0.5rem", textTransform: "uppercase", transform: "translateY(10px)", transition: "transform 0.4s ease" }} className="project-title">{proj.title}</h3>
+              <p style={{ color: "var(--subtext)", fontSize: "clamp(0.75rem, 1.5vw, 0.85rem)", opacity: 0, transform: "translateY(10px)", transition: "all 0.4s ease 0.1s", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }} className="project-desc">{proj.desc}</p>
             </div>
-            <div 
-              className="project-glow"
-              style={{
-                position: 'absolute',
-                inset: 0,
-                border: '2px solid var(--accent)',
-                borderRadius: '12px',
-                opacity: 0,
-                transition: 'opacity 0.4s ease',
-                pointerEvents: 'none'
-              }}
-            />
+            <div className="project-glow" style={{ position: 'absolute', inset: 0, border: '2px solid var(--accent)', borderRadius: '12px', opacity: 0, transition: 'opacity 0.4s ease', pointerEvents: 'none' }} />
           </div>
         ))}
       </div>
 
       <style jsx>{`
-        .project-grid {
-          grid-template-columns: repeat(4, 1fr);
-        }
-        
-        .project-card:hover .project-video {
-          filter: grayscale(0%) brightness(1) !important;
-          transform: scale(1.05);
-        }
-        
-        .project-card:hover .project-overlay {
-          background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(227,24,45,0.2) 100%) !important;
-        }
-        
-        .project-card:hover .project-title {
-          transform: translateY(0) !important;
-          color: var(--accent) !important;
-        }
-        
-        .project-card:hover .project-desc {
-          opacity: 1 !important;
-          transform: translateY(0) !important;
-          color: #fff !important;
-        }
-
-        .project-card:hover .project-glow {
-          opacity: 1 !important;
-        }
-
-        body.light-mode .project-card {
-          border-color: rgba(0,0,0,0.1) !important;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-        }
-
-        body.light-mode .project-card:not(:hover) .project-title {
-          color: #ffffff !important;
-        }
-
-        body.light-mode .project-card:not(:hover) .project-desc {
-          color: #A1A1A6 !important;
-        }
-        @media (max-width: 1200px) {
-          .project-grid {
-            grid-template-columns: repeat(3, 1fr) !important;
-          }
-        }
-        @media (max-width: 900px) {
-          .project-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-          }
-        }
+        .project-grid { grid-template-columns: repeat(4, 1fr); }
+        .project-card:hover .project-video { filter: grayscale(0%) brightness(1) !important; transform: scale(1.05); }
+        .project-card:hover .project-overlay { background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(227,24,45,0.2) 100%) !important; }
+        .project-card:hover .project-title { transform: translateY(0) !important; color: var(--accent) !important; }
+        .project-card:hover .project-desc { opacity: 1 !important; transform: translateY(0) !important; color: #fff !important; }
+        .project-card:hover .project-glow { opacity: 1 !important; }
+        body.light-mode .project-card { border-color: rgba(0,0,0,0.1) !important; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        body.light-mode .project-card:not(:hover) .project-title { color: #ffffff !important; }
+        body.light-mode .project-card:not(:hover) .project-desc { color: #A1A1A6 !important; }
+        @media (max-width: 1200px) { .project-grid { grid-template-columns: repeat(3, 1fr) !important; } }
+        @media (max-width: 900px) { .project-grid { grid-template-columns: repeat(2, 1fr) !important; } }
         @media (max-width: 600px) {
-          .project-grid {
-            grid-template-columns: 1fr !important;
-          }
-          .project-card .project-video {
-             filter: grayscale(0%) brightness(0.8) !important;
-          }
-          .project-card .project-desc {
-            opacity: 1 !important;
-            transform: translateY(0) !important;
-          }
-          .project-card .project-title {
-            transform: translateY(0) !important;
-          }
+          .project-grid { grid-template-columns: 1fr !important; }
+          .project-card .project-video { filter: grayscale(0%) brightness(0.8) !important; }
+          .project-card .project-desc { opacity: 1 !important; transform: translateY(0) !important; }
+          .project-card .project-title { transform: translateY(0) !important; }
         }
       `}</style>
     </section>
@@ -1273,33 +1107,29 @@ export const ProjectShowcase = () => {
 export const MediaEvents = () => {
   const [isHovered, setIsHovered] = useState(false);
 
-  // Duplicate data to create a seamless loop
-  const broadcastData = [
-    {
-      date: "24 FEB 2026 - LIVE",
-      title: "Unveiling New High-Grade Steel Standard",
-      desc: "Setting unprecedented structural benchmarks with 500W TMT.",
-      img: "https://images.unsplash.com/photo-1541888053158-b6fe071d3714?auto=format&fit=crop&q=80&w=600",
-    },
-    {
-      date: "15 JAN 2026 - ARCHIVE",
-      title: "Annual Dealers Synergy Meet 2026",
-      desc: "A grand gathering of our finest national partners.",
-      img: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&q=80&w=600",
-    },
-    {
-      date: "05 DEC 2025 - INTL",
-      title: "Green Factory Certification Awarded",
-      desc: "Recognized for commitment to reducing carbon footprints.",
-      img: "https://images.unsplash.com/photo-1520699918507-3c3e05c46b0c?auto=format&fit=crop&q=80&w=600",
-    },
-    {
-      date: "12 NOV 2025 - LOCAL",
-      title: "Mega-Bridge Foundations Secured",
-      desc: "Anwar Ispat selected as primary supplier for the central bridge project.",
-      img: "https://images.unsplash.com/photo-1545532594-918cecebb08b?auto=format&fit=crop&q=80&w=600",
-    },
-  ];
+  // ── API: load media posts from backend ───────────────────────────────────
+  const [broadcastData, setBroadcastData] = useState([]);
+
+  useEffect(() => {
+    fetch("http://172.31.92.141:5000/api/media")
+      .then((r) => r.json())
+      .then((data) => {
+        setBroadcastData(
+          data.map((m) => ({
+            date: m.event_date
+              ? m.event_date.toUpperCase() + " - " + (m.category || "LOCAL")
+              : (m.category || "LOCAL"),
+            title: m.title,
+            desc: m.description || "",
+            img: m.image_url
+              ? m.image_url
+              : "https://images.unsplash.com/photo-1541888053158-b6fe071d3714?auto=format&fit=crop&q=80&w=600",
+          }))
+        );
+      })
+      .catch(() => {});
+  }, []);
+  // ─────────────────────────────────────────────────────────────────────────
 
   return (
     <section
@@ -1317,227 +1147,76 @@ export const MediaEvents = () => {
         padding: "4rem 5%",
       }}
     >
-      {/* Background elements to enhance the broadcast room feel */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: "10%",
-          width: "1px",
-          height: "100%",
-          background: "rgba(255,255,255,0.05)",
-        }}
-      ></div>
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          right: "10%",
-          width: "1px",
-          height: "100%",
-          background: "rgba(255,255,255,0.05)",
-        }}
-      ></div>
+      <div style={{ position: "absolute", top: 0, left: "10%", width: "1px", height: "100%", background: "rgba(255,255,255,0.05)" }}></div>
+      <div style={{ position: "absolute", top: 0, right: "10%", width: "1px", height: "100%", background: "rgba(255,255,255,0.05)" }}></div>
 
       <div
         className="media-events-container"
-        style={{
-          maxWidth: "1400px",
-          width: "100%",
-          margin: "0 auto",
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "clamp(2rem, 5vw, 4rem)",
-          alignItems: "center",
-          height: "100%",
-        }}
+        style={{ maxWidth: "1400px", width: "100%", margin: "0 auto", display: "flex", flexWrap: "wrap", gap: "clamp(2rem, 5vw, 4rem)", alignItems: "center", height: "100%" }}
       >
-        {/* Left side text content */}
-        <div className="media-text-content" style={{ flex: "1 1 min(400px, 100%)", zIndex: 2 }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "1rem",
-              marginBottom: "1.5rem",
-            }}
-          >
-            <span
-              style={{
-                display: "inline-block",
-                width: "12px",
-                height: "12px",
-                background: "var(--accent)",
-                borderRadius: "50%",
-                animation: "blink 2s infinite",
-              }}
-            ></span>
-            <p
-              style={{
-                fontFamily: "monospace",
-                color: "var(--accent)",
-                letterSpacing: "0.2em",
-                fontSize: "0.9rem",
-                margin: 0,
-              }}
-            >
-              NEWS DESK
-            </p>
+        <div className="media-text-content" style={{ flex: "1 1 400px", minWidth: "350px", zIndex: 2 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1.5rem" }}>
+            <span style={{ display: "inline-block", width: "12px", height: "12px", background: "var(--accent)", borderRadius: "50%", animation: "blink 2s infinite" }}></span>
+            <p style={{ fontFamily: "monospace", color: "var(--accent)", letterSpacing: "0.2em", fontSize: "0.9rem", margin: 0 }}>NEWS DESK</p>
           </div>
-          <h2
-            className="accent-text"
-            style={{
-              fontSize: "clamp(3rem, 6vw, 5rem)",
-              marginBottom: "1.5rem",
-              lineHeight: "0.9",
-            }}
-          >
-            MEDIA &<br />
-            EVENTS
+          <h2 className="accent-text" style={{ fontSize: "clamp(3rem, 6vw, 5rem)", marginBottom: "1.5rem", lineHeight: "0.9" }}>
+            MEDIA &<br />EVENTS
           </h2>
-          <p
-            style={{
-              color: "var(--subtext)",
-              fontSize: "1.1rem",
-              lineHeight: "1.6",
-              marginBottom: "2rem",
-            }}
-          >
+          <p style={{ color: "var(--subtext)", fontSize: "1.1rem", lineHeight: "1.6", marginBottom: "2rem" }}>
             Constant motion. Constant innovation. Tap into our live broadcasting
             feed to stay updated with structural advancements across the nation.
           </p>
-          <a
-            href="#all-events"
-            className="magnetic-btn"
-            style={{
-              fontSize: "0.85rem",
-              padding: "1rem 2rem",
-              marginTop: 0,
-              background: "transparent",
-              border: "1px solid var(--accent)",
-              color: "var(--accent)",
-            }}
-          >
+          <a href="#all-events" className="magnetic-btn" style={{ fontSize: "0.85rem", padding: "1rem 2rem", marginTop: 0, background: "transparent", border: "1px solid var(--accent)", color: "var(--accent)" }}>
             ACCESS FULL TERMINAL
           </a>
         </div>
 
-        {/* Right side Marquee Scroller */}
         <div
           className="marquee-container"
-          style={{
-            flex: "1 1 min(500px, 100%)",
-            height: "clamp(400px, 60vh, 80vh)",
-            position: "relative",
-            perspective: "1000px",
-            display: "flex",
-            alignItems: "center",
-          }}
+          style={{ flex: "1 1 500px", minWidth: "400px", height: "clamp(400px, 60vh, 80vh)", position: "relative", perspective: "1000px", display: "flex", alignItems: "center" }}
         >
-          {/* Top and bottom fade masks for the scrolling effect */}
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "150px",
-              // background:
-              //   "var(--mask-top, linear-gradient(to bottom, rgba(11,11,11,1), transparent))",
-              zIndex: 5,
-              pointerEvents: "none",
-            }}
-          ></div>
-          <div
-            style={{
-              position: "absolute",
-              bottom: 0,
-              left: 0,
-              width: "100%",
-              height: "150px",
-              // background:
-              //   "var(--mask-bottom, linear-gradient(to top, rgba(11,11,11,1), transparent))",
-              zIndex: 5,
-              pointerEvents: "none",
-            }}
-          ></div>
+          <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "150px", zIndex: 5, pointerEvents: "none" }}></div>
+          <div style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: "150px", zIndex: 5, pointerEvents: "none" }}></div>
 
-          <div
-            className="broadcast-marquee"
-            style={{
-              width: "100%",
-              display: "flex",
-              flexDirection: "column",
-              gap: "1rem",
-              transformStyle: "preserve-3d",
-              animation: isHovered ? "none" : "scrollUp 25s linear infinite",
-              animationPlayState: isHovered ? "paused" : "running",
-              transform: "rotateY(-15deg) rotateX(5deg)", // Angled perspective
-            }}
-          >
-            {/* We map the data twice to create the infinite loop effect seamlessly */}
-            {[...broadcastData, ...broadcastData, ...broadcastData].map(
-              (event, index) => (
+          {broadcastData.length === 0 ? (
+            <div style={{ color: "var(--subtext)", textAlign: "center", width: "100%", fontSize: "0.9rem" }}>
+              Loading media posts...
+            </div>
+          ) : (
+            <div
+              className="broadcast-marquee"
+              style={{ width: "100%", display: "flex", flexDirection: "column", gap: "1rem", transformStyle: "preserve-3d", animation: isHovered ? "none" : "scrollUp 25s linear infinite", animationPlayState: isHovered ? "paused" : "running", transform: "rotateY(-15deg) rotateX(5deg)" }}
+            >
+              {[...broadcastData, ...broadcastData, ...broadcastData].map((event, index) => (
                 <BroadcastCard key={index} {...event} onHover={setIsHovered} />
-              ),
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
       <style jsx>{`
         @keyframes scrollUp {
-          0% {
-            transform: rotateY(-15deg) rotateX(5deg) translateY(0);
-          }
-          100% {
-            transform: rotateY(-15deg) rotateX(5deg) translateY(-50%);
-          }
+          0% { transform: rotateY(-15deg) rotateX(5deg) translateY(0); }
+          100% { transform: rotateY(-15deg) rotateX(5deg) translateY(-33.33%); }
         }
         @keyframes scrollUpMobile {
-          0% {
-            transform: translateY(0);
-          }
-          100% {
-            transform: translateY(-50%);
-          }
+          0% { transform: translateY(0); }
+          100% { transform: translateY(-33.33%); }
         }
         @media (max-width: 900px) {
-          #media-events {
-            padding: 6rem 5% !important;
-            height: auto !important;
-          }
-          .media-events-container {
-            height: auto !important;
-            flex-direction: column !important;
-            gap: 2rem !important;
-          }
-          .media-text-content {
-            margin-bottom: 2rem;
-          }
-          .marquee-container {
-            perspective: none !important;
-            height: 60vh !important;
-            width: 100% !important;
-          }
-          .broadcast-marquee {
-            transform: none !important;
-            animation: scrollUpMobile 20s linear infinite !important;
-          }
+          #media-events { padding: 6rem 5% !important; height: auto !important; }
+          .media-events-container { height: auto !important; flex-direction: column !important; gap: 2rem !important; }
+          .media-text-content { margin-bottom: 2rem; }
+          .marquee-container { perspective: none !important; height: 60vh !important; width: 100% !important; }
+          .broadcast-marquee { transform: none !important; animation: scrollUpMobile 20s linear infinite !important; }
         }
       `}</style>
     </section>
   );
 };
 
-const InsightCarouselCard = ({
-  category,
-  title,
-  readTime,
-  img,
-  index,
-  currentIndex,
-}) => {
+const InsightCarouselCard = ({ category, title, readTime, img, index, currentIndex }) => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -1547,7 +1226,6 @@ const InsightCarouselCard = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Calculate relative position to active card
   const isActive = index === currentIndex;
   const isPrev = index === (currentIndex - 1 + 3) % 3;
   const isNext = index === (currentIndex + 1) % 3;
@@ -1558,143 +1236,27 @@ const InsightCarouselCard = ({
   let filter = "grayscale(100%) blur(5px)";
 
   if (isActive) {
-    transform = isMobile
-      ? "translateX(0) scale(1)"
-      : "translateX(0) translateZ(50px) rotateY(0deg) scale(1)";
-    opacity = 1;
-    zIndex = 10;
-    filter = "grayscale(0%) blur(0px)";
+    transform = isMobile ? "translateX(0) scale(1)" : "translateX(0) translateZ(50px) rotateY(0deg) scale(1)";
+    opacity = 1; zIndex = 10; filter = "grayscale(0%) blur(0px)";
   } else if (isPrev) {
-    transform = isMobile
-      ? "translateX(-95%) scale(0.9)"
-      : "translateX(-60%) translateZ(-100px) rotateY(25deg) scale(0.85)";
-    opacity = 0.5;
-    zIndex = 5;
+    transform = isMobile ? "translateX(-95%) scale(0.9)" : "translateX(-60%) translateZ(-100px) rotateY(25deg) scale(0.85)";
+    opacity = 0.5; zIndex = 5;
   } else if (isNext) {
-    transform = isMobile
-      ? "translateX(95%) scale(0.9)"
-      : "translateX(60%) translateZ(-100px) rotateY(-25deg) scale(0.85)";
-    opacity = 0.5;
-    zIndex = 5;
+    transform = isMobile ? "translateX(95%) scale(0.9)" : "translateX(60%) translateZ(-100px) rotateY(-25deg) scale(0.85)";
+    opacity = 0.5; zIndex = 5;
   }
 
   return (
-    <div
-      style={{
-        position: "absolute",
-        top: "10%",
-        left: 0,
-        right: 0,
-        margin: "0 auto",
-        width: "clamp(280px, min(90vw, 90vh), 600px)",
-        height: "clamp(220px, min(50vw, 50vh), 380px)",
-        background: `linear-gradient(var(--insight-overlay-1, rgba(11, 11, 11, 0.4)), var(--insight-overlay-2, rgba(11, 11, 11, 0.95))), url(${img}) center/cover`,
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        border: isActive
-          ? "1px solid rgba(227, 24, 45, 0.5)"
-          : "1px solid rgba(255, 255, 255, 0.1)",
-        borderRadius: "16px",
-        padding: "clamp(1rem, min(4vw, 4vh), 3rem)",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "flex-end",
-        transition: "all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-        transform,
-        opacity,
-        zIndex,
-        filter,
-        boxShadow: isActive
-          ? "0 30px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(227, 24, 45, 0.2)"
-          : "0 10px 30px rgba(0,0,0,0.5)",
-        transformStyle: "preserve-3d",
-        pointerEvents: isActive ? "all" : "none",
-      }}
-    >
-      <div
-        style={{
-          transform: "translateZ(30px)",
-          transition: "transform 0.8s ease",
-        }}
-      >
-        <span
-          style={{
-            display: "inline-block",
-            fontFamily: "monospace",
-            fontSize: "clamp(0.6rem, 2vmin, 0.8rem)",
-            color: isActive ? "var(--accent)" : "rgba(255,255,255,0.5)",
-            letterSpacing: "0.2em",
-            marginBottom: "clamp(0.5rem, 2vh, 1rem)",
-            textTransform: "uppercase",
-            transition: "all 0.5s ease",
-          }}
-        >
-          // {category}
-        </span>
-        <h3
-          style={{
-            fontFamily: "var(--font-heading)",
-            fontSize: "clamp(1.1rem, 5vmin, 2.2rem)",
-            marginBottom: "clamp(0.5rem, 2vh, 1.5rem)",
-            color: "#fff",
-            lineHeight: "1.2",
-            textShadow: "0 4px 20px rgba(0,0,0,0.8)",
-          }}
-        >
-          {title}
-        </h3>
-
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "1.5rem",
-            opacity: isActive ? 1 : 0,
-            transform: isActive ? "translateY(0)" : "translateY(20px)",
-            transition: "all 0.5s ease 0.2s",
-            borderTop: "1px solid rgba(255,255,255,0.1)",
-            paddingTop: "clamp(0.8rem, 2vh, 1.5rem)",
-          }}
-        >
-          <span
-            style={{
-              fontFamily: "monospace",
-              color: "var(--subtext)",
-              fontSize: "clamp(0.7rem, 2vmin, 0.85rem)",
-            }}
-          >
-            TIME: {readTime}
-          </span>
-          <a
-            href="#read"
-            className="magnetic-btn"
-            style={{
-              margin: 0,
-              padding: "clamp(0.5rem, 1.5vh, 0.8rem) clamp(1rem, 3vmin, 1.5rem)",
-              fontSize: "clamp(0.6rem, 2vmin, 0.8rem)",
-              borderRadius: "4px",
-              background: "transparent",
-              border: "1px solid var(--accent)",
-              color: "var(--accent)",
-            }}
-          >
-            INITIATE FEED
-          </a>
+    <div style={{ position: "absolute", top: "10%", left: 0, right: 0, margin: "0 auto", width: "clamp(280px, min(90vw, 90vh), 600px)", height: "clamp(220px, min(50vw, 50vh), 380px)", background: `linear-gradient(var(--insight-overlay-1, rgba(11, 11, 11, 0.4)), var(--insight-overlay-2, rgba(11, 11, 11, 0.95))), url(${img}) center/cover`, backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", border: isActive ? "1px solid rgba(227, 24, 45, 0.5)" : "1px solid rgba(255, 255, 255, 0.1)", borderRadius: "16px", padding: "clamp(1rem, min(4vw, 4vh), 3rem)", display: "flex", flexDirection: "column", justifyContent: "flex-end", transition: "all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)", transform, opacity, zIndex, filter, boxShadow: isActive ? "0 30px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(227, 24, 45, 0.2)" : "0 10px 30px rgba(0,0,0,0.5)", transformStyle: "preserve-3d", pointerEvents: isActive ? "all" : "none" }}>
+      <div style={{ transform: "translateZ(30px)", transition: "transform 0.8s ease" }}>
+        <span style={{ display: "inline-block", fontFamily: "monospace", fontSize: "clamp(0.6rem, 2vmin, 0.8rem)", color: isActive ? "var(--accent)" : "rgba(255,255,255,0.5)", letterSpacing: "0.2em", marginBottom: "clamp(0.5rem, 2vh, 1rem)", textTransform: "uppercase", transition: "all 0.5s ease" }}>// {category}</span>
+        <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "clamp(1.1rem, 5vmin, 2.2rem)", marginBottom: "clamp(0.5rem, 2vh, 1.5rem)", color: "#fff", lineHeight: "1.2", textShadow: "0 4px 20px rgba(0,0,0,0.8)" }}>{title}</h3>
+        <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", opacity: isActive ? 1 : 0, transform: isActive ? "translateY(0)" : "translateY(20px)", transition: "all 0.5s ease 0.2s", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "clamp(0.8rem, 2vh, 1.5rem)" }}>
+          <span style={{ fontFamily: "monospace", color: "var(--subtext)", fontSize: "clamp(0.7rem, 2vmin, 0.85rem)" }}>TIME: {readTime}</span>
+          <a href="#read" className="magnetic-btn" style={{ margin: 0, padding: "clamp(0.5rem, 1.5vh, 0.8rem) clamp(1rem, 3vmin, 1.5rem)", fontSize: "clamp(0.6rem, 2vmin, 0.8rem)", borderRadius: "4px", background: "transparent", border: "1px solid var(--accent)", color: "var(--accent)" }}>INITIATE FEED</a>
         </div>
       </div>
-      {/* Ambient inner glow for active card */}
-      {isActive && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background:
-              "radial-gradient(circle at top right, rgba(227, 24, 45, 0.1), transparent 60%)",
-            pointerEvents: "none",
-            borderRadius: "16px",
-          }}
-        ></div>
-      )}
+      {isActive && <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at top right, rgba(227, 24, 45, 0.1), transparent 60%)", pointerEvents: "none", borderRadius: "16px" }}></div>}
     </div>
   );
 };
@@ -1703,384 +1265,64 @@ export const Blog = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const insights = [
-    {
-      category: "Engineering Analysis",
-      title: "The Physics of 500W: Tension, Yield, and Structural Absolute",
-      readTime: "06:00 MIN",
-      img: "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-      category: "Sustainable Future",
-      title: "Achieving Net-Zero: Algorithms Controlling Carbon Outputs",
-      readTime: "08:30 MIN",
-      img: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-      category: "Project Architectural",
-      title: "Bridging the Divide: Logistics of Mega-Ton Deliveries",
-      readTime: "04:45 MIN",
-      img: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&q=80&w=800",
-    },
+    { category: "Engineering Analysis", title: "The Physics of 500W: Tension, Yield, and Structural Absolute", readTime: "06:00 MIN", img: "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&q=80&w=800" },
+    { category: "Sustainable Future", title: "Achieving Net-Zero: Algorithms Controlling Carbon Outputs", readTime: "08:30 MIN", img: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=800" },
+    { category: "Project Architectural", title: "Bridging the Divide: Logistics of Mega-Ton Deliveries", readTime: "04:45 MIN", img: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&q=80&w=800" },
   ];
 
-  const handleNext = () =>
-    setCurrentIndex((prev) => (prev + 1) % insights.length);
-  const handlePrev = () =>
-    setCurrentIndex((prev) => (prev - 1 + insights.length) % insights.length);
+  const handleNext = () => setCurrentIndex((prev) => (prev + 1) % insights.length);
+  const handlePrev = () => setCurrentIndex((prev) => (prev - 1 + insights.length) % insights.length);
 
   return (
-    <section
-      id="blog"
-      style={{
-        minHeight: "100vh",
-        justifyContent: "center",
-        alignItems: "center",
-        background: "var(--bg-section, rgba(11, 11, 11, 0.7))",
-        backdropFilter: "blur(30px)",
-        WebkitBackdropFilter: "blur(30px)",
-        position: "relative",
-        zIndex: 10,
-        padding: "clamp(4rem, 10vh, 8rem) 0", // Removed horizontal padding to let carousel bleed
-        overflow: "hidden",
-      }}
-    >
-      {/* Minimalist Header */}
-      <div
-        style={{
-          textAlign: "center",
-          maxWidth: "800px",
-          margin: "0 auto clamp(2rem, 5vh, 4rem) auto",
-          position: "relative",
-          zIndex: 20,
-          padding: "0 5%",
-        }}
-      >
-        <p
-          style={{
-            fontFamily: "monospace",
-            color: "var(--subtext)",
-            letterSpacing: "0.2em",
-            marginBottom: "1rem",
-            fontSize: "0.9rem",
-          }}
-        >
-          [ SYSTEM.ARCHIVES.OPEN ]
-        </p>
-        <h2
-          style={{
-            fontSize: "clamp(2.5rem, 5vw, 4.5rem)",
-            color: "#fff",
-            lineHeight: "1.1",
-            textTransform: "uppercase",
-            marginBottom: "1.5rem",
-          }}
-        >
-          INSIGHTS &<br />
-          INNOVATIONS
-        </h2>
+    <section id="blog" style={{ minHeight: "100vh", justifyContent: "center", alignItems: "center", background: "var(--bg-section, rgba(11, 11, 11, 0.7))", backdropFilter: "blur(30px)", WebkitBackdropFilter: "blur(30px)", position: "relative", zIndex: 10, padding: "clamp(4rem, 10vh, 8rem) 0", overflow: "hidden" }}>
+      <div style={{ textAlign: "center", maxWidth: "800px", margin: "0 auto clamp(2rem, 5vh, 4rem) auto", position: "relative", zIndex: 20, padding: "0 5%" }}>
+        <p style={{ fontFamily: "monospace", color: "var(--subtext)", letterSpacing: "0.2em", marginBottom: "1rem", fontSize: "0.9rem" }}>[ SYSTEM.ARCHIVES.OPEN ]</p>
+        <h2 style={{ fontSize: "clamp(2.5rem, 5vw, 4.5rem)", color: "#fff", lineHeight: "1.1", textTransform: "uppercase", marginBottom: "1.5rem" }}>INSIGHTS &<br />INNOVATIONS</h2>
       </div>
 
-      {/* 3D Carousel Container */}
-      <div
-        style={{
-          position: "relative",
-          height: "clamp(300px, min(60vw, 60vh), 480px)",
-          width: "100%",
-          perspective: "1500px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+      <div style={{ position: "relative", height: "clamp(300px, min(60vw, 60vh), 480px)", width: "100%", perspective: "1500px", display: "flex", alignItems: "center", justifyContent: "center" }}>
         {insights.map((insight, idx) => (
-          <InsightCarouselCard
-            key={idx}
-            index={idx}
-            currentIndex={currentIndex}
-            {...insight}
-          />
+          <InsightCarouselCard key={idx} index={idx} currentIndex={currentIndex} {...insight} />
         ))}
-
-        {/* Carousel Controls */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: "0",
-            display: "flex",
-            gap: "2rem",
-            zIndex: 30,
-          }}
-        >
-          <button
-            onClick={handlePrev}
-            style={{
-              background: "transparent",
-              border: "1px solid rgba(255,255,255,0.2)",
-              color: "#fff",
-              width: "50px",
-              height: "50px",
-              borderRadius: "50%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              transition: "all 0.3s ease",
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.borderColor = "var(--accent)";
-              e.currentTarget.style.color = "var(--accent)";
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)";
-              e.currentTarget.style.color = "#fff";
-            }}
-          >
-            &larr;
-          </button>
-          <button
-            onClick={handleNext}
-            style={{
-              background: "transparent",
-              border: "1px solid rgba(255,255,255,0.2)",
-              color: "#fff",
-              width: "50px",
-              height: "50px",
-              borderRadius: "50%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              transition: "all 0.3s ease",
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.borderColor = "var(--accent)";
-              e.currentTarget.style.color = "var(--accent)";
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)";
-              e.currentTarget.style.color = "#fff";
-            }}
-          >
-            &rarr;
-          </button>
+        <div style={{ position: "absolute", bottom: "0", display: "flex", gap: "2rem", zIndex: 30 }}>
+          <button onClick={handlePrev} style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.2)", color: "#fff", width: "50px", height: "50px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "all 0.3s ease" }} onMouseOver={(e) => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.color = "var(--accent)"; }} onMouseOut={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)"; e.currentTarget.style.color = "#fff"; }}>&larr;</button>
+          <button onClick={handleNext} style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.2)", color: "#fff", width: "50px", height: "50px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "all 0.3s ease" }} onMouseOver={(e) => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.color = "var(--accent)"; }} onMouseOut={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)"; e.currentTarget.style.color = "#fff"; }}>&rarr;</button>
         </div>
       </div>
 
-      {/* Heavy Vignette to blend into section below */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          width: "100%",
-          height: "20vh",
-          background:
-            "var(--vignette-bottom, linear-gradient(to top, rgba(11,11,11,0.95), transparent))",
-          pointerEvents: "none",
-          zIndex: 11,
-        }}
-      ></div>
+      <div style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: "20vh", background: "var(--vignette-bottom, linear-gradient(to top, rgba(11,11,11,0.95), transparent))", pointerEvents: "none", zIndex: 11 }}></div>
     </section>
   );
 };
 
 export const Footer = ({ onOpenContact }) => (
-  <footer
-    style={{
-      width: "100%",
-      padding: "4rem 10% 2rem 10%",
-      backgroundColor: "var(--primary)",
-      borderTop: "1px solid rgba(255,255,255,0.05)",
-      position: "relative",
-      zIndex: 10,
-    }}
-  >
-    <div
-      style={{
-        display: "flex",
-        flexWrap: "wrap",
-        justifyContent: "space-between",
-        gap: "2rem",
-        marginBottom: "4rem",
-      }}
-    >
-      <div
-        style={{
-          flex: "1 1 300px",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-        }}
-      >
-        <img
-          src="/Logo.png"
-          alt="Anwar Ispat Logo"
-          style={{
-            height: "clamp(50px, 8vw, 80px)",
-            objectFit: "contain",
-            objectPosition: "left",
-            marginBottom: "1.5rem",
-            filter: "grayscale(100%) brightness(200%)",
-          }}
-        />
-        <p
-          style={{
-            color: "var(--subtext)",
-            fontSize: "0.9rem",
-            lineHeight: "1.6",
-            maxWidth: "300px",
-          }}
-        >
-          Unrelenting strength. Uncompromising quality. The structural backbone
-          of tomorrow's infrastructure.
+  <footer style={{ width: "100%", padding: "4rem 10% 2rem 10%", backgroundColor: "var(--primary)", borderTop: "1px solid rgba(255,255,255,0.05)", position: "relative", zIndex: 10 }}>
+    <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", gap: "2rem", marginBottom: "4rem" }}>
+      <div style={{ flex: "1 1 300px", display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+        <img src="/Logo.png" alt="Anwar Ispat Logo" style={{ height: "clamp(50px, 8vw, 80px)", objectFit: "contain", objectPosition: "left", marginBottom: "1.5rem", filter: "grayscale(100%) brightness(200%)" }} />
+        <p style={{ color: "var(--subtext)", fontSize: "0.9rem", lineHeight: "1.6", maxWidth: "300px" }}>
+          Unrelenting strength. Uncompromising quality. The structural backbone of tomorrow's infrastructure.
         </p>
-        <button
-          onClick={onOpenContact}
-          className="magnetic-btn"
-          style={{ fontSize: "0.8rem", padding: "0.8rem 1.5rem" }}
-        >
-          CONTACT US
-        </button>
+        <button onClick={onOpenContact} className="magnetic-btn" style={{ fontSize: "0.8rem", padding: "0.8rem 1.5rem" }}>CONTACT US</button>
       </div>
-
       <div style={{ display: "flex", gap: "4rem", flexWrap: "wrap" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <h4
-            style={{
-              fontFamily: "var(--font-heading)",
-              letterSpacing: "0.1em",
-              marginBottom: "0.5rem",
-            }}
-          >
-            QUICK LINKS
-          </h4>
-          <a
-            href="#product-service"
-            style={{
-              color: "var(--subtext)",
-              textDecoration: "none",
-              fontSize: "0.9rem",
-              transition: "color 0.3s",
-            }}
-          >
-            Product & Service
-          </a>
-          <a
-            href="#better-tomorrow"
-            style={{
-              color: "var(--subtext)",
-              textDecoration: "none",
-              fontSize: "0.9rem",
-              transition: "color 0.3s",
-            }}
-          >
-            Better Tomorrow
-          </a>
-          <a
-            href="#career"
-            style={{
-              color: "var(--subtext)",
-              textDecoration: "none",
-              fontSize: "0.9rem",
-              transition: "color 0.3s",
-            }}
-          >
-            Career
-          </a>
-          <a
-            href="#media-events"
-            style={{
-              color: "var(--subtext)",
-              textDecoration: "none",
-              fontSize: "0.9rem",
-              transition: "color 0.3s",
-            }}
-          >
-            Media & Events
-          </a>
+          <h4 style={{ fontFamily: "var(--font-heading)", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>QUICK LINKS</h4>
+          {[["#product-service","Product & Service"],["#better-tomorrow","Better Tomorrow"],["#career","Career"],["#media-events","Media & Events"]].map(([href,label])=>(
+            <a key={href} href={href} style={{ color: "var(--subtext)", textDecoration: "none", fontSize: "0.9rem", transition: "color 0.3s" }}>{label}</a>
+          ))}
         </div>
-
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <h4
-            style={{
-              fontFamily: "var(--font-heading)",
-              letterSpacing: "0.1em",
-              marginBottom: "0.5rem",
-            }}
-          >
-            LEGAL
-          </h4>
-          <a
-            href="#"
-            style={{
-              color: "var(--subtext)",
-              textDecoration: "none",
-              fontSize: "0.9rem",
-              transition: "color 0.3s",
-            }}
-          >
-            Privacy Policy
-          </a>
-          <a
-            href="#"
-            style={{
-              color: "var(--subtext)",
-              textDecoration: "none",
-              fontSize: "0.9rem",
-              transition: "color 0.3s",
-            }}
-          >
-            Terms of Service
-          </a>
+          <h4 style={{ fontFamily: "var(--font-heading)", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>LEGAL</h4>
+          <a href="#" style={{ color: "var(--subtext)", textDecoration: "none", fontSize: "0.9rem" }}>Privacy Policy</a>
+          <a href="#" style={{ color: "var(--subtext)", textDecoration: "none", fontSize: "0.9rem" }}>Terms of Service</a>
         </div>
       </div>
     </div>
-
-    <div
-      style={{
-        borderTop: "1px solid rgba(255,255,255,0.05)",
-        paddingTop: "2rem",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        flexWrap: "wrap",
-        gap: "1rem",
-      }}
-    >
-      <p style={{ color: "var(--subtext)", fontSize: "0.8rem" }}>
-        &copy; {new Date().getFullYear()} Anwar Ispat. All Rights Reserved.
-      </p>
+    <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "2rem", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
+      <p style={{ color: "var(--subtext)", fontSize: "0.8rem" }}>&copy; {new Date().getFullYear()} Anwar Ispat. All Rights Reserved.</p>
       <div style={{ display: "flex", gap: "1rem" }}>
-        <a
-          href="#"
-          style={{
-            color: "var(--subtext)",
-            textDecoration: "none",
-            fontSize: "0.8rem",
-          }}
-        >
-          Facebook
-        </a>
-        <a
-          href="#"
-          style={{
-            color: "var(--subtext)",
-            textDecoration: "none",
-            fontSize: "0.8rem",
-          }}
-        >
-          LinkedIn
-        </a>
-        <a
-          href="#"
-          style={{
-            color: "var(--subtext)",
-            textDecoration: "none",
-            fontSize: "0.8rem",
-          }}
-        >
-          Twitter
-        </a>
+        {["Facebook","LinkedIn","Twitter"].map(s=><a key={s} href="#" style={{ color: "var(--subtext)", textDecoration: "none", fontSize: "0.8rem" }}>{s}</a>)}
       </div>
     </div>
   </footer>
@@ -2091,63 +1333,16 @@ export const CoreStrengths = () => {
   const [inView, setInView] = useState(false);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setInView(true);
-        }
-      },
-      { threshold: 0.3 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
+    const observer = new IntersectionObserver(([entry]) => { if (entry.isIntersecting) setInView(true); }, { threshold: 0.3 });
+    if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
   }, []);
 
   return (
-    <section ref={sectionRef} style={{
-      minHeight: '100vh',
-      width: '100%',
-      position: 'relative',
-      background: 'var(--bg-section, rgba(11, 11, 11, 0.7))',
-      backdropFilter: 'blur(30px)',
-      WebkitBackdropFilter: 'blur(30px)',
-      borderTop: '1px solid rgba(255, 60, 0, 0.1)',
-      borderBottom: '1px solid rgba(255, 60, 0, 0.1)',
-      zIndex: 10,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '8rem 5%'
-    }}>
-      {/* Background Ambience */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        background: 'radial-gradient(circle at center, rgba(227, 24, 45, 0.03) 0%, transparent 60%)',
-        pointerEvents: 'none',
-        zIndex: 1
-      }} />
-
-      {/* Fade Gradients for Seamless Merging */}
-      <div style={{
-        position: 'absolute',
-        top: 0, left: 0, right: 0, height: '150px',
-        background: 'linear-gradient(to bottom, var(--bg-main) 0%, transparent 100%)',
-        pointerEvents: 'none',
-        zIndex: 2
-      }} />
-      <div style={{
-        position: 'absolute',
-        bottom: 0, left: 0, right: 0, height: '150px',
-        background: 'linear-gradient(to top, var(--bg-main) 0%, transparent 100%)',
-        pointerEvents: 'none',
-        zIndex: 2
-      }} />
-
+    <section ref={sectionRef} style={{ minHeight: '100vh', width: '100%', position: 'relative', background: 'var(--bg-section, rgba(11, 11, 11, 0.7))', backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', borderTop: '1px solid rgba(255, 60, 0, 0.1)', borderBottom: '1px solid rgba(255, 60, 0, 0.1)', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8rem 5%' }}>
+      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at center, rgba(227, 24, 45, 0.03) 0%, transparent 60%)', pointerEvents: 'none', zIndex: 1 }} />
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '150px', background: 'linear-gradient(to bottom, var(--bg-main) 0%, transparent 100%)', pointerEvents: 'none', zIndex: 2 }} />
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '150px', background: 'linear-gradient(to top, var(--bg-main) 0%, transparent 100%)', pointerEvents: 'none', zIndex: 2 }} />
       <div style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 3 }}>
         <Canvas camera={{ position: [0, 4, 16], fov: 45 }}>
           <CoreStrengths3D inView={inView} />
@@ -2156,3 +1351,8 @@ export const CoreStrengths = () => {
     </section>
   );
 };
+
+
+
+
+
