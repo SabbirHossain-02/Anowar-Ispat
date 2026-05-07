@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, lazy, Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
 import Lenis from 'lenis'
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
@@ -11,9 +11,10 @@ import ContactModal from './components/ContactModal'
 import QuoteModal from './components/QuoteModal'
 import IntroLoader from './components/IntroLoader'
 import FloatingQuoteBtn from './components/FloatingQuoteBtn'
-import AboutUsPage from './pages/AboutUsPage'
-import ProductsPage from './pages/ProductsPage'
-import ProjectsPage from './pages/ProjectsPage'
+
+const AboutUsPage = lazy(() => import('./pages/AboutUsPage'))
+const ProductsPage = lazy(() => import('./pages/ProductsPage'))
+const ProjectsPage = lazy(() => import('./pages/ProjectsPage'))
 
 function App() {
     const lenisRef = useRef()
@@ -113,7 +114,8 @@ function App() {
                 <Canvas
                     shadows
                     camera={{ position: [0, 0, 5], fov: 35 }}
-                    gl={{ antialias: true, alpha: true }}
+                    gl={{ antialias: true, alpha: true, powerPreference: "low-power" }}
+                    dpr={[1, 1.5]}
                 >
                     <Scene />
                 </Canvas>
@@ -134,9 +136,9 @@ function App() {
                             <Blog />
                         </>
                     } />
-                    <Route path="/about" element={<AboutUsPage />} />
-                    <Route path="/products" element={<ProductsPage />} />
-                    <Route path="/projects" element={<ProjectsPage />} />
+                    <Route path="/about" element={<Suspense fallback={null}><AboutUsPage /></Suspense>} />
+                    <Route path="/products" element={<Suspense fallback={null}><ProductsPage /></Suspense>} />
+                    <Route path="/projects" element={<Suspense fallback={null}><ProjectsPage /></Suspense>} />
                 </Routes>
             </main>
 

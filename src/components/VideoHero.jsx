@@ -1,23 +1,27 @@
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect, useState, useCallback } from 'react'
 
 const slides = [
     {
         video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776601119/Hero_Slide_1_akmt2o.mp4",
+        poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776601119/Hero_Slide_1_akmt2o.jpg",
         title: <>SHAPING THE <span className="accent-text">FUTURE</span></>,
         subtitle: "Unrelenting strength. Uncompromising quality. The structural backbone of tomorrow's infrastructure."
     },
     {
         video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776602663/13820828_3840_2160_30Fps_pkmnv5.mp4",
+        poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776602663/13820828_3840_2160_30Fps_pkmnv5.jpg",
         title: <>FORGED IN <span className="accent-text">FIRE</span></>,
         subtitle: "A cinematic journey of power, precision, and the steel that builds nations."
     },
     {
         video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776602664/5121751-Uhd_3840_2160_25Fps_dilffe.mp4",
+        poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776602664/5121751-Uhd_3840_2160_25Fps_dilffe.jpg",
         title: <>ENGINEERED FOR <span className="accent-text">ENDURANCE</span></>,
         subtitle: "Leading the industry with cutting-edge technology and engineering excellence."
     },
     {
         video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776603016/6997856-Hd_1920_1080_25Fps_tyjyst.mp4",
+        poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776603016/6997856-Hd_1920_1080_25Fps_tyjyst.jpg",
         title: <>SUSTAINABLE <span className="accent-text">PROGRESS</span></>,
         subtitle: "Committed to eco-friendly practices that power a greener tomorrow."
     },
@@ -26,10 +30,16 @@ const slides = [
 const VideoHero = () => {
     const contentRef = useRef(null);
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [visibleVideos, setVisibleVideos] = useState([0]);
 
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentSlide((prev) => (prev + 1) % slides.length);
+            setVisibleVideos(prev => {
+                const next = (prev + 1) % slides.length;
+                return [...new Set([...prev, next])].slice(-2);
+            });
         }, 8000);
         return () => clearInterval(interval);
     }, []);
@@ -43,26 +53,24 @@ const VideoHero = () => {
             const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
             if (isTouchDevice || innerWidth < 768) return;
 
-            // Calculate mouse position relative to center of screen (-1 to 1)
             const xPos = (clientX / innerWidth - 0.5) * 2;
             const yPos = (clientY / innerHeight - 0.5) * 2;
 
-            // Calculate rotation amount (max 15 degrees)
             const rotateX = yPos * -15;
             const rotateY = xPos * 15;
 
-            // Apply transform to the content container
             contentRef.current.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
         };
 
         const handleMouseLeave = () => {
             if (!contentRef.current) return;
-            // Reset to default on leave with smooth transition
             contentRef.current.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
         };
 
         window.addEventListener('mousemove', handleMouseMove);
         document.body.addEventListener('mouseleave', handleMouseLeave);
+
+        setTimeout(() => setIsLoaded(true), 100);
 
         return () => {
             window.removeEventListener('mousemove', handleMouseMove);
@@ -93,9 +101,17 @@ const VideoHero = () => {
                         loop
                         muted
                         playsInline
+                        preload={visibleVideos.includes(index) ? "auto" : "none"}
                         className="background-video"
                         src={slide.video}
-                        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                        poster={slide.poster}
+                        style={{ 
+                            objectFit: 'cover', 
+                            width: '100%', 
+                            height: '100%',
+                            opacity: isLoaded ? 1 : 0,
+                            transition: 'opacity 0.5s ease-in-out'
+                        }}
                     >
                     </video>
                     <div className="video-overlay" style={{
@@ -118,12 +134,15 @@ const VideoHero = () => {
                 <img
                     src="/Logo.png"
                     alt="Anwar Ispat Logo"
+                    width="300"
+                    height="80"
                     style={{
                         marginBottom: 'clamp(0.5rem, 3vh, 2rem)',
                         height: 'clamp(40px, min(8vw, 12vh), 100px)',
+                        width: 'auto',
                         objectFit: 'contain',
                         filter: 'drop-shadow(0 0 45px rgba(227, 24, 45, 1))',
-                        transform: 'translateZ(60px)', // Pop out further than text
+                        transform: 'translateZ(60px)',
                         transition: 'transform 0.3s ease'
                     }}
                 />

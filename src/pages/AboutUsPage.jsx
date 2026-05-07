@@ -263,6 +263,8 @@ const AboutUsPage = () => {
                             <img 
                                 src="/Manwar-Hossain-transparent-1by1-ar.png" 
                                 alt="Manwar Hossain" 
+                                width="600"
+                                height="800"
                                 className="pop-out-img"
                                 style={{ 
                                     position: 'absolute', 
@@ -270,7 +272,7 @@ const AboutUsPage = () => {
                                     right: '5%', 
                                     width: '110%', 
                                     height: 'auto', 
-                                    maxHeight: '120%', // allowing it to exceed the container top
+                                    maxHeight: '120%', 
                                     objectFit: 'contain', 
                                     objectPosition: 'bottom', 
                                     transformOrigin: 'bottom center',
@@ -312,6 +314,8 @@ const AboutUsPage = () => {
                                     <img 
                                         src="/Furkaan-Hossain-transparent-1by1-ar.png" 
                                         alt="Furkaan N Hossain" 
+                                        width="500"
+                                        height="600"
                                         className="pop-out-img"
                                         style={{ 
                                             position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', 
@@ -344,6 +348,8 @@ const AboutUsPage = () => {
                                     <img 
                                         src="/Waeez-R-Hossain-transparent-1by1-ar.png" 
                                         alt="Waeez R Hossain" 
+                                        width="500"
+                                        height="600"
                                         className="pop-out-img"
                                         style={{ 
                                             position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', 
