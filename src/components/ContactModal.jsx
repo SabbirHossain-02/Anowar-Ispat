@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+﻿import React, { useEffect, useRef } from 'react';
 import { X, MapPin, Phone, Mail } from 'lucide-react';
 import gsap from 'gsap';
 
@@ -94,7 +94,7 @@ const ContactModal = ({ isOpen, onClose }) => {
                             <MapPin className="info-icon" />
                             <div>
                                 <h4 className="label">HQ LOCATION</h4>
-                                <p>123 Steel Avenue<br />Industrial Zone, Dhaka</p>
+                                <p>Baitul Hossain Building (12th Floor)<br />27 Dilkusha Commercial Area, Dhaka - 1000, Bangladesh</p>
                             </div>
                         </div>
 
@@ -102,7 +102,7 @@ const ContactModal = ({ isOpen, onClose }) => {
                             <Phone className="info-icon" />
                             <div>
                                 <h4 className="label">DIRECT LINE</h4>
-                                <p>+880 1234 567 890</p>
+                                <p>+880 2223 384037</p>
                             </div>
                         </div>
 
@@ -110,7 +110,7 @@ const ContactModal = ({ isOpen, onClose }) => {
                             <Mail className="info-icon" />
                             <div>
                                 <h4 className="label">SECURE COMM</h4>
-                                <p>info@anowarispat.com</p>
+                                <p>mail@anwargroup.net</p>
                             </div>
                         </div>
                     </div>
@@ -151,3 +151,5 @@ const ContactModal = ({ isOpen, onClose }) => {
 };
 
 export default ContactModal;
+
+

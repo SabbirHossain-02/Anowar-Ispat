@@ -22,7 +22,7 @@ export const ProductService = () => {
 
   useEffect(() => {
     let cancelled = false;
-    fetch("http://172.31.92.141:5000/api/products")
+    fetch("https://anwarispat.com/api/products")
       .then((r) => r.json())
       .then((data) => {
         if (!cancelled) {
@@ -667,7 +667,7 @@ const MilestoneCard = ({ index, title, desc, icon: Icon, align, isVisible }) => 
         filter: filter,
         transition: 'all 1s cubic-bezier(0.19, 1, 0.22, 1)'
       }}>
-        <h3 style={{ fontSize: 'clamp(2rem, 3vw, 2.5rem)', color: 'var(--text-primary, #fff)', marginBottom: '1rem', fontFamily: 'var(--font-heading)' }}>
+        <h3 style={{ fontSize: 'clamp(2rem, 3vw, 2.5rem)', color: '#fff', textShadow: '0 2px 8px rgba(0,0,0,1)', marginBottom: '1rem', fontFamily: 'var(--font-heading)' }}>
           {title}
         </h3>
         <p style={{ color: 'var(--subtext)', fontSize: '1.1rem', lineHeight: 1.6, maxWidth: '400px' }}>
@@ -1046,13 +1046,14 @@ const BroadcastCard = ({ date, title, desc, img, isHovering, onHover }) => {
 };
 
 export const ProjectShowcase = () => {
+  const [selectedProject, setSelectedProject] = React.useState(null);
   const projects = [
-    { title: "Padma Bridge", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777390678/Padma_Bridge_fnueme.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777390678/Padma_Bridge_fnueme.jpg", desc: "A monumental infrastructure achievement connecting the nation." },
-    { title: "Rooppur Power Plant", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777390681/Rooppur_en98hz.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777390681/Rooppur_en98hz.jpg", desc: "Bangladesh's first nuclear power plant, empowering the future." },
-    { title: "Mayor Hanif Flyover", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777394650/mayor_hanif_msgq9d.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777394650/mayor_hanif_msgq9d.jpg", desc: "Revolutionizing urban transit and reducing city congestion." },
-    { title: "Purbachal Express Highway", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777394690/Purbachal_Express_Highway_compressed_gxuze8.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777394690/Purbachal_Express_Highway_compressed_gxuze8.jpg", desc: "A massive arterial highway facilitating rapid economic growth." },
-    { title: "Airport 3rd Terminal", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777395501/Airport_3rd_Terminal_brxz6w.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777395501/Airport_3rd_Terminal_brxz6w.jpg", desc: "State-of-the-art aviation hub elevating global connectivity." },
-    { title: "Shahjalal Fertilizer Factory", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777395915/Shahjalal_Fertiliser_Factory_gefg5s.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777395915/Shahjalal_Fertiliser_Factory_gefg5s.jpg", desc: "A critical industrial mega-project ensuring agricultural self-reliance." },
+    { title: "Padma Bridge", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777390678/Padma_Bridge_fnueme.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777390678/Padma_Bridge_fnueme.jpg", desc: "The Padma Multipurpose Bridge is Bangladesh's largest infrastructure project, spanning 6.15 km over the Padma River. Anwar Ispat supplied high-grade TMT steel rods that form the structural backbone of this historic bridge, connecting 21 southern districts and transforming the lives of over 30 million people." },
+    { title: "Rooppur Power Plant", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777390681/Rooppur_en98hz.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777390681/Rooppur_en98hz.jpg", desc: "The Rooppur Nuclear Power Plant is Bangladesh's first-ever nuclear facility, built with a capacity of 2,400 MW. Anwar Ispat contributed precision-engineered steel materials to support the construction of this landmark project, which marks a new era of energy independence for the nation." },
+    { title: "Mayor Hanif Flyover", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777394650/mayor_hanif_msgq9d.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777394650/mayor_hanif_msgq9d.jpg", desc: "The Mayor Hanif Flyover is one of Dhaka's most critical elevated expressways, stretching over 11.8 km to ease severe traffic congestion. Anwar Ispat's reinforcement steel played a vital role in the construction of this flyover, improving daily commutes for millions of residents." },
+    { title: "Purbachal Express Highway", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777394690/Purbachal_Express_Highway_compressed_gxuze8.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777394690/Purbachal_Express_Highway_compressed_gxuze8.jpg", desc: "The Purbachal Express Highway is a modern 6-lane expressway connecting Dhaka to the Purbachal New Town development. Built with Anwar Ispat's high-strength steel, this highway is designed to support Bangladesh's expanding urban footprint and accelerate economic activity in the eastern corridor." },
+    { title: "Airport 3rd Terminal", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777395501/Airport_3rd_Terminal_brxz6w.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777395501/Airport_3rd_Terminal_brxz6w.jpg", desc: "The Hazrat Shahjalal International Airport's 3rd Terminal is a landmark aviation project designed to handle 12 million passengers annually. Anwar Ispat supplied structural steel that supports the terminal's expansive framework, helping Bangladesh step into a new era of international aviation." },
+    { title: "Shahjalal Fertilizer Factory", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777395915/Shahjalal_Fertiliser_Factory_gefg5s.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777395915/Shahjalal_Fertiliser_Factory_gefg5s.jpg", desc: "The Shahjalal Fertilizer Factory is one of Bangladesh's largest industrial projects, producing urea fertilizer to support the agricultural sector. Anwar Ispat provided heavy-duty steel for the factory's structural framework, contributing to the nation's food security and industrial growth." },
     { title: "Hotel Intercontinental", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777396432/Hotel_Intercontinental_k6assz.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777396432/Hotel_Intercontinental_k6assz.jpg", desc: "Iconic luxury and heritage built on unwavering structural strength." },
     { title: "City Center Dhaka", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777396567/City_Center_Dhaka_jzcyar.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777396567/City_Center_Dhaka_jzcyar.jpg", desc: "The tallest skyscraper defining the modern skyline of the capital." }
   ];
@@ -1075,6 +1076,8 @@ export const ProjectShowcase = () => {
         style={{ position: 'relative', overflow: 'hidden', borderRadius: '12px', aspectRatio: '16/9', cursor: 'pointer', border: '1px solid rgba(255, 255, 255, 0.05)' }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+
+        onClick={() => setSelectedProject(proj)}
       >
         <video
           ref={videoRef}
@@ -1088,7 +1091,7 @@ export const ProjectShowcase = () => {
           style={{ width: '100%', height: '100%', objectFit: 'cover', filter: isHovered ? 'grayscale(0%) brightness(1)' : 'grayscale(80%) brightness(0.6)', transition: 'all 0.5s ease' }}
         />
         <div className="project-overlay" style={{ position: 'absolute', inset: 0, background: isHovered ? 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(227,24,45,0.2) 100%)' : 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 60%)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '1.5rem', transition: 'all 0.3s ease' }}>
-          <h3 style={{ color: '#fff', fontSize: 'clamp(1rem, 2vw, 1.3rem)', fontFamily: 'var(--font-heading)', marginBottom: '0.5rem', textTransform: 'uppercase', transform: isHovered ? 'translateY(0)' : 'translateY(10px)', transition: 'transform 0.4s ease' }} className="project-title">{proj.title}</h3>
+          <h3 style={{ color: '#fff', textShadow: '0 2px 12px rgba(0,0,0,1), 0 0 30px rgba(0,0,0,1)', fontSize: 'clamp(1rem, 2vw, 1.3rem)', fontFamily: 'var(--font-heading)', marginBottom: '0.5rem', textTransform: 'uppercase', transform: isHovered ? 'translateY(0)' : 'translateY(10px)', transition: 'transform 0.4s ease' }} className="project-title">{proj.title}</h3>
           <p style={{ color: 'var(--subtext)', fontSize: 'clamp(0.75rem, 1.5vw, 0.85rem)', opacity: isHovered ? 1 : 0, transform: isHovered ? 'translateY(0)' : 'translateY(10px)', transition: 'all 0.4s ease 0.1s', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }} className="project-desc">{proj.desc}</p>
         </div>
         <div className="project-glow" style={{ position: 'absolute', inset: 0, border: '2px solid var(--accent)', borderRadius: '12px', opacity: isHovered ? 1 : 0, transition: 'opacity 0.4s ease', pointerEvents: 'none' }} />
@@ -1136,9 +1139,25 @@ export const ProjectShowcase = () => {
           .project-grid { grid-template-columns: 1fr !important; }
           .project-card .project-video { filter: grayscale(0%) brightness(0.8) !important; }
           .project-card .project-desc { opacity: 1 !important; transform: translateY(0) !important; }
-          .project-card .project-title { transform: translateY(0) !important; }
+          .project-card .project-title { transform: translateY(0) !important; color: #fff !important; text-shadow: 0 2px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.7) !important; }
         }
       `}</style>
+      {selectedProject && (
+        <div onClick={() => setSelectedProject(null)} style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: 'var(--primary)', border: '1px solid rgba(227,24,45,0.3)', borderRadius: '16px', display: 'flex', maxWidth: '900px', width: '100%', overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.8)', position: 'relative', maxHeight: '90vh' }}>
+            <button onClick={() => setSelectedProject(null)} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'rgba(0,0,0,0.6)', border: 'none', color: 'var(--text)', cursor: 'pointer', zIndex: 10, width: '36px', height: '36px', borderRadius: '50%', fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>X</button>
+            <div style={{ flex: 1, minHeight: '300px', position: 'relative', overflow: 'hidden' }}>
+              <video src={selectedProject.video} poster={selectedProject.poster} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', minHeight: '300px' }} />
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, transparent 50%, var(--primary) 100%)' }} />
+            </div>
+            <div style={{ flex: 1, padding: '2.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <div style={{ width: '40px', height: '3px', background: 'var(--accent)', marginBottom: '1.5rem' }} />
+              <h3 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.5rem)', color: 'white!important', fontFamily: 'var(--font-heading)', textTransform: 'uppercase', lineHeight: 1.1, marginBottom: '1rem' }}>{selectedProject.title}</h3>
+              <p style={{ color: 'var(--subtext)', fontSize: '1.2rem', lineHeight: 1.9, marginTop: '0.75rem' }}>{selectedProject.desc}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
@@ -1150,7 +1169,7 @@ export const MediaEvents = () => {
   const [broadcastData, setBroadcastData] = useState([]);
 
   useEffect(() => {
-    fetch("http://172.31.92.141:5000/api/media")
+    fetch("https://anwarispat.com/api/media")
       .then((r) => r.json())
       .then((data) => {
         setBroadcastData(

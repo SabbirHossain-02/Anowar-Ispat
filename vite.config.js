@@ -35,25 +35,6 @@ export default defineConfig({
     },
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          if (id.includes('node_modules')) {
-            if (id.includes('react-dom') || id.includes('react-router')) {
-              return 'vendor-react';
-            }
-            if (id.includes('three') || id.includes('@react-three')) {
-              return 'vendor-three';
-            }
-            if (id.includes('gsap')) {
-              return 'vendor-gsap';
-            }
-            if (id.includes('lenis')) {
-              return 'vendor-lenis';
-            }
-            if (id.includes('lucide')) {
-              return 'vendor-icons';
-            }
-          }
-        },
         chunkFileNames: 'assets/[name]-[hash].js',
         entryFileNames: 'assets/[name]-[hash].js',
         assetFileNames: 'assets/[name]-[hash].[ext]',

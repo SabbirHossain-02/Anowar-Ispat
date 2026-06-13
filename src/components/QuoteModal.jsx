@@ -251,3 +251,5 @@ const QuoteModal = ({ isOpen, onClose }) => {
 };
 
 export default QuoteModal;
+
+

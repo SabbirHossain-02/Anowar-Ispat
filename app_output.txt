@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, lazy, Suspense } from 'react'
+﻿import { useRef, useEffect, useState, lazy, Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
 import Lenis from 'lenis'
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
@@ -21,19 +21,6 @@ function App() {
     const [isContactOpen, setIsContactOpen] = useState(false)
     const [isQuoteOpen, setIsQuoteOpen] = useState(false)
     const [introDone, setIntroDone] = useState(false)
-
-  useEffect(() => {
-    fetch('/api/settings/theme')
-      .then(r => r.json())
-      .then(d => {
-        if (d.theme === 'light') {
-          document.body.classList.add('light-mode');
-        } else {
-          document.body.classList.remove('light-mode');
-        }
-      })
-      .catch(() => {});
-  }, []);
     const navigate = useNavigate();
     const location = useLocation();
 

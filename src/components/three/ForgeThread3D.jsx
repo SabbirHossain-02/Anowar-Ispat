@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useEffect } from 'react';
+﻿import React, { useRef, useMemo, useEffect } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Environment } from '@react-three/drei';
 import * as THREE from 'three';
@@ -252,3 +252,4 @@ export default function ForgeThread3D({ scrollProgress }) {
         </group>
     );
 }
+

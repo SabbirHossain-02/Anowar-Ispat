@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react'
+﻿import React, { useRef, useEffect, useState, useCallback } from 'react'
 
 const slides = [
     {
@@ -217,3 +217,4 @@ const VideoHero = () => {
 }
 
 export default VideoHero
+
