@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import gsap from 'gsap';
 
@@ -112,7 +112,46 @@ const QuoteModal = ({ isOpen, onClose }) => {
             <div ref={contentRef} className="contact-content-wrapper" style={{ maxWidth: '1200px', margin: 'auto', padding: '4rem 0' }}>
                 <div className="contact-header" ref={el => addToRefs(el, textStaggerRef)} style={{ marginBottom: '2rem' }}>
                     <h2 className="tech-heading" style={{ color: 'var(--text)' }}>REQUEST A <span className="accent-text">QUOTATION</span></h2>
-                    <p className="tech-subheading">Submit your requirements for an exact estimation.</p>
+                    <p className="tech-subheading" style={{ marginBottom: '1.5rem' }}>Submit your requirements for an exact estimation.</p>
+                    
+                    <a 
+                        href="/files/anwar_ispat_catalog.pdf" 
+                        download 
+                        className="download-catalog-btn" 
+                        style={{ 
+                            display: 'inline-flex', 
+                            alignItems: 'center', 
+                            gap: '8px', 
+                            padding: '0.6rem 1.5rem', 
+                            fontSize: '0.75rem',
+                            fontWeight: '700',
+                            border: '1px solid var(--accent)',
+                            background: 'transparent',
+                            color: 'var(--text)',
+                            cursor: 'pointer',
+                            borderRadius: '4px',
+                            textDecoration: 'none',
+                            letterSpacing: '0.1em',
+                            transition: 'all 0.3s ease',
+                            fontFamily: 'var(--font-main)',
+                            textTransform: 'uppercase',
+                            marginBottom: '1.5rem'
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.background = 'var(--accent)';
+                            e.currentTarget.style.color = '#fff';
+                            e.currentTarget.style.boxShadow = '0 4px 12px rgba(227, 24, 45, 0.4)';
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'transparent';
+                            e.currentTarget.style.color = 'var(--text)';
+                            e.currentTarget.style.boxShadow = 'none';
+                            e.currentTarget.style.transform = 'none';
+                        }}
+                    >
+                        DOWNLOAD CATALOGUE
+                    </a>
 
                     {submitStatus === 'success' && (
                         <div style={{ marginTop: '1rem', padding: '1rem 2rem', background: 'rgba(0,200,100,0.12)', border: '1px solid rgba(0,200,100,0.4)', borderRadius: '8px', color: '#00cc66', fontFamily: 'monospace', letterSpacing: '0.1em', fontSize: '0.9rem' }}>

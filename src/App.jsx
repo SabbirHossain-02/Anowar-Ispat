@@ -15,6 +15,24 @@ import FloatingQuoteBtn from './components/FloatingQuoteBtn'
 const AboutUsPage = lazy(() => import('./pages/AboutUsPage'))
 const ProductsPage = lazy(() => import('./pages/ProductsPage'))
 const ProjectsPage = lazy(() => import('./pages/ProjectsPage'))
+const VisionMissionPage = lazy(() => import('./pages/VisionMissionPage'))
+const LeadershipPage = lazy(() => import('./pages/LeadershipPage'))
+const AwardsPage = lazy(() => import('./pages/AwardsPage'))
+
+// New Dropdown pages
+const ProductSpecsPage = lazy(() => import('./pages/ProductSpecsPage'))
+const SustainabilityESGPage = lazy(() => import('./pages/SustainabilityESGPage'))
+const SustainabilityCSRPage = lazy(() => import('./pages/SustainabilityCSRPage'))
+const MediaNewsPage = lazy(() => import('./pages/MediaNewsPage'))
+const MediaPressPage = lazy(() => import('./pages/MediaPressPage'))
+const MediaEventsPage = lazy(() => import('./pages/MediaEventsPage'))
+const CareersPositionsPage = lazy(() => import('./pages/CareersPositionsPage'))
+const CareersExperiencePage = lazy(() => import('./pages/CareersExperiencePage'))
+const ContactFormPage = lazy(() => import('./pages/ContactFormPage'))
+const ContactLocationsPage = lazy(() => import('./pages/ContactLocationsPage'))
+const ContactHotlinePage = lazy(() => import('./pages/ContactHotlinePage'))
+const ContactMapPage = lazy(() => import('./pages/ContactMapPage'))
+
 
 function App() {
     const lenisRef = useRef()
@@ -150,8 +168,23 @@ function App() {
                         </>
                     } />
                     <Route path="/about" element={<Suspense fallback={null}><AboutUsPage /></Suspense>} />
+                    <Route path="/about/vision" element={<Suspense fallback={null}><VisionMissionPage /></Suspense>} />
+                    <Route path="/about/leadership" element={<Suspense fallback={null}><LeadershipPage /></Suspense>} />
+                    <Route path="/about/awards" element={<Suspense fallback={null}><AwardsPage /></Suspense>} />
                     <Route path="/products" element={<Suspense fallback={null}><ProductsPage /></Suspense>} />
+                    <Route path="/products/specifications" element={<Suspense fallback={null}><ProductSpecsPage /></Suspense>} />
+                    <Route path="/sustainability/esg" element={<Suspense fallback={null}><SustainabilityESGPage /></Suspense>} />
+                    <Route path="/sustainability/csr" element={<Suspense fallback={null}><SustainabilityCSRPage /></Suspense>} />
                     <Route path="/projects" element={<Suspense fallback={null}><ProjectsPage /></Suspense>} />
+                    <Route path="/media/news" element={<Suspense fallback={null}><MediaNewsPage /></Suspense>} />
+                    <Route path="/media/press" element={<Suspense fallback={null}><MediaPressPage /></Suspense>} />
+                    <Route path="/media/events" element={<Suspense fallback={null}><MediaEventsPage /></Suspense>} />
+                    <Route path="/careers/positions" element={<Suspense fallback={null}><CareersPositionsPage /></Suspense>} />
+                    <Route path="/careers/experience" element={<Suspense fallback={null}><CareersExperiencePage /></Suspense>} />
+                    <Route path="/contact/form" element={<Suspense fallback={null}><ContactFormPage /></Suspense>} />
+                    <Route path="/contact/locations" element={<Suspense fallback={null}><ContactLocationsPage /></Suspense>} />
+                    <Route path="/contact/hotline" element={<Suspense fallback={null}><ContactHotlinePage /></Suspense>} />
+                    <Route path="/contact/map" element={<Suspense fallback={null}><ContactMapPage /></Suspense>} />
                 </Routes>
             </main>
 

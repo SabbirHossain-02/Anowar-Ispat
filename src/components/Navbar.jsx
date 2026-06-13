@@ -46,9 +46,9 @@ const Navbar = ({ onOpenContact, onNavigate }) => {
             page: 'about',
             hash: '',
             dropdown: [
-                { name: 'Vision, Mission & Values', page: 'about', hash: '' },
-                { name: 'Leadership Team', page: 'about', hash: '#leadership' },
-                { name: 'Awards & Recognition', page: 'about', hash: '#awards' }
+                { name: 'Vision, Mission & Values', page: 'about/vision', hash: '' },
+                { name: 'Leadership Team', page: 'about/leadership', hash: '' },
+                { name: 'Awards & Recognition', page: 'about/awards', hash: '' }
             ]
         },
         {
@@ -56,18 +56,18 @@ const Navbar = ({ onOpenContact, onNavigate }) => {
             page: 'products',
             hash: '',
             dropdown: [
-                { name: 'Technical Specifications', page: 'products', hash: '' },
+                { name: 'Technical Specifications', page: 'products/specifications', hash: '' },
                 { name: 'Download Catalog / Request Quote', type: 'quote' },
-                { name: 'Certifications', page: 'home', hash: '#why-choose-us' }
+                { name: 'Certifications', page: 'about/awards', hash: '' }
             ]
         },
         {
             name: 'Sustainability',
-            page: 'home',
-            hash: '#sustainability',
+            page: 'sustainability',
+            hash: '',
             dropdown: [
-                { name: 'Environmental, Social, Governance', page: 'home', hash: '#why-choose-us' },
-                { name: 'CSR Activities', page: 'home', hash: '#why-choose-us' }
+                { name: 'Environmental, Social, Governance', page: 'sustainability/esg', hash: '' },
+                { name: 'CSR Activities', page: 'sustainability/csr', hash: '' }
             ]
         },
         {
@@ -80,32 +80,33 @@ const Navbar = ({ onOpenContact, onNavigate }) => {
         },
         {
             name: 'Media Center',
-            page: 'home',
-            hash: '#media-events',
+            page: 'media',
+            hash: '',
             dropdown: [
-                { name: 'News & Articles', page: 'home', hash: '#blog' },
-                { name: 'Press Releases', page: 'home', hash: '#media-events' },
-                { name: 'Event Gallery', page: 'home', hash: '#media-events' }
+                { name: 'News & Articles', page: 'media/news', hash: '' },
+                { name: 'Press Releases', page: 'media/press', hash: '' },
+                { name: 'Event Gallery', page: 'media/events', hash: '' }
             ]
         },
         {
             name: 'Careers',
-            page: 'home',
-            hash: '#careers',
+            page: 'careers',
+            hash: '',
             dropdown: [
-                { name: 'Open Positions', page: 'home', hash: '#why-choose-us' },
-                { name: 'Employee Experience', page: 'home', hash: '#why-choose-us' }
+                { name: 'Open Positions', page: 'careers/positions', hash: '' },
+                { name: 'Employee Experience', page: 'careers/experience', hash: '' }
             ]
         },
         {
             name: 'Contact Us',
-            page: 'home',
-            hash: '#contact',
+            page: 'contact',
+            hash: '',
+            isContact: true,
             dropdown: [
-                { name: 'Contact Form', type: 'contact' },
-                { name: 'Office Locations', type: 'contact' },
-                { name: 'Hotline / Email', type: 'contact' },
-                { name: 'Google Map', type: 'contact' }
+                { name: 'Contact Form', page: 'contact/form', hash: '' },
+                { name: 'Office Locations', page: 'contact/locations', hash: '' },
+                { name: 'Hotline / Email', page: 'contact/hotline', hash: '' },
+                { name: 'Google Map', page: 'contact/map', hash: '' }
             ]
         }
     ];
@@ -224,10 +225,7 @@ const Navbar = ({ onOpenContact, onNavigate }) => {
                                             href={subItem.hash || '#'}
                                             className="dropdown-item"
                                             onClick={(e) => {
-                                                e.preventDefault();
-                                                if (subItem.type === 'contact') {
-                                                    onOpenContact();
-                                                }
+                                                handleNavClick(e, subItem);
                                             }}
                                         >
                                             {subItem.name}
