@@ -40,7 +40,7 @@ const Navbar = ({ onOpenContact, onNavigate }) => {
     }, []);
 
     const navLinks = [
-        { name: 'Home', page: 'home', hash: '' },
+        
         {
             name: 'About Us',
             page: 'about',
@@ -73,7 +73,7 @@ const Navbar = ({ onOpenContact, onNavigate }) => {
             ]
         },
         {
-            name: 'Projects & Portfolio',
+            name: 'Landmarks',
             page: 'projects',
             hash: '',
             dropdown: [
