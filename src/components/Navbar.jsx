@@ -48,7 +48,8 @@ const Navbar = ({ onOpenContact, onNavigate }) => {
             dropdown: [
                 { name: 'Vision, Mission & Values', page: 'about/vision', hash: '' },
                 { name: 'Leadership Team', page: 'about/leadership', hash: '' },
-                { name: 'Awards & Recognition', page: 'about/awards', hash: '' }
+                { name: 'Awards & Recognition', page: 'about/awards', hash: '' },
+                { name: 'Heritage', page: 'about/heritage', hash: '' }
             ]
         },
         {

@@ -18,6 +18,7 @@ const ProjectsPage = lazy(() => import('./pages/ProjectsPage'))
 const VisionMissionPage = lazy(() => import('./pages/VisionMissionPage'))
 const LeadershipPage = lazy(() => import('./pages/LeadershipPage'))
 const AwardsPage = lazy(() => import('./pages/AwardsPage'))
+const HeritagePage = lazy(() => import('./pages/HeritagePage'))
 
 // New Dropdown pages
 const ProductSpecsPage = lazy(() => import('./pages/ProductSpecsPage'))
@@ -170,6 +171,7 @@ function App() {
                     <Route path="/about" element={<Suspense fallback={null}><AboutUsPage /></Suspense>} />
                     <Route path="/about/vision" element={<Suspense fallback={null}><VisionMissionPage /></Suspense>} />
                     <Route path="/about/leadership" element={<Suspense fallback={null}><LeadershipPage /></Suspense>} />
+                    <Route path="/about/heritage" element={<Suspense fallback={null}><HeritagePage /></Suspense>} />
                     <Route path="/about/awards" element={<Suspense fallback={null}><AwardsPage /></Suspense>} />
                     <Route path="/products" element={<Suspense fallback={null}><ProductsPage /></Suspense>} />
                     <Route path="/products/specifications" element={<Suspense fallback={null}><ProductSpecsPage /></Suspense>} />
