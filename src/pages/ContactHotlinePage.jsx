@@ -1,118 +1,139 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Phone, Mail } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const RevealText = ({ text, className, style, wordClass = "reveal-word" }) => {
-    const words = text.split(' ');
-    return (
-        <div className={className} style={style}>
-            {words.map((word, i) => (
-                <span key={i} style={{ display: 'inline-flex', overflow: 'hidden', verticalAlign: 'top', marginRight: '0.25em' }}>
-                    <span className={wordClass} style={{ transform: 'translateY(120%)', paddingBottom: '0.1em', display: 'inline-block', willChange: 'transform' }}>
-                        {word}
-                    </span>
-                </span>
-            ))}
-        </div>
-    );
-};
+const phones = [
+  { color:'#E3182D', bg:'rgba(227,24,45,0.1)', label:'Sales Hotline', number:'+880 2-XXXX-XXXX', hours:'Sun–Thu · 9:00 AM – 6:00 PM', desc:'For product inquiries, quotes, and sales support.' },
+  { color:'#22c55e', bg:'rgba(34,197,94,0.1)', label:'Factory / Technical', number:'+880 1XXX-XXXXXX', hours:'24/7 Emergency Line', desc:'For technical support, factory operations and urgent matters.' },
+  { color:'#3b82f6', bg:'rgba(59,130,246,0.1)', label:'Corporate Office', number:'+880 2-XXXX-XXXX', hours:'Sun–Thu · 9:00 AM – 5:00 PM', desc:'For corporate affairs, partnerships and general inquiries.' },
+];
+
+const emails = [
+  { color:'#3b82f6', bg:'rgba(59,130,246,0.1)', label:'General Enquiry', email:'info@anwarispat.com', desc:'For all general inquiries and information requests.' },
+  { color:'#a855f7', bg:'rgba(168,85,247,0.1)', label:'Media / PR', email:'media@anwarispat.com', desc:'For press, media coverage and public relations.' },
+  { color:'#22c55e', bg:'rgba(34,197,94,0.1)', label:'Sales & Orders', email:'sales@anwarispat.com', desc:'For product orders, pricing and sales inquiries.' },
+  { color:'#eab308', bg:'rgba(234,179,8,0.1)', label:'Careers', email:'careers@anwarispat.com', desc:'For job applications and recruitment inquiries.' },
+];
+
+const socials = [
+  { name:'Facebook', color:'#1877f2', bg:'rgba(24,119,242,0.1)', handle:'@AnwarIspat', href:'https://facebook.com' },
+  { name:'LinkedIn', color:'#0077b5', bg:'rgba(0,119,181,0.1)', handle:'Anwar Ispat Ltd.', href:'https://linkedin.com' },
+  { name:'YouTube', color:'#ff0000', bg:'rgba(255,0,0,0.1)', handle:'@AnwarIspatOfficial', href:'https://youtube.com' },
+];
 
 const ContactHotlinePage = () => {
-    const containerRef = useRef(null);
+  const containerRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
-    useGSAP(() => {
-        const heroTl = gsap.timeline();
-        heroTl.fromTo('.hero-subtitle', 
-            { opacity: 0, letterSpacing: '0em', filter: 'blur(10px)' },
-            { opacity: 1, letterSpacing: '0.2em', filter: 'blur(0px)', duration: 1.2, ease: "power3.out" }
-        )
-        .fromTo('.hero-title .reveal-word',
-            { y: '120%', rotationZ: 4 },
-            { y: '0%', rotationZ: 0, duration: 1.0, stagger: 0.05, ease: "power4.out" },
-            "-=0.8"
-        );
-    }, { scope: containerRef });
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
-    return (
-        <div ref={containerRef} style={{ background: 'var(--primary)', color: 'var(--text)', minHeight: '100vh', padding: '0 0 150px 0', overflowX: 'hidden', position: 'relative' }}>
-            
-            {/* Ambient glows */}
-            <div className="ambient-orb" style={{ position: 'absolute', top: '-10%', left: '-10%', width: '50vw', height: '50vw', background: 'radial-gradient(circle, rgba(227,24,45,0.08) 0%, transparent 65%)', filter: 'blur(100px)', zIndex: 0, pointerEvents: 'none' }} />
+  useGSAP(() => {
+    gsap.fromTo('.ch-hero-tag', { opacity:0, y:20 }, { opacity:1, y:0, duration:0.4, delay:0, ease:'power3.out' });
+    gsap.fromTo('.ch-hero-title', { opacity:0, y:40 }, { opacity:1, y:0, duration:0.5, delay:0.05, ease:'power3.out' });
+    gsap.fromTo('.ch-hero-sub', { opacity:0, y:20 }, { opacity:1, y:0, duration:0.4, delay:0.1, ease:'power3.out' });
+    gsap.utils.toArray('.ch-fade').forEach(el => {
+      ScrollTrigger.create({ trigger:el, start:'top 88%', onEnter:() => gsap.to(el, { opacity:1, y:0, duration:0.7, delay:parseFloat(el.dataset.delay||0), ease:'power3.out' }) });
+    });
+    gsap.utils.toArray('.ch-card').forEach((el, i) => {
+      ScrollTrigger.create({ trigger:el, start:'top 90%', onEnter:() => gsap.to(el, { opacity:1, y:0, duration:0.6, delay:i*0.08, ease:'power3.out' }) });
+    });
+  }, { scope:containerRef });
 
-            {/* HERO SECTION */}
-            <section style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingTop: '15vh', position: 'relative', zIndex: 2, paddingLeft: '5%', paddingRight: '5%' }}>
-                <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
-                    <p className="hero-subtitle" style={{ fontFamily: 'monospace', color: 'var(--accent)', fontSize: '0.9rem', marginBottom: '1.5rem', textTransform: 'uppercase' }}>
-                        // Direct Hotline Support
-                    </p>
-                    <RevealText 
-                        text="DIAL OUR STEEL" 
-                        className="hero-title" 
-                        style={{ fontSize: 'clamp(3rem, 6vw, 6rem)', lineHeight: 0.9, textTransform: 'uppercase', fontWeight: 900, color: 'var(--text)' }} 
-                    />
-                    <RevealText 
-                        text="COMMUNICATION HUB." 
-                        className="hero-title" 
-                        style={{ fontSize: 'clamp(3rem, 6vw, 6rem)', lineHeight: 0.9, textTransform: 'uppercase', fontWeight: 900, marginBottom: '2.5rem', color: 'var(--subtext)' }} 
-                    />
-                </div>
-            </section>
+  const secLabel = (text) => (
+    <div className="ch-fade" data-delay="0" style={{ fontSize:'10px', letterSpacing:'3px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'18px', display:'flex', alignItems:'center', gap:'12px', opacity:0, transform:'translateY(20px)' }}>
+      {text}<div style={{ flex:1, height:'1px', background:'var(--glass-border)' }}/>
+    </div>
+  );
 
-            {/* HOTLINE DETAILS */}
-            <section style={{ padding: '2rem 5%', display: 'flex', justifyContent: 'center', position: 'relative', zIndex: 2 }}>
-                <div style={{ width: '100%', maxWidth: '1200px', display: 'flex', flexWrap: 'wrap', gap: '3rem' }}>
-                    
-                    {/* Left: Hotline card */}
-                    <div style={{ flex: '1 1 500px', background: 'var(--glass)', border: '1px solid var(--glass-border)', padding: '3rem', borderRadius: '24px', backdropFilter: 'blur(20px)', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                        <div>
-                            <h3 style={{ color: 'var(--accent)', fontFamily: 'var(--font-heading)', fontSize: '1.3rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <Phone size={20} /> CUSTOMER HOTLINE
-                            </h3>
-                            <p style={{ color: 'var(--text)', fontSize: '1.8rem', margin: 0, fontWeight: 800 }}>16027</p>
-                            <p style={{ color: 'var(--subtext)', marginTop: '0.5rem' }}>
-                                Toll-free support for order updates & logistics dispatching.
-                            </p>
-                        </div>
-                        <div style={{ borderTop: '1px solid var(--glass-border)', paddingTop: '2rem' }}>
-                            <h3 style={{ color: 'var(--accent)', fontFamily: 'var(--font-heading)', fontSize: '1.3rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <Mail size={20} /> EMAIL CHANNELS
-                            </h3>
-                            <p style={{ color: 'var(--text)', fontSize: '1.2rem', margin: 0, fontWeight: 700 }}>info@anwarispat.com</p>
-                            <p style={{ color: 'var(--subtext)', marginTop: '0.5rem' }}>
-                                Send structural blueprints or general project bids.
-                            </p>
-                        </div>
-                    </div>
+  return (
+    <div ref={containerRef} style={{ background:'var(--primary)', color:'var(--text)', minHeight:'100vh', paddingTop:'80px', overflowX:'hidden' }}>
 
-                    {/* Right: Hotline operator image placeholder */}
-                    <div style={{ flex: '1 1 450px', position: 'relative', aspectRatio: '4/3', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', background: 'var(--glass)', borderRadius: '24px', border: '1px solid var(--glass-border)', overflow: 'hidden' }}>
-                        <img 
-                            src="/images/contact_hotline.jpg" 
-                            alt="Customer hotline operators call center" 
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                            onError={(e) => {
-                                e.target.style.display = 'none';
-                                e.target.nextSibling.style.display = 'flex';
-                            }}
-                        />
-                        <div style={{ position: 'absolute', inset: 0, display: 'none', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '2rem' }}>
-                            <Phone size={100} strokeWidth={1} color="var(--accent)" style={{ marginBottom: '1rem' }} />
-                            <p style={{ fontSize: '0.85rem', color: 'var(--subtext)', textAlign: 'center', fontFamily: 'monospace' }}>[ contact_hotline.jpg ]</p>
-                        </div>
-                        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'rgba(0,0,0,0.85)', padding: '0.75rem 1rem', backdropFilter: 'blur(10px)', borderTop: '1px solid var(--glass-border)' }}>
-                            <p style={{ margin: 0, fontSize: '0.8rem', color: '#fff', textAlign: 'center', fontFamily: 'var(--font-main)' }}>
-                                PROPOSED IMAGE: In-house dispatch operator desk answering client hotlines
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+      <section style={{ padding:isMobile?'16px 24px 16px':'20px 40px 16px', borderBottom:'1px solid var(--glass-border)', position:'relative', overflow:'hidden', textAlign:'center' }}>
+        <div style={{ position:'absolute', bottom:0, left:'50%', transform:'translateX(-50%)', width:'600px', height:'220px', background:'radial-gradient(ellipse, rgba(227,24,45,0.12) 0%, transparent 70%)', pointerEvents:'none' }}/>
+        <div style={{ maxWidth:'860px', margin:'0 auto' }}>
+          <div className="ch-hero-tag" style={{ fontSize:'10px', letterSpacing:'4px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'14px' }}>// Reach Out</div>
+          <h1 className="ch-hero-title" style={{ fontSize:'clamp(30px,5vw,52px)', fontWeight:900, lineHeight:1.05, textTransform:'uppercase', letterSpacing:'-1px', marginBottom:'16px', opacity:0, fontFamily:'var(--font-heading)' }}>
+            Hotline / <span style={{ color:'var(--accent)' }}>Email</span>
+          </h1>
+          <p className="ch-hero-sub" style={{ fontSize:isMobile?'13px':'15px', color:'var(--subtext)', maxWidth:'480px', margin:'0 auto', lineHeight:1.8 }}>
+            Get in touch with our team directly via phone, email, or social media channels.
+          </p>
         </div>
-    );
+      </section>
+
+      <div style={{ maxWidth:'920px', margin:'0 auto', padding:isMobile?'36px 24px 60px':'44px 40px 64px' }}>
+
+        {secLabel('Phone Lines')}
+        <div style={{ display:'flex', flexDirection:'column', gap:'10px', marginBottom:'40px' }}>
+          {phones.map((p, i) => (
+            <a key={i} href={'tel:' + p.number} className="ch-card"
+              style={{ display:'flex', alignItems:'center', gap:'18px', padding:'20px 22px', background:'var(--glass)', border:'1px solid var(--glass-border)', borderRadius:'12px', cursor:'pointer', transition:'all 0.2s', opacity:0, transform:'translateY(20px)', textDecoration:'none', color:'inherit' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor=p.color + '50'; e.currentTarget.style.background=p.color + '06'; e.currentTarget.style.transform='translateX(4px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor='var(--glass-border)'; e.currentTarget.style.background='var(--glass)'; e.currentTarget.style.transform='translateX(0)'; }}>
+              <div style={{ width:'52px', height:'52px', borderRadius:'14px', background:p.bg, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={p.color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.6 1.25h3a2 2 0 0 1 2 1.72c.127.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.86a16 16 0 0 0 6 6l1.27-.97a2 2 0 0 1 2.11-.45c.91.34 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+              </div>
+              <div style={{ flex:1 }}>
+                <div style={{ fontSize:'10px', letterSpacing:'2px', color:p.color, textTransform:'uppercase', marginBottom:'5px', fontWeight:700 }}>{p.label}</div>
+                <div style={{ fontSize:isMobile?'18px':'22px', fontWeight:900, letterSpacing:'-0.5px', marginBottom:'4px' }}>{p.number}</div>
+                <div style={{ fontSize:'11px', color:'var(--subtext)', opacity:0.6 }}>{p.hours}</div>
+              </div>
+              <div style={{ fontSize:'10px', color:'var(--accent)', fontWeight:700, flexShrink:0 }}>Call →</div>
+            </a>
+          ))}
+        </div>
+
+        {secLabel('Email')}
+        <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:'10px', marginBottom:'40px' }}>
+          {emails.map((em, i) => (
+            <a key={i} href={'mailto:' + em.email} className="ch-card"
+              style={{ display:'flex', alignItems:'flex-start', gap:'14px', padding:'18px 20px', background:'var(--glass)', border:'1px solid var(--glass-border)', borderRadius:'12px', cursor:'pointer', transition:'all 0.2s', opacity:0, transform:'translateY(20px)', textDecoration:'none', color:'inherit' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor=em.color + '50'; e.currentTarget.style.background=em.color + '06'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor='var(--glass-border)'; e.currentTarget.style.background='var(--glass)'; }}>
+              <div style={{ width:'44px', height:'44px', borderRadius:'12px', background:em.bg, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={em.color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+                </svg>
+              </div>
+              <div style={{ flex:1, minWidth:0 }}>
+                <div style={{ fontSize:'9px', letterSpacing:'2px', color:em.color, textTransform:'uppercase', marginBottom:'5px', fontWeight:700 }}>{em.label}</div>
+                <div style={{ fontSize:'13px', fontWeight:700, marginBottom:'4px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{em.email}</div>
+                <div style={{ fontSize:'11px', color:'var(--subtext)', opacity:0.6, lineHeight:1.5 }}>{em.desc}</div>
+              </div>
+            </a>
+          ))}
+        </div>
+
+        {secLabel('Social Media')}
+        <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)', gap:'10px' }}>
+          {socials.map((s, i) => (
+            <a key={i} href={s.href} target="_blank" rel="noopener noreferrer" className="ch-card"
+              style={{ display:'flex', alignItems:'center', gap:'14px', padding:'18px 20px', background:'var(--glass)', border:'1px solid var(--glass-border)', borderRadius:'12px', cursor:'pointer', transition:'all 0.2s', opacity:0, transform:'translateY(20px)', textDecoration:'none', color:'inherit' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor=s.color + '50'; e.currentTarget.style.background=s.color + '08'; e.currentTarget.style.transform='translateY(-2px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor='var(--glass-border)'; e.currentTarget.style.background='var(--glass)'; e.currentTarget.style.transform='translateY(0)'; }}>
+              <div style={{ width:'44px', height:'44px', borderRadius:'12px', background:s.bg, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                <div style={{ width:'12px', height:'12px', borderRadius:'50%', background:s.color }}/>
+              </div>
+              <div>
+                <div style={{ fontSize:'13px', fontWeight:700, marginBottom:'3px' }}>{s.name}</div>
+                <div style={{ fontSize:'11px', color:'var(--subtext)', opacity:0.6 }}>{s.handle}</div>
+              </div>
+            </a>
+          ))}
+        </div>
+
+      </div>
+    </div>
+  );
 };
 
 export default ContactHotlinePage;
