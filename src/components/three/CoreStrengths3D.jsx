@@ -87,7 +87,7 @@ const Planet = ({ data, index, total, inView }) => {
             <Html 
                 position={[0, 0.5, 0]} 
                 center
-                zIndexRange={[50, 0]}
+                zIndexRange={[10, 0]}
                 style={{
                     transition: 'all 0.5s',
                     opacity: inView ? 1 : 0,
@@ -173,7 +173,7 @@ export default function CoreStrengths3D({ inView }) {
             ))}
 
             {/* Center Label */}
-            <Html center position={[0, 0, 1.5]} zIndexRange={[100, 100]}>
+            <Html center position={[0, 0, 1.5]} zIndexRange={[200, 200]}>
                 <div 
                     className="core-strength-card"
                     style={{
