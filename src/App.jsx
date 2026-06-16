@@ -26,6 +26,7 @@ const ProductRangePage = lazy(() => import('./pages/ProductRangePage'))
 const SustainabilityESGPage = lazy(() => import('./pages/SustainabilityESGPage'))
 const SustainabilityCSRPage = lazy(() => import('./pages/SustainabilityCSRPage'))
 const MediaNewsPage = lazy(() => import('./pages/MediaNewsPage'))
+const NewsArticlePage = lazy(() => import('./pages/NewsArticlePage'))
 const MediaPressPage = lazy(() => import('./pages/MediaPressPage'))
 const MediaEventsPage = lazy(() => import('./pages/MediaEventsPage'))
 const CareersPositionsPage = lazy(() => import('./pages/CareersPositionsPage'))
@@ -181,6 +182,7 @@ function App() {
                     <Route path="/sustainability/csr" element={<Suspense fallback={null}><SustainabilityCSRPage /></Suspense>} />
                     <Route path="/projects" element={<Suspense fallback={null}><ProjectsPage /></Suspense>} />
                     <Route path="/media/news" element={<Suspense fallback={null}><MediaNewsPage /></Suspense>} />
+                    <Route path="/media/news/:slug" element={<Suspense fallback={null}><NewsArticlePage /></Suspense>} />
                     <Route path="/media/press" element={<Suspense fallback={null}><MediaPressPage /></Suspense>} />
                     <Route path="/media/events" element={<Suspense fallback={null}><MediaEventsPage /></Suspense>} />
                     <Route path="/careers/positions" element={<Suspense fallback={null}><CareersPositionsPage /></Suspense>} />
