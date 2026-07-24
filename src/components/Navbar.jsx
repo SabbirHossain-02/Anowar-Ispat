@@ -65,7 +65,7 @@ const Navbar = ({ onOpenContact, onNavigate }) => {
         },
         {
             name: 'Sustainability',
-            page: 'sustainability',
+            page: 'sustainability/esg',
             hash: '',
             dropdown: [
                 { name: 'Environmental, Social, Governance', page: 'sustainability/esg', hash: '' },
@@ -82,7 +82,7 @@ const Navbar = ({ onOpenContact, onNavigate }) => {
         },
         {
             name: 'Media Center',
-            page: 'media',
+            page: 'media/news',
             hash: '',
             dropdown: [
                 { name: 'News & Articles', page: 'media/news', hash: '' },
@@ -92,7 +92,7 @@ const Navbar = ({ onOpenContact, onNavigate }) => {
         },
         {
             name: 'Careers',
-            page: 'careers',
+            page: 'careers/positions',
             hash: '',
             dropdown: [
                 { name: 'Open Positions', page: 'careers/positions', hash: '' },
@@ -144,15 +144,9 @@ const Navbar = ({ onOpenContact, onNavigate }) => {
                         {navLinks.filter(link => !link.isContact).map((link) => (
                             <div key={link.name} className="nav-item">
                                 <a
-                                    href={link.hash || '#'}
+                                    href={link.page ? `/${link.page}` : (link.hash || '#')}
                                     className="nav-link"
-                                    onClick={(e) => {
-                                        if (link.dropdown) {
-                                            e.preventDefault();
-                                        } else {
-                                            handleNavClick(e, link);
-                                        }
-                                    }}
+                                    onClick={(e) => handleNavClick(e, link)}
                                 >
                                     {link.name}
                                     {link.dropdown && <ChevronDown size={12} className="dropdown-caret" />}
