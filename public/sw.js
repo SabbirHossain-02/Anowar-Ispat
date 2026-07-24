@@ -1,4 +1,4 @@
-const CACHE_NAME = 'anwar-ispat-v2';
+const CACHE_NAME = 'anwar-ispat-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -10,7 +10,7 @@ const STATIC_ASSETS = [
   '/anwar_favicon.png',
 ];
 
-const RUNTIME_CACHE = 'anwar-ispat-runtime-v2';
+const RUNTIME_CACHE = 'anwar-ispat-runtime-v3';
 const MAX_RUNTIME_ENTRIES = 50;
 
 self.addEventListener('install', (event) => {

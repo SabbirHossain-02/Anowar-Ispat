@@ -1144,8 +1144,9 @@ body.light-mode .video-hero-subtitle {
 }
 
 body.light-mode .video-hero-content img {
-  content: url('/Logo.png') !important;
+  content: url('/logo-badge.jpeg') !important;
   filter: drop-shadow(0 0 45px rgba(227, 24, 45, 1)) !important;
+  border-radius: 6px !important;
 }
 
 body.light-mode .video-overlay {
@@ -1353,8 +1354,9 @@ body.light-mode button[style*="border: 1px solid rgba(255,255,255,0.2)"]:hover {
 }
 
 body.light-mode img[alt="Anwar Ispat Logo"] {
-  content: url('/logo-dark.png');
+  content: url('/logo-badge.jpeg');
   filter: none !important;
+  border-radius: 6px;
 }
 
 body.light-mode .product-modal-overlay {

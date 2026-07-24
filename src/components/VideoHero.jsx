@@ -132,7 +132,7 @@ const VideoHero = () => {
                 }}
             >
                 <img
-                    src="/Logo.png"
+                    src="/logo-badge.jpeg"
                     alt="Anwar Ispat Logo"
                     width="300"
                     height="80"
@@ -141,6 +141,7 @@ const VideoHero = () => {
                         height: 'clamp(40px, min(8vw, 12vh), 100px)',
                         width: 'auto',
                         objectFit: 'contain',
+                        borderRadius: '6px',
                         filter: 'drop-shadow(0 0 45px rgba(227, 24, 45, 1))',
                         transform: 'translateZ(60px)',
                         transition: 'transform 0.3s ease'

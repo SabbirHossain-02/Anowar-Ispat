@@ -1357,7 +1357,7 @@ export const Footer = ({ onOpenContact }) => (
   <footer style={{ width: "100%", padding: "4rem 10% 2rem 10%", backgroundColor: "var(--primary)", borderTop: "1px solid rgba(255,255,255,0.05)", position: "relative", zIndex: 10 }}>
     <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", gap: "2rem", marginBottom: "4rem" }}>
       <div style={{ flex: "1 1 300px", display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-        <img src="/Logo.png" alt="Anwar Ispat Logo" width="200" height="60" style={{ height: "clamp(50px, 8vw, 80px)", width: "auto", objectFit: "contain", objectPosition: "left", marginBottom: "1.5rem", filter: "grayscale(100%) brightness(200%)" }} />
+        <img src="/logo-badge.jpeg" alt="Anwar Ispat Logo" width="200" height="60" style={{ height: "clamp(50px, 8vw, 80px)", width: "auto", objectFit: "contain", objectPosition: "left", marginBottom: "1.5rem", borderRadius: "6px" }} />
         <p style={{ color: "var(--subtext)", fontSize: "0.9rem", lineHeight: "1.6", maxWidth: "300px" }}>
           Unrelenting strength. Uncompromising quality. The structural backbone of tomorrow's infrastructure.
         </p>

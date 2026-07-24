@@ -135,7 +135,7 @@ const Navbar = ({ onOpenContact, onNavigate }) => {
                     {/* Logo */}
                     <div className="nav-logo">
                         <a href="#" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('home'); }}>
-                            <img src="/Logo.png" alt="Anwar Ispat Logo" width="150" height="40" style={{ height: 'clamp(30px, 5vw, 50px)', width: 'auto', objectFit: 'contain' }} />
+                            <img src="/logo-badge.jpeg" alt="Anwar Ispat Logo" width="150" height="40" style={{ height: 'clamp(30px, 5vw, 50px)', width: 'auto', objectFit: 'contain', borderRadius: '6px' }} />
                         </a>
                     </div>
 
