@@ -19,10 +19,11 @@ export const ProductService = () => {
 
   // ── API: load products from backend ──────────────────────────────────────
   const [products, setProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
-    fetch("https://anwarispat.com/api/products")
+    fetch("/api/products")
       .then((r) => r.json())
       .then((data) => {
         if (!cancelled) {
@@ -38,7 +39,8 @@ export const ProductService = () => {
           );
         }
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setLoadingProducts(false); });
     return () => { cancelled = true; };
   }, []);
   // ─────────────────────────────────────────────────────────────────────────
@@ -117,7 +119,7 @@ export const ProductService = () => {
 
         {products.length === 0 ? (
           <div style={{ color: "var(--subtext)", marginTop: "4rem", fontSize: "1rem" }}>
-            Loading products...
+            {loadingProducts ? "Loading products..." : "No products published yet."}
           </div>
         ) : (
           <div className="carousel-container">
@@ -1167,15 +1169,18 @@ export const MediaEvents = () => {
 
   // ── API: load media posts from backend ───────────────────────────────────
   const [broadcastData, setBroadcastData] = useState([]);
+  const [loadingMedia, setLoadingMedia] = useState(true);
 
   useEffect(() => {
-    fetch("https://anwarispat.com/api/media")
+    let cancelled = false;
+    fetch("/api/media")
       .then((r) => r.json())
       .then((data) => {
+        if (cancelled) return;
         setBroadcastData(
           data.map((m) => ({
             date: m.event_date
-              ? m.event_date.toUpperCase() + " - " + (m.category || "LOCAL")
+              ? String(m.event_date).toUpperCase() + " - " + (m.category || "LOCAL")
               : (m.category || "LOCAL"),
             title: m.title,
             desc: m.description || "",
@@ -1185,7 +1190,9 @@ export const MediaEvents = () => {
           }))
         );
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setLoadingMedia(false); });
+    return () => { cancelled = true; };
   }, []);
   // ─────────────────────────────────────────────────────────────────────────
 
@@ -1238,7 +1245,7 @@ export const MediaEvents = () => {
 
           {broadcastData.length === 0 ? (
             <div style={{ color: "var(--subtext)", textAlign: "center", width: "100%", fontSize: "0.9rem" }}>
-              Loading media posts...
+              {loadingMedia ? "Loading media posts..." : "No media posts yet."}
             </div>
           ) : (
             <div
