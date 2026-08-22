@@ -1,48 +1,87 @@
-﻿import React, { useRef, useEffect, useState, useCallback } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 
-const slides = [
+// অ্যাডমিন থেকে কোনো স্লাইড যোগ না করা থাকলে বা API না পেলে এগুলো দেখানো হয়
+const defaultSlides = [
     {
-        video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776601119/Hero_Slide_1_akmt2o.mp4",
+        media: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776601119/Hero_Slide_1_akmt2o.mp4",
+        type: "video",
         poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776601119/Hero_Slide_1_akmt2o.jpg",
-        title: <>SHAPING THE <span className="accent-text">FUTURE</span></>,
+        prefix: "SHAPING THE",
+        accent: "FUTURE",
         subtitle: "Unrelenting strength. Uncompromising quality. The structural backbone of tomorrow's infrastructure."
     },
     {
-        video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776602663/13820828_3840_2160_30Fps_pkmnv5.mp4",
+        media: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776602663/13820828_3840_2160_30Fps_pkmnv5.mp4",
+        type: "video",
         poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776602663/13820828_3840_2160_30Fps_pkmnv5.jpg",
-        title: <>FORGED IN <span className="accent-text">FIRE</span></>,
+        prefix: "FORGED IN",
+        accent: "FIRE",
         subtitle: "A cinematic journey of power, precision, and the steel that builds nations."
     },
     {
-        video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776602664/5121751-Uhd_3840_2160_25Fps_dilffe.mp4",
+        media: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776602664/5121751-Uhd_3840_2160_25Fps_dilffe.mp4",
+        type: "video",
         poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776602664/5121751-Uhd_3840_2160_25Fps_dilffe.jpg",
-        title: <>ENGINEERED FOR <span className="accent-text">ENDURANCE</span></>,
+        prefix: "ENGINEERED FOR",
+        accent: "ENDURANCE",
         subtitle: "Leading the industry with cutting-edge technology and engineering excellence."
     },
     {
-        video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776603016/6997856-Hd_1920_1080_25Fps_tyjyst.mp4",
+        media: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776603016/6997856-Hd_1920_1080_25Fps_tyjyst.mp4",
+        type: "video",
         poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776603016/6997856-Hd_1920_1080_25Fps_tyjyst.jpg",
-        title: <>SUSTAINABLE <span className="accent-text">PROGRESS</span></>,
+        prefix: "SUSTAINABLE",
+        accent: "PROGRESS",
         subtitle: "Committed to eco-friendly practices that power a greener tomorrow."
     },
 ];
 
 const VideoHero = () => {
     const contentRef = useRef(null);
+    const [slides, setSlides] = useState(defaultSlides);
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isLoaded, setIsLoaded] = useState(false);
     const [visibleVideos, setVisibleVideos] = useState([0]);
 
+    // ── API: অ্যাডমিন থেকে আপলোড করা হিরো ব্যানার ──────────────────────────
     useEffect(() => {
+        let cancelled = false;
+        fetch('/api/hero')
+            .then((r) => r.json())
+            .then((data) => {
+                if (cancelled || !Array.isArray(data) || data.length === 0) return;
+                setSlides(data.map((h) => ({
+                    media: h.media_url,
+                    type: h.media_type,
+                    poster: h.poster_url || undefined,
+                    prefix: h.title_prefix || '',
+                    accent: h.title_accent || '',
+                    subtitle: h.subtitle || ''
+                })));
+                setCurrentSlide(0);
+                setVisibleVideos([0]);
+            })
+            .catch(() => {});
+        return () => { cancelled = true; };
+    }, []);
+    // ─────────────────────────────────────────────────────────────────────
+
+    useEffect(() => {
+        if (slides.length < 2) return;
         const interval = setInterval(() => {
             setCurrentSlide((prev) => (prev + 1) % slides.length);
-            setVisibleVideos(prev => {
-                const next = (prev + 1) % slides.length;
-                return [...new Set([...prev, next])].slice(-2);
-            });
         }, 8000);
         return () => clearInterval(interval);
-    }, []);
+    }, [slides.length]);
+
+    // চলতি ও ঠিক পরের স্লাইডটুকুই লোড রাখি — সব ভিডিও একসাথে নামানো ঠেকাতে
+    useEffect(() => {
+        if (slides.length === 0) return;
+        setVisibleVideos((prev) => {
+            const next = (currentSlide + 1) % slides.length;
+            return [...new Set([...prev, currentSlide, next])].slice(-3);
+        });
+    }, [currentSlide, slides.length]);
 
     useEffect(() => {
         const handleMouseMove = (e) => {
@@ -70,9 +109,10 @@ const VideoHero = () => {
         window.addEventListener('mousemove', handleMouseMove);
         document.body.addEventListener('mouseleave', handleMouseLeave);
 
-        setTimeout(() => setIsLoaded(true), 100);
+        const t = setTimeout(() => setIsLoaded(true), 100);
 
         return () => {
+            clearTimeout(t);
             window.removeEventListener('mousemove', handleMouseMove);
             document.body.removeEventListener('mouseleave', handleMouseLeave);
         };
@@ -80,45 +120,64 @@ const VideoHero = () => {
 
     return (
         <section className="video-hero" style={{ position: 'relative', overflow: 'hidden' }}>
-            {slides.map((slide, index) => (
-                <div
-                    key={index}
-                    className="video-background"
-                    style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        opacity: currentSlide === index ? 1 : 0,
-                        transition: 'opacity 1s ease-in-out',
-                        zIndex: currentSlide === index ? 1 : 0,
-                        pointerEvents: 'none'
-                    }}
-                >
-                    <video
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        preload={visibleVideos.includes(index) ? "auto" : "none"}
-                        className="background-video"
-                        src={slide.video}
-                        poster={slide.poster}
-                        style={{ 
-                            objectFit: 'cover', 
-                            width: '100%', 
+            {slides.map((slide, index) => {
+                const isVisible = visibleVideos.includes(index);
+                return (
+                    <div
+                        key={slide.media || index}
+                        className="video-background"
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
                             height: '100%',
-                            opacity: isLoaded ? 1 : 0,
-                            transition: 'opacity 0.5s ease-in-out'
+                            opacity: currentSlide === index ? 1 : 0,
+                            transition: 'opacity 1s ease-in-out',
+                            zIndex: currentSlide === index ? 1 : 0,
+                            pointerEvents: 'none'
                         }}
                     >
-                    </video>
-                    <div className="video-overlay" style={{
-                        position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'
-                    }}></div>
-                </div>
-            ))}
+                        {slide.type === 'image' ? (
+                            <img
+                                className="background-video"
+                                src={isVisible ? slide.media : undefined}
+                                alt=""
+                                loading={index === 0 ? 'eager' : 'lazy'}
+                                style={{
+                                    objectFit: 'cover',
+                                    width: '100%',
+                                    height: '100%',
+                                    opacity: isLoaded ? 1 : 0,
+                                    transition: 'opacity 0.5s ease-in-out'
+                                }}
+                            />
+                        ) : (
+                            <video
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                preload={isVisible ? 'auto' : 'none'}
+                                className="background-video"
+                                src={isVisible ? slide.media : undefined}
+                                poster={slide.poster}
+                                style={{
+                                    objectFit: 'cover',
+                                    width: '100%',
+                                    height: '100%',
+                                    opacity: isLoaded ? 1 : 0,
+                                    transition: 'opacity 0.5s ease-in-out'
+                                }}
+                            >
+                            </video>
+                        )}
+                        <div className="video-overlay" style={{
+                            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'
+                        }}></div>
+                    </div>
+                );
+            })}
 
             {/* The 3D container that handles the perspective and rotation */}
             <div
@@ -151,7 +210,7 @@ const VideoHero = () => {
                 <div style={{ position: 'relative', width: '100%' }}>
                     {slides.map((slide, index) => (
                         <div
-                            key={index}
+                            key={slide.media || index}
                             style={{
                                 position: index === 0 ? 'relative' : 'absolute',
                                 top: 0,
@@ -166,7 +225,7 @@ const VideoHero = () => {
                             }}
                         >
                             <h1 className="video-hero-title" style={{ transform: 'translateZ(40px)', textAlign: 'center' }}>
-                                {slide.title}
+                                {slide.prefix} <span className="accent-text">{slide.accent}</span>
                             </h1>
                             <p className="video-hero-subtitle" style={{
                                 marginTop: 'clamp(0.5rem, 2vh, 1.5rem)',
@@ -186,36 +245,37 @@ const VideoHero = () => {
             </div>
 
             {/* Carousel Indicators */}
-            <div className="carousel-indicators" style={{
-                position: 'absolute',
-                bottom: '3rem',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                display: 'flex',
-                gap: '12px',
-                zIndex: 20
-            }}>
-                {slides.map((_, index) => (
-                    <button
-                        key={index}
-                        onClick={() => setCurrentSlide(index)}
-                        style={{
-                            width: currentSlide === index ? '32px' : '12px',
-                            height: '12px',
-                            borderRadius: '6px',
-                            backgroundColor: currentSlide === index ? 'var(--accent)' : 'rgba(255, 255, 255, 0.4)',
-                            border: 'none',
-                            cursor: 'pointer',
-                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                            padding: 0
-                        }}
-                        aria-label={`Go to slide ${index + 1}`}
-                    />
-                ))}
-            </div>
+            {slides.length > 1 && (
+                <div className="carousel-indicators" style={{
+                    position: 'absolute',
+                    bottom: '3rem',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    display: 'flex',
+                    gap: '12px',
+                    zIndex: 20
+                }}>
+                    {slides.map((slide, index) => (
+                        <button
+                            key={slide.media || index}
+                            onClick={() => setCurrentSlide(index)}
+                            style={{
+                                width: currentSlide === index ? '32px' : '12px',
+                                height: '12px',
+                                borderRadius: '6px',
+                                backgroundColor: currentSlide === index ? 'var(--accent)' : 'rgba(255, 255, 255, 0.4)',
+                                border: 'none',
+                                cursor: 'pointer',
+                                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                padding: 0
+                            }}
+                            aria-label={`Go to slide ${index + 1}`}
+                        />
+                    ))}
+                </div>
+            )}
         </section>
     )
 }
 
 export default VideoHero
-
