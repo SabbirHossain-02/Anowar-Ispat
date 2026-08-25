@@ -38,7 +38,7 @@ const ProductsPage = () => {
       style={{
         minHeight: '100vh',
         padding: '120px 5% 4rem 5%',
-        background: 'var(--bg-main)',
+        background: 'var(--primary)',
       }}
     >
       <div style={{ textAlign: "center", maxWidth: "800px", margin: "0 auto 4rem auto" }}>

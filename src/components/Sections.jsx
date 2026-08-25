@@ -870,7 +870,7 @@ export const WhyChooseUs = () => {
         <p style={{ fontFamily: 'monospace', color: 'var(--accent)', letterSpacing: '0.15em', marginBottom: '1rem', fontSize: '0.9rem' }}>
           THE FORGED PATH
         </p>
-        <h2 style={{ fontSize: 'clamp(3rem, 6vw, 5rem)', marginBottom: '1.5rem', color: 'var(--text-primary, #fff)', lineHeight: 1, textTransform: 'uppercase' }}>
+        <h2 style={{ fontSize: 'clamp(3rem, 6vw, 5rem)', marginBottom: '1.5rem', color: 'var(--text)', lineHeight: 1, textTransform: 'uppercase' }}>
           WHY CHOOSE US?
         </h2>
       </div>
@@ -1203,7 +1203,7 @@ export const MediaEvents = () => {
         minHeight: "100vh",
         justifyContent: "center",
         alignItems: "center",
-        background: "rgba(11, 11, 11, 0.7)",
+        background: "var(--bg-section, rgba(11, 11, 11, 0.7))",
         backdropFilter: "blur(30px)",
         WebkitBackdropFilter: "blur(30px)",
         position: "relative",
@@ -1406,8 +1406,8 @@ export const CoreStrengths = () => {
   return (
     <section ref={sectionRef} style={{ minHeight: '100vh', width: '100%', position: 'relative', background: 'var(--bg-section, rgba(11, 11, 11, 0.7))', backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', borderTop: '1px solid rgba(255, 60, 0, 0.1)', borderBottom: '1px solid rgba(255, 60, 0, 0.1)', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8rem 5%' }}>
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at center, rgba(227, 24, 45, 0.03) 0%, transparent 60%)', pointerEvents: 'none', zIndex: 1 }} />
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '150px', background: 'linear-gradient(to bottom, var(--bg-main) 0%, transparent 100%)', pointerEvents: 'none', zIndex: 2 }} />
-      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '150px', background: 'linear-gradient(to top, var(--bg-main) 0%, transparent 100%)', pointerEvents: 'none', zIndex: 2 }} />
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '150px', background: 'linear-gradient(to bottom, var(--primary) 0%, transparent 100%)', pointerEvents: 'none', zIndex: 2 }} />
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '150px', background: 'linear-gradient(to top, var(--primary) 0%, transparent 100%)', pointerEvents: 'none', zIndex: 2 }} />
       <div style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 3 }}>
         <Canvas camera={{ position: [0, 4, 16], fov: 45 }} dpr={[1, 1.5]} gl={{ powerPreference: "low-power" }}>
           <CoreStrengths3D inView={inView} />

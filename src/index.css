@@ -24,6 +24,12 @@ html.lenis, html.lenis body {
   --subtext: #A1A1A6;
   --glass: rgba(255, 255, 255, 0.05);
   --glass-border: rgba(255, 255, 255, 0.1);
+  /* কার্ড ও প্যানেলের পৃষ্ঠতল — light-mode এ নিচে উল্টে যায় */
+  --surface: rgba(15, 15, 15, 0.7);
+  --surface-solid: rgba(0, 0, 0, 0.5);
+  --surface-grad: linear-gradient(180deg, rgba(20, 20, 20, 0.8) 0%, rgba(10, 10, 10, 0.9) 100%);
+  --card-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), inset 0 0 40px rgba(0, 0, 0, 0.5);
+  --orb-neutral: rgba(42, 42, 42, 0.8);
   --font-main: 'Inter', sans-serif;
   --font-heading: 'Outfit', sans-serif;
 }
@@ -1109,6 +1115,11 @@ body.light-mode {
   --subtext: #5A5A5C;
   --glass: rgba(0, 0, 0, 0.05);
   --glass-border: rgba(0, 0, 0, 0.1);
+  --surface: rgba(255, 255, 255, 0.75);
+  --surface-solid: rgba(255, 255, 255, 0.88);
+  --surface-grad: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 240, 244, 0.95) 100%);
+  --card-shadow: 0 20px 50px rgba(0, 0, 0, 0.10), inset 0 0 40px rgba(255, 255, 255, 0.5);
+  --orb-neutral: rgba(200, 200, 210, 0.55);
   --bg-section: rgba(245, 245, 247, 0.85);
   --bg-radial-overlay: radial-gradient(circle at center, transparent 0%, rgba(245, 245, 247, 0.95) 80%);
   --career-glow: radial-gradient(circle, rgba(227, 24, 45, 0.1) 0%, transparent 60%);
@@ -1131,6 +1142,12 @@ body.light-mode .carousel-title,
 body.light-mode .carousel-desc {
   color: var(--text) !important;
   text-shadow: none !important;
+}
+
+/* উপরের নিয়মটা সব hero-title কে --text করে দেয়। যে লাইনগুলো
+   ইচ্ছাকৃতভাবে হালকা রঙের, সেগুলো .muted দিয়ে আলাদা রাখা হয়। */
+body.light-mode .hero-title.muted {
+  color: var(--subtext) !important;
 }
 
 body.light-mode .video-hero-title {
