@@ -1171,6 +1171,12 @@ export const MediaEvents = () => {
   const [broadcastData, setBroadcastData] = useState([]);
   const [loadingMedia, setLoadingMedia] = useState(true);
 
+  // মার্কি কনটেইনার ৬০vh স্থির উচ্চতার। পোস্ট কম থাকলে কার্ডগুলো
+  // সেটুকু ভরাতে পারে না, ফলে নিচে বড় ফাঁকা জায়গা পড়ে থাকে এবং
+  // স্ক্রল করার সাথে সেটা আরও বাড়ে। তাই কম হলে স্ক্রল বন্ধ রেখে
+  // উচ্চতা কনটেন্ট অনুযায়ী ছেড়ে দিই।
+  const canScroll = broadcastData.length >= 4;
+
   useEffect(() => {
     let cancelled = false;
     fetch("/api/media")
@@ -1238,7 +1244,7 @@ export const MediaEvents = () => {
 
         <div
           className="marquee-container"
-          style={{ flex: "1 1 500px", minWidth: "400px", height: "clamp(400px, 60vh, 80vh)", position: "relative", perspective: "1000px", display: "flex", alignItems: "center" }}
+          style={{ flex: "1 1 500px", minWidth: "400px", height: canScroll ? "clamp(400px, 60vh, 80vh)" : "auto", position: "relative", perspective: "1000px", display: "flex", alignItems: "center" }}
         >
           <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "150px", zIndex: 5, pointerEvents: "none" }}></div>
           <div style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: "150px", zIndex: 5, pointerEvents: "none" }}></div>
@@ -1250,9 +1256,14 @@ export const MediaEvents = () => {
           ) : (
             <div
               className="broadcast-marquee"
-              style={{ width: "100%", display: "flex", flexDirection: "column", gap: "1rem", transformStyle: "preserve-3d", animation: isHovered ? "none" : "scrollUp 25s linear infinite", animationPlayState: isHovered ? "paused" : "running", transform: "rotateY(-15deg) rotateX(5deg)" }}
+              style={{ width: "100%", display: "flex", flexDirection: "column", gap: "1rem", transformStyle: "preserve-3d", animation: (canScroll && !isHovered) ? "scrollUp 25s linear infinite" : "none", animationPlayState: isHovered ? "paused" : "running", transform: "rotateY(-15deg) rotateX(5deg)" }}
             >
-              {[...broadcastData, ...broadcastData, ...broadcastData].map((event, index) => (
+              {/* তিন কপি — scrollUp ঠিক এক কপি (-33.33%) সরায়, তাই লুপ নিরবচ্ছিন্ন হয়।
+                  পোস্ট কম থাকলে কপি করা হয় না, নইলে একই খবর বারবার দেখা যেত। */}
+              {(canScroll
+                ? [...broadcastData, ...broadcastData, ...broadcastData]
+                : broadcastData
+              ).map((event, index) => (
                 <BroadcastCard key={index} {...event} onHover={setIsHovered} />
               ))}
             </div>
