@@ -45,9 +45,7 @@ const Navbar = ({ onOpenContact, onNavigate }) => {
             name: 'About Us',
             page: 'about',
             hash: '',
-            blurb: "As a proud concern of the century-old Anwar Group, Anwar Ispat has led the mild steel industry since 1978. We were the first to introduce 60-grade steel to Bangladesh and have consistently upgraded our facilities to bring the world's most advanced technology to the local market. From the tallest skyscrapers to complex nuclear power plants, our commitment to quality ensures that every structure built with Anwar Ispat is resilient, durable, and safe.",
             dropdown: [
-                { name: 'Overview', page: 'about', hash: '' },
                 { name: 'Vision, Mission & Values', page: 'about/vision', hash: '' },
                 { name: 'Leadership Team', page: 'about/leadership', hash: '' },
                 { name: 'Heritage', page: 'about/heritage', hash: '' }
@@ -152,35 +150,27 @@ const Navbar = ({ onOpenContact, onNavigate }) => {
                                     {link.dropdown && <ChevronDown size={12} className="dropdown-caret" />}
                                 </a>
                                 {link.dropdown && (
-                                    <div className={`dropdown-menu ${link.blurb ? 'mega-menu' : ''}`}>
-                                        {link.blurb && (
-                                            <div className="mega-menu-intro">
-                                                <h3 className="mega-menu-title">{link.name}</h3>
-                                                <p className="mega-menu-blurb">{link.blurb}</p>
-                                            </div>
-                                        )}
-                                        <div className="mega-menu-links">
-                                            {link.dropdown.map((subItem) => (
-                                                <a
-                                                    key={subItem.name}
-                                                    href={subItem.page ? `/${subItem.page}` : (subItem.hash || '#')}
-                                                    className="dropdown-item"
-                                                    onClick={(e) => {
-                                                        if (subItem.type === 'quote') {
-                                                            e.preventDefault();
-                                                            window.dispatchEvent(new CustomEvent('open-quote'));
-                                                        } else if (subItem.type === 'contact') {
-                                                            e.preventDefault();
-                                                            onOpenContact();
-                                                        } else {
-                                                            handleNavClick(e, subItem);
-                                                        }
-                                                    }}
-                                                >
-                                                    {subItem.name}
-                                                </a>
-                                            ))}
-                                        </div>
+                                    <div className="dropdown-menu">
+                                        {link.dropdown.map((subItem) => (
+                                            <a
+                                                key={subItem.name}
+                                                href={subItem.page ? `/${subItem.page}` : (subItem.hash || '#')}
+                                                className="dropdown-item"
+                                                onClick={(e) => {
+                                                    if (subItem.type === 'quote') {
+                                                        e.preventDefault();
+                                                        window.dispatchEvent(new CustomEvent('open-quote'));
+                                                    } else if (subItem.type === 'contact') {
+                                                        e.preventDefault();
+                                                        onOpenContact();
+                                                    } else {
+                                                        handleNavClick(e, subItem);
+                                                    }
+                                                }}
+                                            >
+                                                {subItem.name}
+                                            </a>
+                                        ))}
                                     </div>
                                 )}
                             </div>
