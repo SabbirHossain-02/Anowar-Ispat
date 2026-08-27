@@ -89,13 +89,20 @@ main>* {
 }
 
 section {
-  min-height: 100vh;
   padding: 4rem 10%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   position: relative;
   z-index: 10;
+}
+
+/* পুরো স্ক্রিন জুড়ে থাকাটা হোমপেজের সেকশনগুলোরই বৈশিষ্ট্য।
+   আগে এটা সব <section> এ প্রযোজ্য ছিল, ফলে ভেতরের পেজে ছোট
+   কনটেন্টের সেকশনও ১০০vh জুড়ে বসে থাকত আর লেখা মাঝখানে ভেসে
+   উপরে-নিচে বিশাল ফাঁকা তৈরি করত। */
+.home section {
+  min-height: 100vh;
 }
 
 .video-hero {

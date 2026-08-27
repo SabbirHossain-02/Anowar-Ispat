@@ -158,7 +158,11 @@ function App() {
             <main>
                 <Routes>
                     <Route path="/" element={
-                        <>
+                        /* .home — এই মোড়কটাই সেকশনগুলোকে ফুল-স্ক্রিন করে
+                           (index.css এ `.home section`)। ভেতরের পেজগুলোতে
+                           সেটা প্রযোজ্য নয়, তাই সেখানে সেকশন কনটেন্ট
+                           অনুযায়ী লম্বা হয়। */
+                        <div className="home">
                             <VideoHero />
                             <Hero />
                             <ProductService />
@@ -168,7 +172,7 @@ function App() {
                             <ProjectShowcase />
                             <MediaEvents />
                             <Blog />
-                        </>
+                        </div>
                     } />
                     <Route path="/about" element={<Suspense fallback={null}><AboutUsPage /></Suspense>} />
                     <Route path="/about/vision" element={<Suspense fallback={null}><VisionMissionPage /></Suspense>} />

@@ -30,12 +30,6 @@ const LEADERSHIP = [
     },
 ];
 
-// index.css এ গ্লোবাল `section { min-height:100vh; display:flex;
-// justify-content:center }` আছে — হোমপেজের ফুল-স্ক্রিন সেকশনগুলোর জন্য।
-// এই পেজের সেকশনগুলো কনটেন্ট অনুযায়ী লম্বা হওয়া দরকার, নইলে ছোট
-// অনুচ্ছেদও পুরো স্ক্রিন জুড়ে বসে থাকে। তাই এখানে সেটা বাতিল করছি।
-const NOT_FULLSCREEN = { minHeight: 'auto', display: 'block' };
-
 // পুরো পেজে একটাই স্পেসিং স্কেল
 const SECTION_PAD = 'clamp(2.25rem, 4vw, 3.5rem)';
 const CONTAINER = {
@@ -120,7 +114,6 @@ const AboutUsPage = () => {
             <section
                 ref={bannerRef}
                 style={{
-                    ...NOT_FULLSCREEN,
                     position: 'relative',
                     // নেভবারের ঠিক নিচ থেকে শুরু। ভিউপোর্টের পুরোটা না নিয়ে
                     // নিচে ~104px ছেড়ে রাখি, যাতে ব্রেডক্রাম্বটুকু চোখে পড়ে —
@@ -195,7 +188,7 @@ const AboutUsPage = () => {
             {/* BACKGROUND */}
             {/* ---------------------------------------------------------- */}
             <section style={{
-                ...NOT_FULLSCREEN, ...CONTAINER,
+                ...CONTAINER,
                 paddingTop: '30px', paddingBottom: '30px',
             }}>
                 <p className="ab-reveal" style={{
@@ -217,7 +210,6 @@ const AboutUsPage = () => {
             {/* LEADERSHIP */}
             {/* ---------------------------------------------------------- */}
             <section style={{
-                ...NOT_FULLSCREEN,
                 paddingTop: SECTION_PAD,
                 paddingBottom: `calc(${SECTION_PAD} * 1.4)`,
                 paddingLeft: 0,
