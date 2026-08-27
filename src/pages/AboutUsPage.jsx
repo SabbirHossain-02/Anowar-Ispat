@@ -35,55 +35,55 @@ const AboutUsPage = () => {
     const bannerRef = useRef(null);
     const bannerImgRef = useRef(null);
     const [isMobile, setIsMobile] = useState(false);
+    // নেভবার fixed এবং তার উচ্চতা স্ক্রিন অনুযায়ী বদলায়, তাই মেপে নিই —
+    // তাহলে ব্যানার ঠিক বাকি ভিউপোর্টটুকু নেবে, নিচে গিয়ে উপচে পড়বে না
+    const [navH, setNavH] = useState(96);
 
     useEffect(() => {
-        const onResize = () => setIsMobile(window.innerWidth < 900);
-        onResize();
-        window.addEventListener('resize', onResize);
-        return () => window.removeEventListener('resize', onResize);
+        const measure = () => {
+            setIsMobile(window.innerWidth < 900);
+            const nav = document.querySelector('.navbar');
+            if (nav) setNavH(nav.offsetHeight);
+        };
+        measure();
+        window.addEventListener('resize', measure);
+        return () => window.removeEventListener('resize', measure);
     }, []);
 
     useGSAP(() => {
         const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        // ব্যানার শুরুতে দুই পাশে জায়গা রেখে বসে, স্ক্রলের সাথে
-        // ধীরে ধীরে ফুল স্ক্রিন হয়ে যায়। clip-path ব্যবহার করছি কারণ
-        // width বদলালে প্রতি ফ্রেমে layout হিসাব হয়, ফলে আটকে আটকে চলে।
+        // পেজ খোলার সাথে সাথেই ব্যানার দুই পাশ থেকে খুলে ফুল স্ক্রিন হয় —
+        // স্ক্রলের সাথে নয়। clip-path ব্যবহার করছি কারণ width বদলালে
+        // প্রতি ফ্রেমে layout হিসাব হয়, ফলে আটকে আটকে চলে।
         if (!reduced && bannerRef.current) {
-            gsap.fromTo(
+            const tl = gsap.timeline({ delay: 0.35 });
+
+            tl.fromTo(
                 bannerRef.current,
-                { clipPath: 'inset(0% 7% 0% 7% round 20px)' },
-                {
-                    clipPath: 'inset(0% 0% 0% 0% round 0px)',
-                    ease: 'none',
-                    scrollTrigger: {
-                        trigger: bannerRef.current,
-                        start: 'top top',
-                        end: '+=420',
-                        scrub: 0.6,
-                    },
-                }
+                { clipPath: 'inset(0% 8% 0% 8% round 24px)' },
+                { clipPath: 'inset(0% 0% 0% 0% round 0px)', duration: 1.6, ease: 'power2.inOut' },
+                0
             );
 
-            gsap.fromTo(
+            // ফ্রেম বাইরে খুলছে আর ছবি ভেতরে গুটিয়ে আসছে — এই দুটো একসাথে
+            // হলে গভীরতার অনুভূতি তৈরি হয়, নইলে ছবি পাশে সরে যাচ্ছে মনে হয়
+            tl.fromTo(
                 bannerImgRef.current,
-                { scale: 1.18 },
-                {
-                    scale: 1,
-                    ease: 'none',
-                    scrollTrigger: {
-                        trigger: bannerRef.current,
-                        start: 'top top',
-                        end: '+=420',
-                        scrub: 0.6,
-                    },
-                }
+                { scale: 1.22 },
+                { scale: 1, duration: 2, ease: 'power2.out' },
+                0
             );
-        }
 
-        gsap.from('.ab-hero-line', {
-            y: 40, opacity: 0, duration: 0.9, stagger: 0.12, ease: 'power3.out', delay: 0.15,
-        });
+            tl.from('.ab-hero-line',
+                { y: 38, opacity: 0, duration: 0.9, stagger: 0.12, ease: 'power3.out' },
+                0.55
+            );
+        } else {
+            gsap.from('.ab-hero-line', {
+                y: 30, opacity: 0, duration: 0.7, stagger: 0.1, ease: 'power3.out',
+            });
+        }
 
         gsap.utils.toArray('.ab-reveal').forEach((el) => {
             gsap.from(el, {
@@ -107,8 +107,10 @@ const AboutUsPage = () => {
                 ref={bannerRef}
                 style={{
                     position: 'relative',
-                    height: isMobile ? '68vh' : 'min(88vh, 820px)',
-                    marginTop: '72px',
+                    // নেভবারের ঠিক নিচ থেকে শুরু, আর বাকি পুরো ভিউপোর্টটুকু —
+                    // তাই ব্যানারটা এক নজরেই সম্পূর্ণ চোখের সামনে থাকে
+                    marginTop: `${navH}px`,
+                    height: `calc(100vh - ${navH}px)`,
                     overflow: 'hidden',
                     willChange: 'clip-path',
                     // ব্যানারের ছবি লোড হওয়ার আগে বা না থাকলেও যেন ফাঁকা সাদা না দেখায়
@@ -125,10 +127,16 @@ const AboutUsPage = () => {
                         objectFit: 'cover', willChange: 'transform',
                     }}
                 />
-                {/* লেখা পড়ার জন্য নিচ থেকে গাঢ় হয়ে আসা আবরণ */}
+                {/* ছবির ডান পাশটা উজ্জ্বল (আগুন/গলিত ইস্পাত), তাই লেখার
+                    জায়গাটুকু যথেষ্ট গাঢ় করতে দুটো স্তর — বাঁ দিক থেকে
+                    এবং নিচ থেকে। নইলে সাদা লেখাও পড়া যায় না। */}
                 <div style={{
                     position: 'absolute', inset: 0,
-                    background: 'linear-gradient(90deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.45) 45%, rgba(0,0,0,0.12) 100%)',
+                    background: 'linear-gradient(90deg, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.74) 32%, rgba(0,0,0,0.42) 62%, rgba(0,0,0,0.15) 100%)',
+                }} />
+                <div style={{
+                    position: 'absolute', inset: 0,
+                    background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 45%)',
                 }} />
 
                 <div style={{
@@ -137,17 +145,22 @@ const AboutUsPage = () => {
                 }}>
                     <span className="ab-hero-line" style={{
                         fontFamily: 'var(--font-main)', fontSize: '0.8rem', fontWeight: 700,
-                        letterSpacing: '0.32em', color: '#fff', opacity: 0.9, marginBottom: '1.1rem',
+                        letterSpacing: '0.32em', color: '#fff', opacity: 0.95, marginBottom: '1.1rem',
+                        textShadow: '0 2px 12px rgba(0,0,0,0.9)',
                     }}>
                         ABOUT US
                     </span>
                     <h1 className="ab-hero-line" style={{
-                        fontFamily: 'var(--font-heading)', fontSize: 'clamp(2.4rem, 6vw, 5.2rem)',
-                        lineHeight: 1.02, fontWeight: 800, letterSpacing: '0.01em',
-                        color: '#fff', margin: 0, maxWidth: '16ch',
-                        textShadow: '0 4px 30px rgba(0,0,0,0.45)',
+                        fontFamily: 'var(--font-heading)', fontSize: 'clamp(2.2rem, 5.4vw, 4.6rem)',
+                        lineHeight: 1.05, fontWeight: 800, letterSpacing: '0.01em',
+                        color: '#fff', margin: 0, maxWidth: '13ch',
+                        textShadow: '0 2px 6px rgba(0,0,0,0.85), 0 8px 40px rgba(0,0,0,0.7)',
                     }}>
-                        Forged in Fire,<br />Built for <span style={{ color: 'var(--accent)' }}>Eternity</span>
+                        Forged in Fire,<br />
+                        Built for <span style={{
+                            color: '#FF4152',
+                            textShadow: '0 2px 6px rgba(0,0,0,0.9), 0 8px 40px rgba(0,0,0,0.8)',
+                        }}>Eternity</span>
                     </h1>
                 </div>
             </section>
