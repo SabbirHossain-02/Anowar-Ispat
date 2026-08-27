@@ -117,7 +117,7 @@ const AboutUsPage = () => {
             >
                 <img
                     ref={bannerImgRef}
-                    src="/about-banner.jpg"
+                    src="/about-banner.jpeg"
                     alt="Anwar Ispat manufacturing facility"
                     onError={(e) => { e.currentTarget.style.display = 'none'; }}
                     style={{
