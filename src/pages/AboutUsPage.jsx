@@ -57,7 +57,7 @@ const AboutUsPage = () => {
         // স্ক্রলের সাথে নয়। clip-path ব্যবহার করছি কারণ width বদলালে
         // প্রতি ফ্রেমে layout হিসাব হয়, ফলে আটকে আটকে চলে।
         if (!reduced && bannerRef.current) {
-            const tl = gsap.timeline({ delay: 0.35 });
+            const tl = gsap.timeline({ delay: 1.2 });
 
             tl.fromTo(
                 bannerRef.current,
@@ -107,10 +107,11 @@ const AboutUsPage = () => {
                 ref={bannerRef}
                 style={{
                     position: 'relative',
-                    // নেভবারের ঠিক নিচ থেকে শুরু, আর বাকি পুরো ভিউপোর্টটুকু —
-                    // তাই ব্যানারটা এক নজরেই সম্পূর্ণ চোখের সামনে থাকে
+                    // নেভবারের ঠিক নিচ থেকে শুরু। ভিউপোর্টের পুরোটা না নিয়ে
+                    // নিচে ~104px ছেড়ে রাখি, যাতে ব্রেডক্রাম্বটুকু চোখে পড়ে —
+                    // রেফারেন্স সাইটেও ঠিক তাই।
                     marginTop: `${navH}px`,
-                    height: `calc(100vh - ${navH}px)`,
+                    height: `max(420px, calc(100vh - ${navH}px - 104px))`,
                     overflow: 'hidden',
                     willChange: 'clip-path',
                     // ব্যানারের ছবি লোড হওয়ার আগে বা না থাকলেও যেন ফাঁকা সাদা না দেখায়
@@ -143,24 +144,19 @@ const AboutUsPage = () => {
                     position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
                     justifyContent: 'center', padding: isMobile ? '0 8%' : '0 9%',
                 }}>
-                    <span className="ab-hero-line" style={{
+                    <span className="ab-hero-line ab-hero-label" style={{
                         fontFamily: 'var(--font-main)', fontSize: '0.8rem', fontWeight: 700,
-                        letterSpacing: '0.32em', color: '#fff', opacity: 0.95, marginBottom: '1.1rem',
-                        textShadow: '0 2px 12px rgba(0,0,0,0.9)',
+                        letterSpacing: '0.32em', marginBottom: '1.1rem',
                     }}>
                         ABOUT US
                     </span>
-                    <h1 className="ab-hero-line" style={{
+                    <h1 className="ab-hero-line ab-hero-title" style={{
                         fontFamily: 'var(--font-heading)', fontSize: 'clamp(2.2rem, 5.4vw, 4.6rem)',
                         lineHeight: 1.05, fontWeight: 800, letterSpacing: '0.01em',
-                        color: '#fff', margin: 0, maxWidth: '13ch',
-                        textShadow: '0 2px 6px rgba(0,0,0,0.85), 0 8px 40px rgba(0,0,0,0.7)',
+                        margin: 0, maxWidth: '13ch',
                     }}>
                         Forged in Fire,<br />
-                        Built for <span style={{
-                            color: '#FF4152',
-                            textShadow: '0 2px 6px rgba(0,0,0,0.9), 0 8px 40px rgba(0,0,0,0.8)',
-                        }}>Eternity</span>
+                        Built for <span className="ab-accent">Eternity</span>
                     </h1>
                 </div>
             </section>

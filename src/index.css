@@ -1151,6 +1151,29 @@ body.light-mode .hero-title.muted {
   color: var(--subtext) !important;
 }
 
+/* About পেজের ব্যানারের লেখা ছবির ওপর বসে, তাই দুই থিমেই সাদা থাকতে হয়।
+   inline এ সাদা দিলে নিচের [style*="color: rgb(255,255,255)"] নিয়মটা
+   লাইট মোডে সেটাকে কালো করে দেয় — তাই ক্লাস দিয়ে সেট করা হচ্ছে। */
+.ab-hero-label,
+.ab-hero-title,
+body.light-mode .ab-hero-label,
+body.light-mode .ab-hero-title {
+  color: #fff !important;
+}
+
+.ab-hero-label {
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9) !important;
+}
+
+.ab-hero-title {
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.85), 0 8px 40px rgba(0, 0, 0, 0.7) !important;
+}
+
+.ab-hero-title .ab-accent,
+body.light-mode .ab-hero-title .ab-accent {
+  color: #FF4152 !important;
+}
+
 body.light-mode .video-hero-title {
   color: #fff !important;
   text-shadow: 0 4px 30px rgba(0, 0, 0, 1), 0 2px 10px rgba(0, 0, 0, 0.8), 0 0 30px rgba(227, 24, 45, 0.4) !important;
