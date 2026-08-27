@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState, lazy, Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
 import Lenis from 'lenis'
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import Scene from './components/three/Scene'
 import VideoHero from './components/VideoHero'
 import Hero from './components/Hero'
@@ -17,7 +17,6 @@ const ProductsPage = lazy(() => import('./pages/ProductsPage'))
 const ProjectsPage = lazy(() => import('./pages/ProjectsPage'))
 const VisionMissionPage = lazy(() => import('./pages/VisionMissionPage'))
 const LeadershipPage = lazy(() => import('./pages/LeadershipPage'))
-const AwardsPage = lazy(() => import('./pages/AwardsPage'))
 const HeritagePage = lazy(() => import('./pages/HeritagePage'))
 
 // New Dropdown pages
@@ -175,7 +174,8 @@ function App() {
                     <Route path="/about/vision" element={<Suspense fallback={null}><VisionMissionPage /></Suspense>} />
                     <Route path="/about/leadership" element={<Suspense fallback={null}><LeadershipPage /></Suspense>} />
                     <Route path="/about/heritage" element={<Suspense fallback={null}><HeritagePage /></Suspense>} />
-                    <Route path="/about/awards" element={<Suspense fallback={null}><AwardsPage /></Suspense>} />
+                    {/* পেজটি সরানো হয়েছে — পুরোনো লিংক যেন সাদা পেজ না দেখায় */}
+                    <Route path="/about/awards" element={<Navigate to="/about" replace />} />
                     <Route path="/products" element={<Suspense fallback={null}><ProductsPage /></Suspense>} />
                     <Route path="/products/range" element={<Suspense fallback={null}><ProductRangePage /></Suspense>} />
                     <Route path="/products/specifications" element={<Suspense fallback={null}><ProductSpecsPage /></Suspense>} />

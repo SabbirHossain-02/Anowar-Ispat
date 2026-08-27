@@ -60,8 +60,7 @@ const Navbar = ({ onOpenContact, onNavigate }) => {
             dropdown: [
                 { name: 'Our Product Range', page: 'products/range', hash: '' },
                 { name: 'Technical Specifications', page: 'products/specifications', hash: '' },
-                { name: 'Download Catalog / Request Quote', type: 'quote' },
-                { name: 'Certifications', page: 'about/awards', hash: '' }
+                { name: 'Download Catalog / Request Quote', type: 'quote' }
             ]
         },
         {
