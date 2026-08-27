@@ -248,20 +248,40 @@ const AboutUsPage = () => {
                             }}
                         >
                             <div style={{ direction: 'ltr' }}>
+                                {/* ছবিগুলো transparent cutout এবং ২:৩ পোর্ট্রেট।
+                                    তাই বক্সও পোর্ট্রেট, আর contain — cover দিলে
+                                    মাথা বা পা কেটে যায়। figure নিচে বসে থাকে,
+                                    যেন গ্রেডিয়েন্টের ওপর দাঁড়িয়ে আছে। */}
                                 <div style={{
                                     position: 'relative',
-                                    borderRadius: '18px',
+                                    borderRadius: '20px',
                                     overflow: 'hidden',
-                                    background: 'linear-gradient(160deg, rgba(227,24,45,0.14) 0%, var(--surface) 70%)',
+                                    aspectRatio: '3 / 4',
+                                    background: 'linear-gradient(165deg, rgba(227,24,45,0.16) 0%, var(--surface) 55%, var(--glass) 100%)',
                                     border: '1px solid var(--glass-border)',
-                                    aspectRatio: '1 / 1',
-                                    maxWidth: isMobile ? '260px' : 'none',
+                                    boxShadow: 'var(--card-shadow)',
+                                    maxWidth: isMobile ? '300px' : 'none',
+                                    marginInline: isMobile ? 'auto' : 0,
+                                    display: 'flex',
+                                    alignItems: 'flex-end',
+                                    justifyContent: 'center',
                                 }}>
+                                    {/* পায়ের কাছে নরম আভা — figure যেন ভেসে না থাকে */}
+                                    <div style={{
+                                        position: 'absolute', inset: 0,
+                                        background: 'radial-gradient(ellipse 72% 52% at 50% 100%, rgba(227,24,45,0.22) 0%, transparent 72%)',
+                                    }} />
                                     <img
                                         src={person.photo}
                                         alt={person.name}
                                         loading="lazy"
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                                        style={{
+                                            position: 'relative',
+                                            width: '100%', height: '100%',
+                                            objectFit: 'contain',
+                                            objectPosition: 'bottom center',
+                                            display: 'block',
+                                        }}
                                     />
                                 </div>
                             </div>
