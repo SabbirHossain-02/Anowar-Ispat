@@ -1,8 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
+import PageBanner from '../components/PageBanner';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -40,59 +40,16 @@ const CONTAINER = {
 
 const AboutUsPage = () => {
     const rootRef = useRef(null);
-    const bannerRef = useRef(null);
-    const bannerImgRef = useRef(null);
     const [isMobile, setIsMobile] = useState(false);
-    // নেভবার fixed এবং তার উচ্চতা স্ক্রিন অনুযায়ী বদলায়, তাই মেপে নিই —
-    // তাহলে ব্যানার ঠিক বাকি ভিউপোর্টটুকু নেবে, নিচে গিয়ে উপচে পড়বে না
-    const [navH, setNavH] = useState(96);
 
     useEffect(() => {
-        const measure = () => {
-            setIsMobile(window.innerWidth < 900);
-            const nav = document.querySelector('.navbar');
-            if (nav) setNavH(nav.offsetHeight);
-        };
-        measure();
-        window.addEventListener('resize', measure);
-        return () => window.removeEventListener('resize', measure);
+        const onResize = () => setIsMobile(window.innerWidth < 900);
+        onResize();
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
     }, []);
 
     useGSAP(() => {
-        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-        // পেজ খোলার সাথে সাথেই ব্যানার দুই পাশ থেকে খুলে ফুল স্ক্রিন হয় —
-        // স্ক্রলের সাথে নয়। clip-path ব্যবহার করছি কারণ width বদলালে
-        // প্রতি ফ্রেমে layout হিসাব হয়, ফলে আটকে আটকে চলে।
-        if (!reduced && bannerRef.current) {
-            const tl = gsap.timeline({ delay: 1.2 });
-
-            tl.fromTo(
-                bannerRef.current,
-                { clipPath: 'inset(0% 8% 0% 8% round 24px)' },
-                { clipPath: 'inset(0% 0% 0% 0% round 0px)', duration: 1.6, ease: 'power2.inOut' },
-                0
-            );
-
-            // ফ্রেম বাইরে খুলছে আর ছবি ভেতরে গুটিয়ে আসছে — এই দুটো একসাথে
-            // হলে গভীরতার অনুভূতি তৈরি হয়, নইলে ছবি পাশে সরে যাচ্ছে মনে হয়
-            tl.fromTo(
-                bannerImgRef.current,
-                { scale: 1.22 },
-                { scale: 1, duration: 2, ease: 'power2.out' },
-                0
-            );
-
-            tl.from('.ab-hero-line',
-                { y: 38, opacity: 0, duration: 0.9, stagger: 0.12, ease: 'power3.out' },
-                0.55
-            );
-        } else {
-            gsap.from('.ab-hero-line', {
-                y: 30, opacity: 0, duration: 0.7, stagger: 0.1, ease: 'power3.out',
-            });
-        }
-
         gsap.utils.toArray('.ab-reveal').forEach((el) => {
             gsap.from(el, {
                 y: 48, opacity: 0, duration: 0.8, ease: 'power3.out',
@@ -108,81 +65,16 @@ const AboutUsPage = () => {
             ref={rootRef}
             style={{ background: 'var(--primary)', color: 'var(--text)', minHeight: '100vh', overflowX: 'hidden' }}
         >
-            {/* ---------------------------------------------------------- */}
-            {/* HERO BANNER — স্ক্রলে দুই পাশ থেকে খুলে ফুল স্ক্রিন হয় */}
-            {/* ---------------------------------------------------------- */}
-            <section
-                ref={bannerRef}
-                style={{
-                    position: 'relative',
-                    // নেভবারের ঠিক নিচ থেকে শুরু। ভিউপোর্টের পুরোটা না নিয়ে
-                    // নিচে ~104px ছেড়ে রাখি, যাতে ব্রেডক্রাম্বটুকু চোখে পড়ে —
-                    // রেফারেন্স সাইটেও ঠিক তাই।
-                    marginTop: `${navH}px`,
-                    height: `max(420px, calc(100vh - ${navH}px - 104px))`,
-                    overflow: 'hidden',
-                    willChange: 'clip-path',
-                    // ব্যানারের ছবি লোড হওয়ার আগে বা না থাকলেও যেন ফাঁকা সাদা না দেখায়
-                    background: 'linear-gradient(140deg, #1b2733 0%, #0d1319 60%, #1a0e11 100%)',
-                }}
-            >
-                <img
-                    ref={bannerImgRef}
-                    src="/about-banner.jpeg"
-                    alt="Anwar Ispat manufacturing facility"
-                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                    style={{
-                        position: 'absolute', inset: 0, width: '100%', height: '100%',
-                        objectFit: 'cover', willChange: 'transform',
-                    }}
-                />
-                {/* ছবির ডান পাশটা উজ্জ্বল (আগুন/গলিত ইস্পাত), তাই লেখার
-                    জায়গাটুকু যথেষ্ট গাঢ় করতে দুটো স্তর — বাঁ দিক থেকে
-                    এবং নিচ থেকে। নইলে সাদা লেখাও পড়া যায় না। */}
-                <div style={{
-                    position: 'absolute', inset: 0,
-                    background: 'linear-gradient(90deg, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.74) 32%, rgba(0,0,0,0.42) 62%, rgba(0,0,0,0.15) 100%)',
-                }} />
-                <div style={{
-                    position: 'absolute', inset: 0,
-                    background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 45%)',
-                }} />
-
-                <div style={{
-                    position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
-                    justifyContent: 'center', padding: isMobile ? '0 8%' : '0 9%',
-                }}>
-                    <span className="ab-hero-line ab-hero-label" style={{
-                        fontFamily: 'var(--font-main)', fontSize: '0.8rem', fontWeight: 700,
-                        letterSpacing: '0.32em', marginBottom: '1.1rem',
-                    }}>
-                        ABOUT US
-                    </span>
-                    <h1 className="ab-hero-line ab-hero-title" style={{
-                        fontFamily: 'var(--font-heading)', fontSize: 'clamp(2.2rem, 5.4vw, 4.6rem)',
-                        lineHeight: 1.05, fontWeight: 800, letterSpacing: '0.01em',
-                        margin: 0, maxWidth: '13ch',
-                    }}>
-                        Forged in Fire,<br />
-                        Built for <span className="ab-accent">Eternity</span>
-                    </h1>
-                </div>
-            </section>
-
-            {/* ---------------------------------------------------------- */}
-            {/* BREADCRUMB */}
-            {/* ---------------------------------------------------------- */}
-            <div style={{ ...CONTAINER, paddingTop: '1.15rem' }}>
-                <nav style={{
-                    display: 'flex', alignItems: 'center', gap: '0.6rem',
-                    fontSize: '0.82rem', color: 'var(--subtext)',
-                    paddingBottom: '0.9rem', borderBottom: '1px solid var(--glass-border)',
-                }}>
-                    <Link to="/" style={{ color: 'var(--subtext)', textDecoration: 'none' }}>Home</Link>
-                    <span style={{ opacity: 0.5 }}>&gt;</span>
-                    <span style={{ color: 'var(--text)' }}>About us</span>
-                </nav>
-            </div>
+            <PageBanner
+                image="/about-banner.jpeg"
+                label="ABOUT US"
+                title="Forged in Fire, Built for"
+                accent="Eternity"
+                crumbs={[
+                    { label: 'Home', to: '/' },
+                    { label: 'About us' },
+                ]}
+            />
 
             {/* ---------------------------------------------------------- */}
             {/* BACKGROUND */}
