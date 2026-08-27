@@ -1,193 +1,206 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
+import PageBanner from '../components/PageBanner';
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-const ispatTimeline = [
-  { year: '1978', position: 'top', label: 'Founded Khaled Iron', desc: 'Laying the foundation of steel excellence in Bangladesh' },
-  { year: '1985', position: 'bottom', label: 'Anwar Group Introduced', desc: '60-Grade Bar in Bangladesh' },
-  { year: '2004', position: 'top', label: 'Rebranded Khaled Iron to', desc: "'Anwar Ispat'" },
-  { year: '2009', position: 'bottom', label: 'Anwar Ispat Introduced', desc: '500W TMT Box in Bangladesh' },
-  { year: '2018', position: 'top', label: 'Enhanced Production', desc: 'Capacity for Anwar Ispat' },
-  { year: '2020', position: 'bottom', label: 'Launched 500 DWR', desc: '& 420 DWR Bars' },
-];
+const SECTION_PAD = 'clamp(2.25rem, 4vw, 3.5rem)';
+const CONTAINER = {
+    maxWidth: '1180px',
+    margin: '0 auto',
+    padding: '0 clamp(1.25rem, 5vw, 3rem)',
+};
 
-const ailLegacy = [
-  { year: '1834', text: 'Laik Mohammad: Pioneering Cloth and Hide Trades' },
-  { year: '1870', text: 'Rahim Bakhsh: Venturing into Button and Comb Manufacturing Network' },
-  { year: '1946', text: 'Late Anwar Hossain  The Anwar Brand was established through the creation of Anwar Cloth Store' },
-  { year: '1965', text: "Rise from Chawk Bazar: Anwar Cloth Store's Ascension" },
-  { year: '1968', text: 'Mala Saree: A Symbol of Elegance and Tradition' },
-  { year: '1968', text: 'Manwar Industries: The First Stainless Steel Cutlery Manufacturer' },
-  { year: '1970', text: 'Anwar Silk Mills Ltd.: A Transformation in the Silk Industry' },
-  { year: '1981', text: 'Khaled Iron & RUMA Steel Mills Ltd.: Shaping Structural Excellence' },
-  { year: '1983', text: 'Sunshine Cables & Rubber Works Ltd.: Diversification and Dominion' },
-  { year: '1995', text: 'Anwar Galvanizing Ltd.: Largest Manufacturer of Galvanized Items' },
-  { year: '1996', text: 'Anwar Jute Spinning Mills Ltd.: Revitalizing the Jute Industry' },
-  { year: '1996', text: 'Mehmud Industries: A Dynamic Force in Textiles' },
-  { year: '1999', text: 'Anwar Cement Ltd.: Redefining Building Materials Quality' },
-  { year: '2001', text: 'Anwar Landmark Ltd.: Premium Real Estate and Construction Industry' },
-  { year: '2001', text: 'A.G. Automobile Ltd.: Driving Innovation in the Automotive Sector' },
-  { year: '2004', text: 'Anwar Ispat Limited: Forging Progress in the Steel Industry' },
-  { year: '2005', text: 'A-One Polymer: Pioneering uPVC Fittings, Pipes & Bathroom Fitting in Industry' },
-  { year: '2008', text: 'Introducing Ford: A.G. Automobiles Brings Automotive Excellence' },
-  { year: '2009', text: 'Anwar Cement Sheet: Redefining Construction Materials' },
-  { year: '2010', text: "Introducing Volvo: Eurocars' Scandinavian Elegance" },
-  { year: '2020', text: 'Introducing Peugeot: A.G. Motors Elevates Driving Experience' },
-  { year: '2021', text: 'Death of Anwar Hossain' },
-  { year: '2021', text: 'Anwar Denim Ltd.: Advancing Garment Diversification' },
-  { year: '2021', text: 'Anwar Technologies: Pioneering Enterprise Solutions' },
-  { year: '2021', text: 'Manwar Hossain: New Chairman of Anwar Group' },
-  { year: '2022', text: "Jeep's Arrival in Bangladesh: Toledo Motors Ltd Introduces Adventure" },
+// ২৯টি মাইলফলক একটানা তালিকায় দিলে কেউ পড়ে না। তাই যুগ অনুযায়ী
+// চার ভাগে ভাগ করা — প্রতিটি ভাগ নিজেই একটা গল্প বলে।
+const ERAS = [
+    {
+        span: '1834 — 1946',
+        title: 'The founding trades',
+        note: 'Four generations before steel, the family traded cloth, hide and household goods.',
+        events: [
+            { year: '1834', name: 'Laik Mohammad', text: 'Pioneering cloth and hide trades.' },
+            { year: '1870', name: 'Rahim Bakhsh', text: 'Venturing into button and comb manufacturing.' },
+            { year: '1946', name: 'Anwar Cloth Store', text: 'Late Anwar Hossain establishes the Anwar brand.' },
+        ],
+    },
+    {
+        span: '1965 — 1983',
+        title: 'Into manufacturing',
+        note: 'The move from trading to making things, and the first steel mill.',
+        events: [
+            { year: '1965', name: 'Rise from Chawk Bazar', text: "Anwar Cloth Store's ascension." },
+            { year: '1968', name: 'Mala Saree', text: 'A symbol of elegance and tradition.' },
+            { year: '1968', name: 'Manwar Industries', text: 'The first stainless steel cutlery manufacturer.' },
+            { year: '1970', name: 'Anwar Silk Mills Ltd.', text: 'A transformation in the silk industry.' },
+            { year: '1981', name: 'Khaled Iron & RUMA Steel Mills Ltd.', text: 'Shaping structural excellence.' },
+            { year: '1983', name: 'Sunshine Cables & Rubber Works Ltd.', text: 'Diversification and dominion.' },
+        ],
+    },
+    {
+        span: '1995 — 2001',
+        title: 'Diversification',
+        note: 'Galvanising, jute, textiles, cement, real estate and agriculture within seven years.',
+        events: [
+            { year: '1995', name: 'Anwar Galvanizing Ltd.', text: 'Largest manufacturer of galvanized items.' },
+            { year: '1996', name: 'Anwar Jute Spinning Mills Ltd.', text: 'Revitalizing the jute industry.' },
+            { year: '1996', name: 'Mehmud Industries', text: 'A dynamic force in textiles.' },
+            { year: '1999', name: 'Anwar Cement Ltd.', text: 'Redefining building materials quality.' },
+            { year: '2001', name: 'Anwar Landmark Ltd.', text: 'Premium real estate and construction.' },
+            { year: '2001', name: 'Anwar Green Firm Ltd.', text: 'Pioneering agro-based sustainability.' },
+            { year: '2001', name: 'Anwar Green Initiative', text: 'Environmental awareness.' },
+            { year: '2001', name: 'A.G. Automobile Ltd.', text: 'Driving innovation in the automotive sector.' },
+        ],
+    },
+    {
+        span: '2004 — 2022',
+        title: 'The modern group',
+        note: 'Anwar Ispat is founded, and the group extends into polymers, automotive and technology.',
+        events: [
+            { year: '2004', name: 'Anwar Ispat Limited', text: 'Forging progress in the steel industry.', highlight: true },
+            { year: '2004', name: "Athena's Furniture & Home Decor", text: 'Elevating luxury living.' },
+            { year: '2005', name: 'A-One Polymer', text: 'Pioneering uPVC fittings, pipes and bathroom fittings.' },
+            { year: '2008', name: 'Ford', text: 'A.G. Automobiles brings automotive excellence.' },
+            { year: '2009', name: 'Anwar Cement Sheet', text: 'Redefining construction materials.' },
+            { year: '2010', name: 'Volvo', text: "Eurocars' Scandinavian elegance." },
+            { year: '2020', name: 'Peugeot', text: 'A.G. Motors elevates the driving experience.' },
+            { year: '2021', name: 'Anwar Hossain', text: 'The founder passes away.', memoriam: true },
+            { year: '2021', name: 'Manwar Hossain', text: 'Becomes Chairman of Anwar Group.' },
+            { year: '2021', name: 'Anwar Denim Ltd.', text: 'Advancing garment diversification.' },
+            { year: '2021', name: 'Anwar Technologies', text: 'Pioneering enterprise solutions.' },
+            { year: '2022', name: "Jeep's arrival in Bangladesh", text: 'Toledo Motors Ltd introduces adventure.' },
+        ],
+    },
 ];
 
 const HeritagePage = () => {
-  const containerRef = useRef(null);
-  const heroTagRef = useRef(null);
-  const heroSubRef = useRef(null);
-  const statsRef = useRef(null);
-  const introCardRef = useRef(null);
-  const tlItemsRef = useRef([]);
-  const ailItemsRef = useRef([]);
-  const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
-  React.useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    const rootRef = useRef(null);
+    const [isMobile, setIsMobile] = useState(false);
 
-  useGSAP(() => {
-    gsap.to(heroTagRef.current, { opacity: 1, y: 0, duration: 0.8, delay: 0.2, ease: 'power3.out' });
-    gsap.to(heroSubRef.current, { opacity: 1, y: 0, duration: 0.8, delay: 0.6, ease: 'power3.out' });
-    gsap.to(statsRef.current, { opacity: 1, y: 0, duration: 0.8, delay: 0.9, ease: 'power3.out' });
+    useEffect(() => {
+        const onResize = () => setIsMobile(window.innerWidth < 900);
+        onResize();
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+    }, []);
 
-    ScrollTrigger.create({
-      trigger: introCardRef.current,
-      start: 'top 85%',
-      onEnter: () => gsap.to(introCardRef.current, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' })
-    });
+    useGSAP(() => {
+        gsap.utils.toArray('.hr-reveal').forEach((el) => {
+            gsap.from(el, {
+                y: 34, opacity: 0, duration: 0.7, ease: 'power3.out',
+                scrollTrigger: { trigger: el, start: 'top 88%' },
+            });
+        });
+    }, { scope: rootRef });
 
-    tlItemsRef.current.forEach((el, i) => {
-      if (!el) return;
-      const isTop = el.dataset.position === 'top';
-      ScrollTrigger.create({
-        trigger: el,
-        start: 'top 88%',
-        onEnter: () => gsap.to(el, { opacity: 1, y: 0, duration: 0.7, delay: i * 0.1, ease: 'power3.out' })
-      });
-    });
+    return (
+        <div
+            ref={rootRef}
+            style={{ background: 'var(--primary)', color: 'var(--text)', minHeight: '100vh', overflowX: 'hidden' }}
+        >
+            <PageBanner
+                image="/heritage-banner.jpeg"
+                label="HERITAGE"
+                title="Nearly two centuries of"
+                accent="Building"
+                crumbs={[
+                    { label: 'Home', to: '/' },
+                    { label: 'About us', to: '/about' },
+                    { label: 'Heritage' },
+                ]}
+            />
 
-    ailItemsRef.current.forEach((el, i) => {
-      if (!el) return;
-      ScrollTrigger.create({
-        trigger: el,
-        start: 'top 92%',
-        onEnter: () => gsap.to(el, { opacity: 1, x: 0, duration: 0.5, delay: (i % 4) * 0.08, ease: 'power3.out' })
-      });
-    });
-  }, { scope: containerRef });
+            {/* ---------------------------------------------------------- */}
+            {/* INTRO */}
+            {/* ---------------------------------------------------------- */}
+            <section style={{
+                minHeight: 'auto', display: 'block',
+                ...CONTAINER, paddingTop: '30px', paddingBottom: '30px',
+            }}>
+                <p className="hr-reveal" style={{
+                    fontFamily: 'var(--font-heading)',
+                    fontSize: 'clamp(1.15rem, 2.2vw, 1.75rem)',
+                    fontWeight: 700, lineHeight: 1.45, letterSpacing: '0.01em',
+                    color: 'var(--text)', margin: 0, maxWidth: '30ch',
+                    textTransform: 'none',
+                }}>
+                    A legacy to value and enjoy in the present, and to preserve and pass on to
+                    future generations.
+                </p>
+            </section>
 
-  return (
-    <div ref={containerRef} style={{ background: 'var(--primary)', color: 'var(--text)', minHeight: '100vh', paddingTop: '80px' }}>
+            {/* ---------------------------------------------------------- */}
+            {/* TIMELINE */}
+            {/* ---------------------------------------------------------- */}
+            <section style={{
+                minHeight: 'auto', display: 'block',
+                paddingTop: 0,
+                paddingBottom: `calc(${SECTION_PAD} * 1.4)`,
+                paddingLeft: 0, paddingRight: 0,
+            }}>
+                <div style={CONTAINER}>
+                    {ERAS.map((era) => (
+                        <div key={era.span} style={{ paddingTop: SECTION_PAD }}>
+                            {/* যুগের শিরোনাম — ডেস্কটপে স্ক্রলের সাথে আটকে থাকে,
+                                তাই লম্বা তালিকা পড়ার সময়ও কোন যুগ চলছে বোঝা যায় */}
+                            <div
+                                className="hr-reveal"
+                                style={{
+                                    position: isMobile ? 'static' : 'sticky',
+                                    top: '92px',
+                                    zIndex: 3,
+                                    background: 'var(--primary)',
+                                    paddingBottom: '1.1rem',
+                                    borderBottom: '1px solid var(--glass-border)',
+                                    marginBottom: '0.5rem',
+                                }}
+                            >
+                                <span style={{
+                                    fontFamily: 'var(--font-main)', fontSize: '0.74rem', fontWeight: 700,
+                                    letterSpacing: '0.2em', color: 'var(--accent)',
+                                }}>
+                                    {era.span}
+                                </span>
+                                <h2 style={{
+                                    fontFamily: 'var(--font-heading)',
+                                    fontSize: 'clamp(1.5rem, 2.8vw, 2.1rem)',
+                                    fontWeight: 800, letterSpacing: '0.02em',
+                                    margin: '0.5rem 0 0.55rem', textTransform: 'none',
+                                }}>
+                                    {era.title}
+                                </h2>
+                                <p style={{
+                                    fontFamily: 'var(--font-main)', fontSize: '0.92rem',
+                                    lineHeight: 1.7, color: 'var(--subtext)', margin: 0, maxWidth: '58ch',
+                                }}>
+                                    {era.note}
+                                </p>
+                            </div>
 
-      <section style={{ position: 'relative', padding: isMobile ? '60px 20px 40px' : '80px 40px 60px', textAlign: 'center', borderBottom: '1px solid #1a1a1a', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '600px', height: '300px', background: 'radial-gradient(ellipse, rgba(180,20,20,0.2) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        <div ref={heroTagRef} style={{ fontSize: '11px', letterSpacing: '4px', color: '#E24B4A', textTransform: 'uppercase', marginBottom: '20px', opacity: 0, transform: 'translateY(20px)' }}>Our Legacy</div>
-        <h1 style={{ fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 700, lineHeight: 1.1, marginBottom: '20px' }}>
-          Built on <span style={{ color: '#E24B4A' }}>48 Years</span><br />of Steel Strength
-        </h1>
-        <div ref={heroSubRef} style={{ fontSize: '14px', color: 'var(--subtext)', maxWidth: '560px', margin: '0 auto 36px', lineHeight: 1.8, opacity: 0, transform: 'translateY(20px)' }}>
-          For nearly five decades, Anwar Ispat  <span style={{ color: '#E24B4A' }}>Strongest Steel Since 1978</span>  has delivered the reliability required to build the backbone of Bangladesh's infrastructure.
-        </div>
-        <div ref={statsRef} style={{ display: 'flex', justifyContent: 'center', gap: isMobile ? '32px' : '80px', flexWrap: 'wrap', opacity: 0, transform: 'translateY(20px)', width: '100%' }}>
-          {[{ n: '1978', l: 'Founded' }, { n: '48+', l: 'Years of Excellence' }, { n: '500W', l: 'Grade Rebar' }].map((s, i) => (
-            <div key={i} style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '48px', fontWeight: 700, color: '#E24B4A' }}>{s.n}</div>
-              <div style={{ fontSize: '10px', color: 'var(--subtext)', letterSpacing: '2px', textTransform: 'uppercase', marginTop: '4px' }}>{s.l}</div>
-            </div>
-          ))}
-        </div>
-      </section>
+                            {era.events.map((e, i) => (
+                                <div
+                                    key={`${e.year}-${e.name}`}
+                                    className="hr-reveal hr-row"
+                                    style={{ gridTemplateColumns: isMobile ? '64px 1fr' : '104px 1fr' }}
+                                >
+                                    <span className="hr-year">{e.year}</span>
 
-      <div style={{ padding: isMobile ? '32px 20px 0' : '48px 40px 0' }}>
-        <div ref={introCardRef} style={{ background: 'var(--secondary)', border: '1px solid var(--glass-border)', borderRadius: '12px', padding: '28px 32px', display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '28px', alignItems: isMobile ? 'stretch' : 'center', opacity: 0, transform: 'translateY(24px)' }}>
-          <div style={{ flex: 1 }}>
-            <h3 style={{ fontSize: '17px', color: '#E24B4A', fontStyle: 'italic', marginBottom: '10px' }}>Anwar Ispat: Strength in Every Build</h3>
-            <p style={{ fontSize: '13px', color: 'var(--subtext)', lineHeight: 1.8 }}>For nearly five decades, Anwar Ispat  Strongest Steel Since 1978  has delivered the reliability required to build the backbone of Bangladesh's infrastructure. We build on this legacy by ensuring uncompromising quality for every structure. Anwar Ispat embodies a shared commitment to engineering excellence and sustainable growth.</p>
-          </div>
-          <div style={{ flexShrink: 0, background: '#E24B4A', borderRadius: '10px', padding: '18px 22px', textAlign: 'center' }}>
-            <div style={{ fontSize: '30px', fontWeight: 700, color: 'var(--text)' }}>48</div>
-            <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.75)', letterSpacing: '2px', textTransform: 'uppercase', marginTop: '4px' }}>Years of Steel Strength</div>
-          </div>
-        </div>
-      </div>
-
-      <div style={{ padding: isMobile ? '40px 20px 0' : '56px 40px 0', textAlign: 'center' }}>
-        <div style={{ fontSize: '11px', letterSpacing: '4px', color: '#E24B4A', textTransform: 'uppercase', marginBottom: '12px' }}>AIL Timeline</div>
-        <div style={{ fontSize: '36px', fontWeight: 700, marginBottom: '12px' }}>Anwar Ispat: Strength in Every Build</div>
-        <div style={{ fontSize: '15px', color: 'var(--subtext)', lineHeight: 1.8, maxWidth: '640px', margin: '0 auto' }}>From Khaled Iron to Bangladesh's most trusted steel brand  a journey of innovation and quality.</div>
-      </div>
-
-      <div style={{ padding: isMobile ? '32px 12px 40px' : '48px 20px 60px', position: 'relative' }}>
-        <div style={{ position: 'relative' }}>
-          <div style={{ position: 'absolute', top: '50%', left: '20px', right: '20px', height: '2px', background: 'linear-gradient(to right, transparent, #E24B4A 10%, #E24B4A 90%, transparent)', transform: 'translateY(-50%)', zIndex: 1 }} />
-          <div style={{ display: isMobile ? 'grid' : 'flex', gridTemplateColumns: isMobile ? 'repeat(3, 1fr)' : 'none', gridTemplateRows: isMobile ? 'repeat(2, auto)' : 'none', alignItems: 'center', minHeight: isMobile ? '320px' : '240px', position: 'relative' }}>
-            {ispatTimeline.map((item, i) => {
-              const isTop = item.position === 'top';
-              return (
-                <div key={i} ref={el => tlItemsRef.current[i] = el} data-position={item.position}
-                  style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2, opacity: 0, transform: isTop ? 'translateY(-30px)' : 'translateY(30px)' }}>
-                  {isTop ? (
-                    <>
-                      <div style={{ textAlign: 'center', maxWidth: '140px', marginBottom: '8px' }}>
-                        <div style={{ fontSize: '11px', color: '#E24B4A', fontWeight: 700, marginBottom: '2px' }}>{item.label}</div>
-                        <div style={{ fontSize: '10px', color: 'var(--subtext)', lineHeight: 1.5, fontStyle: 'italic' }}>{item.desc}</div>
-                      </div>
-                      <div style={{ width: '1px', height: '28px', background: 'var(--glass-border)' }} />
-                      <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: '#E24B4A', border: '3px solid var(--primary)', boxShadow: '0 0 0 4px rgba(226,75,74,0.25)', zIndex: 3 }} />
-                      <div style={{ fontSize: '22px', fontWeight: 700, color: '#E24B4A', marginTop: '12px' }}>{item.year}</div>
-                    </>
-                  ) : (
-                    <>
-                      <div style={{ fontSize: '22px', fontWeight: 700, color: '#E24B4A', marginBottom: '12px' }}>{item.year}</div>
-                      <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: '#E24B4A', border: '3px solid var(--primary)', boxShadow: '0 0 0 4px rgba(226,75,74,0.25)', zIndex: 3 }} />
-                      <div style={{ width: '1px', height: '28px', background: 'var(--glass-border)' }} />
-                      <div style={{ textAlign: 'center', maxWidth: '140px', marginTop: '8px' }}>
-                        <div style={{ fontSize: '11px', color: '#E24B4A', fontWeight: 700, marginBottom: '2px' }}>{item.label}</div>
-                        <div style={{ fontSize: '10px', color: 'var(--subtext)', lineHeight: 1.5, fontStyle: 'italic' }}>{item.desc}</div>
-                      </div>
-                    </>
-                  )}
+                                    <div className="hr-entry">
+                                        <h3 className={`hr-name${e.highlight ? ' hr-name-accent' : ''}`}>
+                                            {e.name}
+                                        </h3>
+                                        <p className="hr-text">{e.text}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ))}
                 </div>
-              );
-            })}
-          </div>
+            </section>
         </div>
-      </div>
-
-      <div style={{ padding: isMobile ? '0 20px 60px' : '0 40px 80px', background: 'var(--primary)', borderTop: '1px solid var(--glass-border)' }}>
-        <div style={{ padding: '56px 0 32px', textAlign: 'center' }}>
-          <div style={{ fontSize: '11px', letterSpacing: '4px', color: '#E24B4A', textTransform: 'uppercase', marginBottom: '12px' }}>A Legacy to Value and Preserve</div>
-          <div style={{ fontSize: '36px', fontWeight: 700, marginBottom: '12px' }}>The Anwar Group Heritage</div>
-          <div style={{ fontSize: '15px', color: 'var(--subtext)', lineHeight: 1.8, maxWidth: '640px', margin: '0 auto' }}>A Legacy to Value and Enjoy in the Present and to Preserve and Pass on to Future Generations</div>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2px' }}>
-          {ailLegacy.map((item, i) => (
-            <div key={i} ref={el => ailItemsRef.current[i] = el}
-              style={{ padding: '16px 20px', borderLeft: '2px solid var(--glass-border)', opacity: 0, transform: 'translateX(-12px)', cursor: 'default' }}
-              onMouseEnter={e => { e.currentTarget.style.borderLeftColor = '#E24B4A'; e.currentTarget.style.background = 'rgba(226,75,74,0.04)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderLeftColor = '#1a1a1a'; e.currentTarget.style.background = 'transparent'; }}>
-              <div style={{ fontSize: '14px', fontWeight: 700, color: '#E24B4A' }}>{item.year}</div>
-              <div style={{ fontSize: '13px', color: 'var(--subtext)', lineHeight: 1.6, marginTop: '4px' }}>{item.text}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-    </div>
-  );
+    );
 };
 
 export default HeritagePage;

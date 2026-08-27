@@ -1159,6 +1159,90 @@ body.light-mode .hero-title.muted {
 }
 
 /* ============================================================
+   Heritage টাইমলাইন — বাঁ পাশে সাল, ডান পাশে ঘটনা, মাঝে একটানা
+   রেখা। রেখাটাই ১৮৩৪ থেকে ২০২২ পর্যন্ত ধারাবাহিকতা বোঝায়।
+   ============================================================ */
+.hr-row {
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.75rem);
+  align-items: start;
+  padding: 0.95rem 0;
+}
+
+.hr-year {
+  font-family: var(--font-heading);
+  font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--subtext);
+  padding-top: 0.1rem;
+  transition: color 0.3s ease;
+}
+
+/* বাঁ পাশের উল্লম্ব রেখা ও প্রতিটি ঘটনার বিন্দু */
+.hr-entry {
+  position: relative;
+  padding-left: clamp(1.1rem, 2vw, 1.6rem);
+  border-left: 1px solid var(--glass-border);
+  padding-bottom: 0.15rem;
+}
+
+.hr-entry::before {
+  content: '';
+  position: absolute;
+  left: -4.5px;
+  top: 0.5rem;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+  border: 2px solid var(--glass-border);
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.hr-name {
+  font-family: var(--font-heading);
+  font-size: clamp(0.98rem, 1.35vw, 1.12rem);
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  line-height: 1.3;
+  margin: 0;
+  text-transform: none;
+}
+
+/* Anwar Ispat নিজে প্রতিষ্ঠার বছরটি আলাদা করে চেনানো */
+.hr-name-accent {
+  color: var(--accent);
+}
+
+.hr-text {
+  font-family: var(--font-main);
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: var(--subtext);
+  margin: 0.3rem 0 0;
+  max-width: 56ch;
+}
+
+@media (hover: hover) {
+  .hr-row:hover .hr-year {
+    color: var(--accent);
+  }
+
+  .hr-row:hover .hr-entry::before {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hr-year,
+  .hr-entry::before {
+    transition: none;
+  }
+}
+
+/* ============================================================
    Why Anwar Ispat — বাক্সে না রেখে সম্পাদকীয় ধাঁচের তালিকা।
    কার্ড গ্রিডে সব কার্ড সমান উচ্চতার হয় কিন্তু লেখা অসমান,
    তাই ছোট লেখার নিচে ফাঁকা পড়ে থাকে। তালিকায় সেই সমস্যা নেই।
