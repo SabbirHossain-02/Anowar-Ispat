@@ -1,10 +1,50 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { History, Cpu, Rocket, ShieldCheck, Microscope, Building2 } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import PageBanner from '../components/PageBanner';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
+
+// স্লাইডে যে শব্দগুলো মোটা করা ছিল সেগুলোই <b> — পড়ার সময় চোখ
+// ওখানেই আটকায়, তাই দাবিগুলো দ্রুত বোঝা যায়
+const B = ({ children }) => (
+    <b style={{ color: 'var(--text)', fontWeight: 700 }}>{children}</b>
+);
+
+const WHY = [
+    {
+        icon: History,
+        title: '190+ Years of Legacy',
+        body: <>Part of the prestigious <B>Anwar Group</B>, building trust in Bangladesh since 1834.</>,
+    },
+    {
+        icon: Cpu,
+        title: 'European Technology',
+        body: <>The only manufacturer in Bangladesh using patented <B>TMT technology from Belgium</B> for superior reinforcement.</>,
+    },
+    {
+        icon: Rocket,
+        title: 'Pioneer in Innovation',
+        body: <>The trailblazer in the Bangladesh steel industry, being the first to introduce <B>60-Grade reinforcement bars</B> to the country.</>,
+    },
+    {
+        icon: ShieldCheck,
+        title: 'Earthquake Resistant',
+        body: <>Engineered with a high <B>TS/YS ratio</B> for maximum ductility, meeting strict <B>BNBC and ACI</B> safety codes.</>,
+    },
+    {
+        icon: Microscope,
+        title: 'Precision Quality',
+        body: <>Every batch is tested via <B>Spectrometer</B> (28-element analysis) to ensure 100% compliance with <B>BSTI and ISO</B> standards.</>,
+    },
+    {
+        icon: Building2,
+        title: 'Nation Builder',
+        body: <>A proven partner for Bangladesh's iconic mega-projects and thousands of individual homes.</>,
+    },
+];
 
 const LEADERSHIP = [
     {
@@ -99,15 +139,108 @@ const AboutUsPage = () => {
             </section>
 
             {/* ---------------------------------------------------------- */}
-            {/* LEADERSHIP */}
+            {/* WHY ANWAR ISPAT */}
             {/* ---------------------------------------------------------- */}
             <section style={{
+                minHeight: 'auto', display: 'block',
+                paddingTop: SECTION_PAD,
+                paddingBottom: SECTION_PAD,
+                paddingLeft: 0, paddingRight: 0,
+                background: 'var(--glass)',
+                borderTop: '1px solid var(--glass-border)',
+                borderBottom: '1px solid var(--glass-border)',
+            }}>
+                <div style={CONTAINER}>
+                    <div className="ab-reveal" style={{ marginBottom: SECTION_PAD }}>
+                        <span style={{
+                            fontFamily: 'var(--font-main)', fontSize: '0.72rem', fontWeight: 700,
+                            letterSpacing: '0.28em', color: 'var(--accent)',
+                        }}>
+                            // WHY ANWAR ISPAT
+                        </span>
+                        <h2 style={{
+                            fontFamily: 'var(--font-heading)', fontSize: 'clamp(1.9rem, 4vw, 3rem)',
+                            fontWeight: 800, margin: '0.8rem 0 0', letterSpacing: '0.02em',
+                        }}>
+                            Six reasons builders choose us
+                        </h2>
+                    </div>
+
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: isMobile
+                            ? 'repeat(auto-fit, minmax(260px, 1fr))'
+                            : 'repeat(3, 1fr)',
+                        gap: 'clamp(1rem, 1.6vw, 1.4rem)',
+                    }}>
+                        {WHY.map(({ icon: Icon, title, body }, i) => (
+                            <article key={title} className="ab-reveal" style={{
+                                position: 'relative',
+                                background: 'var(--surface)',
+                                border: '1px solid var(--glass-border)',
+                                borderRadius: '16px',
+                                padding: 'clamp(1.4rem, 2.2vw, 1.8rem)',
+                                overflow: 'hidden',
+                            }}>
+                                {/* উপরে সরু লাল রেখা — কার্ডগুলো একসারিতে থাকলে
+                                    চোখ সহজে আলাদা করতে পারে */}
+                                <span aria-hidden="true" style={{
+                                    position: 'absolute', top: 0, left: 0,
+                                    width: '52px', height: '3px', background: 'var(--accent)',
+                                    borderRadius: '0 0 3px 0',
+                                }} />
+
+                                <span aria-hidden="true" style={{
+                                    position: 'absolute', top: '0.9rem', right: '1.1rem',
+                                    fontFamily: 'var(--font-heading)', fontSize: '2.6rem',
+                                    fontWeight: 800, lineHeight: 1,
+                                    color: 'var(--accent)', opacity: 0.1,
+                                }}>
+                                    {String(i + 1).padStart(2, '0')}
+                                </span>
+
+                                <span style={{
+                                    width: '44px', height: '44px', borderRadius: '12px',
+                                    background: 'rgba(227,24,45,0.12)',
+                                    border: '1px solid rgba(227,24,45,0.25)',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    marginBottom: '1.15rem',
+                                }}>
+                                    <Icon size={21} color="var(--accent)" />
+                                </span>
+
+                                <h3 style={{
+                                    fontFamily: 'var(--font-heading)',
+                                    fontSize: 'clamp(1.05rem, 1.5vw, 1.22rem)',
+                                    fontWeight: 800, letterSpacing: '0.03em',
+                                    margin: '0 0 0.7rem',
+                                }}>
+                                    {title}
+                                </h3>
+
+                                <p style={{
+                                    fontFamily: 'var(--font-main)', fontSize: '0.93rem',
+                                    lineHeight: 1.8, color: 'var(--subtext)', margin: 0,
+                                }}>
+                                    {body}
+                                </p>
+                            </article>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* ---------------------------------------------------------- */}
+            {/* LEADERSHIP */}
+            {/* ---------------------------------------------------------- */}
+            {/* উপরের "Why Anwar Ispat" সেকশনটি ধূসর, তাই এটি সাদা —
+                পরপর দুটি একই রঙের হলে সীমানা বোঝা যায় না */}
+            <section style={{
+                minHeight: 'auto', display: 'block',
                 paddingTop: SECTION_PAD,
                 paddingBottom: `calc(${SECTION_PAD} * 1.4)`,
                 paddingLeft: 0,
                 paddingRight: 0,
-                background: 'var(--glass)',
-                borderTop: '1px solid var(--glass-border)',
             }}>
                 <div style={CONTAINER}>
                     <div className="ab-reveal" style={{ marginBottom: SECTION_PAD }}>
