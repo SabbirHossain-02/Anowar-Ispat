@@ -79,12 +79,12 @@ export const ProductService = () => {
     <section
       id="product-service"
       style={{
-        minHeight: "100vh",
+        minHeight: "auto",
         justifyContent: "flex-start",
         alignItems: "center",
         padding: "0 5%",
-        paddingTop: "80px",
-        paddingBottom: "120px",
+        paddingTop: "30px",
+        paddingBottom: "30px",
       }}
     >
       <div
@@ -823,7 +823,7 @@ export const WhyChooseUs = () => {
 
   return (
     <section id="why-choose-us" ref={sectionRef} style={{
-      minHeight: '100vh',
+      minHeight: 'auto',
       background: 'var(--bg-section, rgba(11, 11, 11, 0.7))',
       backdropFilter: 'blur(30px)',
       WebkitBackdropFilter: 'blur(30px)',
@@ -831,7 +831,7 @@ export const WhyChooseUs = () => {
       borderBottom: '1px solid rgba(255, 60, 0, 0.1)',
       position: 'relative',
       zIndex: 10,
-      padding: '8rem 5%',
+      padding: '30px 5%',
     }}>
       <div style={{
         position: 'absolute',
@@ -1105,12 +1105,12 @@ export const ProjectShowcase = () => {
     <section
       id="project-showcase"
       style={{
-        minHeight: "100vh",
+        minHeight: "auto",
         background: "var(--bg-section, rgba(11, 11, 11, 0.7))",
         backdropFilter: "blur(30px)",
         WebkitBackdropFilter: "blur(30px)",
         borderTop: "1px solid rgba(255, 60, 0, 0.1)",
-        padding: "8rem 5%",
+        padding: "30px 5%",
         position: "relative",
         zIndex: 10,
       }}
@@ -1206,7 +1206,7 @@ export const MediaEvents = () => {
     <section
       id="media-events"
       style={{
-        minHeight: "100vh",
+        minHeight: "auto",
         justifyContent: "center",
         alignItems: "center",
         background: "var(--bg-section, rgba(11, 11, 11, 0.7))",
@@ -1215,7 +1215,7 @@ export const MediaEvents = () => {
         position: "relative",
         zIndex: 10,
         overflow: "hidden",
-        padding: "4rem 5%",
+        padding: "30px 5%",
       }}
     >
       <div style={{ position: "absolute", top: 0, left: "10%", width: "1px", height: "100%", background: "rgba(255,255,255,0.05)" }}></div>
@@ -1281,7 +1281,7 @@ export const MediaEvents = () => {
           100% { transform: translateY(-33.33%); }
         }
         @media (max-width: 900px) {
-          #media-events { padding: 6rem 5% !important; height: auto !important; }
+          #media-events { padding: 30px 5% !important; height: auto !important; }
           .media-events-container { height: auto !important; flex-direction: column !important; gap: 2rem !important; }
           .media-text-content { margin-bottom: 2rem; }
           .marquee-container { perspective: none !important; height: 60vh !important; width: 100% !important; }
@@ -1350,7 +1350,7 @@ export const Blog = () => {
   const handlePrev = () => setCurrentIndex((prev) => (prev - 1 + insights.length) % insights.length);
 
   return (
-    <section id="blog" style={{ minHeight: "100vh", justifyContent: "center", alignItems: "center", background: "var(--bg-section, rgba(11, 11, 11, 0.7))", backdropFilter: "blur(30px)", WebkitBackdropFilter: "blur(30px)", position: "relative", zIndex: 10, padding: "clamp(4rem, 10vh, 8rem) 0", overflow: "hidden" }}>
+    <section id="blog" style={{ minHeight: "auto", justifyContent: "center", alignItems: "center", background: "var(--bg-section, rgba(11, 11, 11, 0.7))", backdropFilter: "blur(30px)", WebkitBackdropFilter: "blur(30px)", position: "relative", zIndex: 10, padding: "30px 0", overflow: "hidden" }}>
       <div style={{ textAlign: "center", maxWidth: "800px", margin: "0 auto clamp(2rem, 5vh, 4rem) auto", position: "relative", zIndex: 20, padding: "0 5%" }}>
         <p style={{ fontFamily: "monospace", color: "var(--subtext)", letterSpacing: "0.2em", marginBottom: "1rem", fontSize: "0.9rem" }}>[ SYSTEM.ARCHIVES.OPEN ]</p>
         <h2 style={{ fontSize: "clamp(2.5rem, 5vw, 4.5rem)", color: "#fff", lineHeight: "1.1", textTransform: "uppercase", marginBottom: "1.5rem" }}>INSIGHTS &<br />INNOVATIONS</h2>
@@ -1415,7 +1415,7 @@ export const CoreStrengths = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} style={{ minHeight: '100vh', width: '100%', position: 'relative', background: 'var(--bg-section, rgba(11, 11, 11, 0.7))', backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', borderTop: '1px solid rgba(255, 60, 0, 0.1)', borderBottom: '1px solid rgba(255, 60, 0, 0.1)', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8rem 5%' }}>
+    <section ref={sectionRef} style={{ minHeight: '100vh', width: '100%', position: 'relative', background: 'var(--bg-section, rgba(11, 11, 11, 0.7))', backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', borderTop: '1px solid rgba(255, 60, 0, 0.1)', borderBottom: '1px solid rgba(255, 60, 0, 0.1)', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '30px 5%' }}>
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at center, rgba(227, 24, 45, 0.03) 0%, transparent 60%)', pointerEvents: 'none', zIndex: 1 }} />
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '150px', background: 'linear-gradient(to bottom, var(--primary) 0%, transparent 100%)', pointerEvents: 'none', zIndex: 2 }} />
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '150px', background: 'linear-gradient(to top, var(--primary) 0%, transparent 100%)', pointerEvents: 'none', zIndex: 2 }} />

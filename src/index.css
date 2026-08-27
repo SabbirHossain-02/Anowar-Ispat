@@ -1438,16 +1438,21 @@ body.light-mode .btn-learn-more:hover {
 
 /* --- Global Responsive Adjustments --- */
 @media (max-width: 768px) {
+  /* আগে এখানে `padding: 120px 5% 4rem` ছিল — উপরের ১২০px টা fixed
+     নেভবারের নিচ থেকে শুরু করার জন্য, কিন্তু সেটা প্রতিটি সেকশনে
+     প্রযোজ্য হওয়ায় মোবাইলে সেকশনে সেকশনে বিশাল ফাঁকা তৈরি হতো।
+     নেভবারের জায়গা ছাড়ার দায়িত্ব এখন প্রথম সেকশনগুলোর নিজের। */
   section {
-    padding: 120px 5% 4rem 5%;
+    padding: 30px 5%;
   }
 
   .video-hero {
-    padding: 120px 5% 4rem 5%;
+    padding: 120px 5% 30px 5%;
   }
 
   .hero {
     align-items: center;
+    padding-top: 120px;
   }
 
   .product-modal {
