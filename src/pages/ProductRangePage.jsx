@@ -1,346 +1,417 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
+import { Check, Layers, Grid3x3, Building } from 'lucide-react';
 import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
+import PageBanner from '../components/PageBanner';
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-const products = [
-  {
-    id: 1,
-    badge: 'Flagship Product',
-    badgeStyle: 'filled',
-    name: 'ANWARS 500DWR',
-    type: '500 Grade · Dual Wire Rib',
-    image: '/images/product-500dwr.jpg',
-    imageLabel: '500DWR Product Image',
-    advantages: [
-      'High Strength Reinforcing Steel',
-      'Excellent Elongation Properties',
-      'TS/YS ratio > 1.25',
-      'Superior Weldability',
-      'More Durable and Weather Resistant',
-      'Good Quality Bonding with Concrete',
-      'Excellent Bendability',
-    ],
-  },
-  {
-    id: 2,
-    badge: 'Premium Grade',
-    badgeStyle: 'outline',
-    name: 'ANWARS 420DWR',
-    type: '420 Grade · Dual Wire Rib',
-    image: '/images/product-420dwr.jpg',
-    imageLabel: '420DWR Product Image',
-    advantages: [
-      'Suitable Earthquake Resistance Structures',
-      'High Ductility',
-      'Higher Energy Consumption Capacity',
-      'ACI Code and BNBC Certified',
-      'Excellent Durability',
-    ],
-  },
-  {
-    id: 3,
-    badge: 'High Performance',
-    badgeStyle: 'outline',
-    name: 'ANWARS 500W TMT',
-    type: '500W Grade · Thermo Mechanical',
-    image: '/images/product-500w-tmt.jpg',
-    imageLabel: '500W TMT Product Image',
-    advantages: [
-      'Thermo Mechanically Treated Steel',
-      'Enhanced Corrosion Resistance',
-      'Superior Fatigue Strength',
-      'Ideal for High-Rise Structures',
-      'Consistent Mechanical Properties',
-      'BDS & ISO Certified Quality',
-    ],
-  },
-];
-
-const ProductCard = ({ product, index }) => {
-  const cardRef = useRef(null);
-
-  return (
-    <div
-      ref={cardRef}
-      className={`pr-card pr-card-${index}`}
-      style={{
-        background: 'var(--glass)',
-        border: '1px solid var(--glass-border)',
-        borderRadius: '16px',
-        overflow: 'hidden',
-        opacity: 0,
-        transform: 'translateY(40px)',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      <div
-        style={{
-          position: 'relative',
-          width: '100%',
-          height: '220px',
-          background: 'rgba(0,0,0,0.3)',
-          overflow: 'hidden',
-          flexShrink: 0,
-        }}
-      >
-        <img
-          src={product.image}
-          alt={product.name}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-          onError={e => { e.target.style.display = 'none'; }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '10px',
-            background: 'rgba(0,0,0,0.25)',
-          }}
-        >
-          <svg width="44" height="44" viewBox="0 0 24 24" fill="none"
-            stroke="rgba(227,24,45,0.4)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2"/>
-            <circle cx="8.5" cy="8.5" r="1.5"/>
-            <path d="M21 15l-5-5L5 21"/>
-          </svg>
-          <span style={{ fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)' }}>
-            {product.imageLabel}
-          </span>
-        </div>
-        <div style={{
-          position: 'absolute',
-          top: 0, right: 0,
-          width: '100px', height: '100px',
-          background: 'radial-gradient(circle, rgba(227,24,45,0.12), transparent)',
-          pointerEvents: 'none',
-        }} />
-      </div>
-
-      <div style={{
-        background: 'linear-gradient(135deg, rgba(30,5,8,0.8) 0%, rgba(15,15,15,0.6) 100%)',
-        padding: '22px 24px 16px',
-        borderBottom: '1px solid var(--glass-border)',
-      }}>
-        <div style={{ marginBottom: '10px' }}>
-          {product.badgeStyle === 'filled' ? (
-            <span style={{
-              display: 'inline-block',
-              background: 'var(--accent)',
-              color: '#fff',
-              fontSize: '10px',
-              letterSpacing: '2px',
-              textTransform: 'uppercase',
-              padding: '4px 10px',
-              borderRadius: '4px',
-              fontWeight: 700,
-            }}>{product.badge}</span>
-          ) : (
-            <span style={{
-              display: 'inline-block',
-              background: 'rgba(227,24,45,0.1)',
-              color: 'var(--accent)',
-              border: '1px solid rgba(227,24,45,0.3)',
-              fontSize: '10px',
-              letterSpacing: '2px',
-              textTransform: 'uppercase',
-              padding: '4px 10px',
-              borderRadius: '4px',
-              fontWeight: 700,
-            }}>{product.badge}</span>
-          )}
-        </div>
-        <div style={{
-          fontSize: '22px',
-          fontWeight: 800,
-          letterSpacing: '-0.5px',
-          textTransform: 'uppercase',
-          color: 'var(--text)',
-          fontFamily: 'var(--font-heading)',
-          marginBottom: '4px',
-        }}>{product.name}</div>
-        <div style={{ fontSize: '12px', color: 'var(--subtext)', letterSpacing: '1.5px', textTransform: 'uppercase' }}>
-          {product.type}
-        </div>
-        <div style={{ width: '36px', height: '3px', background: 'var(--accent)', borderRadius: '2px', marginTop: '14px' }} />
-      </div>
-
-      <div style={{ padding: '20px 24px', flex: 1 }}>
-        <div style={{ fontSize: '10px', letterSpacing: '3px', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '14px' }}>
-          Advantages
-        </div>
-        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          {product.advantages.map((adv, i) => (
-            <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '13px', color: 'var(--subtext)', lineHeight: 1.5 }}>
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent)', flexShrink: 0, marginTop: '5px' }} />
-              {adv}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div style={{ padding: '0 24px 24px', display: 'flex', gap: '10px' }}>
-        <button
-          onClick={() => window.dispatchEvent(new CustomEvent('open-quote'))}
-          style={{
-            flex: 1,
-            background: 'var(--accent)',
-            color: '#fff',
-            border: 'none',
-            padding: '11px 16px',
-            borderRadius: '6px',
-            fontSize: '11px',
-            letterSpacing: '1.5px',
-            textTransform: 'uppercase',
-            fontWeight: 700,
-            cursor: 'pointer',
-          }}
-        >
-          Get Quote
-        </button>
-        <button
-          style={{
-            flex: 1,
-            background: 'transparent',
-            color: 'var(--subtext)',
-            border: '1px solid var(--glass-border)',
-            padding: '11px 16px',
-            borderRadius: '6px',
-            fontSize: '11px',
-            letterSpacing: '1.5px',
-            textTransform: 'uppercase',
-            cursor: 'pointer',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--glass-border)'; e.currentTarget.style.color = 'var(--subtext)'; }}
-        >
-          Learn More
-        </button>
-      </div>
-    </div>
-  );
+const SECTION_PAD = 'clamp(2.25rem, 4vw, 3.5rem)';
+const CONTAINER = {
+    maxWidth: '1180px',
+    margin: '0 auto',
+    padding: '0 clamp(1.25rem, 5vw, 3rem)',
 };
 
+const GRADES = [
+    {
+        name: 'ANWARS 500DWR',
+        tag: '500 grade · dual wire rib',
+        advantages: [
+            'High strength reinforcing steel',
+            'Excellent elongation properties',
+            'TS/YS ratio > 1.25',
+            'Superior weldability',
+            'More durable and weather resistant',
+            'Good quality bonding with concrete',
+            'Excellent bendability',
+        ],
+    },
+    {
+        name: 'ANWARS 420DWR',
+        tag: '420 grade · dual wire rib',
+        advantages: [
+            'Suitable for earthquake resistant structures',
+            'High ductility',
+            'Higher energy consumption capacity',
+            'ACI Code and BNBC certified',
+            'Excellent durability',
+        ],
+    },
+];
+
+// স্লাইডের টেবিলটি প্রতিটি গ্রেডের জন্য দুই কলামে সাল সাজানো ছিল;
+// এখানে গ্রেড অনুযায়ী এক সারিতে আনা হয়েছে, পড়তে সহজ হয়।
+// 420DWR এ ৮ মি.মি. নেই — টেবিলে ওই ঘরটি ফাঁকা ছিল।
+const SIZES = [
+    { grade: '500CWR', mm: [8, 10, 12, 16, 20, 22, 25, 28, 32, 40] },
+    { grade: '500DWR', mm: [8, 10, 12, 16, 20, 22, 25, 28, 32, 40] },
+    { grade: '420DWR', mm: [10, 12, 16, 20, 22, 25, 28, 32, 40] },
+];
+
+const APPLICATIONS = [
+    { icon: Layers, name: 'Piling foundation' },
+    { icon: Grid3x3, name: 'Slab construction' },
+    { icon: Building, name: 'Constructing pillars' },
+];
+
 const ProductRangePage = () => {
-  const containerRef = useRef(null);
-  const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+    const rootRef = useRef(null);
+    const [isMobile, setIsMobile] = useState(false);
 
-  React.useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    // ── API: অ্যাডমিন থেকে যোগ করা প্রোডাক্ট ─────────────────────────
+    const [products, setProducts] = useState([]);
+    const [loadingProducts, setLoadingProducts] = useState(true);
 
-  useGSAP(() => {
-    gsap.fromTo('.pr-hero-tag', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, delay: 0.2, ease: 'power3.out' });
-    gsap.fromTo('.pr-hero-title', { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 1, delay: 0.4, ease: 'power3.out' });
-    gsap.fromTo('.pr-hero-sub', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, delay: 0.7, ease: 'power3.out' });
+    useEffect(() => {
+        let cancelled = false;
+        fetch('/api/products')
+            .then((r) => r.json())
+            .then((data) => { if (!cancelled && Array.isArray(data)) setProducts(data); })
+            .catch(() => {})
+            .finally(() => { if (!cancelled) setLoadingProducts(false); });
+        return () => { cancelled = true; };
+    }, []);
+    // ─────────────────────────────────────────────────────────────────
 
-    products.forEach((_, i) => {
-      const el = document.querySelector(`.pr-card-${i}`);
-      if (!el) return;
-      ScrollTrigger.create({
-        trigger: el,
-        start: 'top 88%',
-        onEnter: () => gsap.to(el, { opacity: 1, y: 0, duration: 0.7, delay: i * 0.12, ease: 'power3.out' }),
-      });
-    });
+    useEffect(() => {
+        const onResize = () => setIsMobile(window.innerWidth < 900);
+        onResize();
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+    }, []);
 
-    ScrollTrigger.create({
-      trigger: '.pr-compare-section',
-      start: 'top 88%',
-      onEnter: () => gsap.to('.pr-compare-section', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }),
-    });
-  }, { scope: containerRef });
+    useGSAP(() => {
+        gsap.utils.toArray('.pr-reveal').forEach((el) => {
+            gsap.from(el, {
+                y: 38, opacity: 0, duration: 0.75, ease: 'power3.out',
+                scrollTrigger: { trigger: el, start: 'top 86%' },
+            });
+        });
+    }, { scope: rootRef, dependencies: [products.length] });
 
-  return (
-    <div ref={containerRef} style={{ background: 'var(--primary)', color: 'var(--text)', minHeight: '100vh', paddingTop: '80px', overflowX: 'hidden' }}>
+    const askForQuote = () => window.dispatchEvent(new CustomEvent('open-quote'));
 
-      <section style={{ padding: isMobile ? '56px 24px 40px' : '80px 40px 56px', borderBottom: '1px solid var(--glass-border)', position: 'relative', overflow: 'hidden', textAlign: 'center' }}>
-        <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '600px', height: '250px', background: 'radial-gradient(ellipse, rgba(227,24,45,0.16) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        <div style={{ maxWidth: '860px', margin: '0 auto' }}>
-          <div className="pr-hero-tag" style={{ fontSize: '11px', letterSpacing: '4px', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '18px', opacity: 0 }}>Product Line</div>
-          <h1 className="pr-hero-title" style={{ fontSize: 'clamp(32px,5vw,54px)', fontWeight: 900, lineHeight: 1.05, textTransform: 'uppercase', letterSpacing: '-1px', marginBottom: '20px', opacity: 0, fontFamily: 'var(--font-heading)' }}>
-            Our Product <span style={{ color: 'var(--accent)' }}>Range</span>
-          </h1>
-          <p className="pr-hero-sub" style={{ fontSize: isMobile ? '14px' : '15px', color: 'var(--subtext)', maxWidth: '540px', margin: '0 auto', lineHeight: 1.8, opacity: 0 }}>
-            Premium grade reinforcing steel engineered for Bangladesh's most demanding structures.
-          </p>
+    const heading = (eyebrow, title) => (
+        <div className="pr-reveal" style={{ marginBottom: SECTION_PAD }}>
+            <span style={{
+                fontFamily: 'var(--font-main)', fontSize: '0.72rem', fontWeight: 700,
+                letterSpacing: '0.28em', color: 'var(--accent)',
+            }}>
+                {eyebrow}
+            </span>
+            <h2 style={{
+                fontFamily: 'var(--font-heading)', fontSize: 'clamp(1.7rem, 3.4vw, 2.6rem)',
+                fontWeight: 800, margin: '0.8rem 0 0', letterSpacing: '0.02em',
+                textTransform: 'none',
+            }}>
+                {title}
+            </h2>
         </div>
-      </section>
+    );
 
-      <section style={{ padding: isMobile ? '40px 20px 48px' : '60px 40px 64px' }}>
-        <div style={{
-          maxWidth: '1060px',
-          margin: '0 auto',
-          display: 'grid',
-          gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-          gap: '24px',
-          alignItems: 'stretch',
-        }}>
-          {products.map((product, i) => (
-            <ProductCard key={product.id} product={product} index={i} />
-          ))}
+    return (
+        <div
+            ref={rootRef}
+            style={{ background: 'var(--primary)', color: 'var(--text)', minHeight: '100vh', overflowX: 'hidden' }}
+        >
+            <PageBanner
+                image="/product-range-banner.jpeg"
+                label="PRODUCTS"
+                title="Reinforcement built for"
+                accent="Strength"
+                crumbs={[
+                    { label: 'Home', to: '/' },
+                    { label: 'Products', to: '/products' },
+                    { label: 'Our Product Range' },
+                ]}
+            />
+
+            {/* ---------------------------------------------------------- */}
+            {/* INTRO */}
+            {/* ---------------------------------------------------------- */}
+            <section style={{
+                minHeight: 'auto', display: 'block',
+                ...CONTAINER, paddingTop: '30px', paddingBottom: '30px',
+            }}>
+                <p className="pr-reveal" style={{
+                    fontFamily: 'var(--font-main)',
+                    fontSize: 'clamp(1rem, 1.5vw, 1.22rem)',
+                    lineHeight: 1.8, color: 'var(--text)', margin: 0, maxWidth: '62ch',
+                }}>
+                    Anwar Ispat produces deformed reinforcement bars using patented TMT technology from
+                    Belgium, tested batch by batch and certified to BSTI and ISO standards.
+                </p>
+            </section>
+
+            {/* ---------------------------------------------------------- */}
+            {/* GRADES */}
+            {/* ---------------------------------------------------------- */}
+            <section style={{
+                minHeight: 'auto', display: 'block',
+                paddingTop: SECTION_PAD, paddingBottom: SECTION_PAD,
+                paddingLeft: 0, paddingRight: 0,
+                background: 'var(--glass)',
+                borderTop: '1px solid var(--glass-border)',
+                borderBottom: '1px solid var(--glass-border)',
+            }}>
+                <div style={CONTAINER}>
+                    {heading('OUR GRADES', 'Two grades, two jobs')}
+
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+                        gap: 'clamp(1rem, 2vw, 1.75rem)',
+                        alignItems: 'start',
+                    }}>
+                        {GRADES.map((g) => (
+                            <article key={g.name} className="pr-reveal" style={{
+                                background: 'var(--surface)',
+                                border: '1px solid var(--glass-border)',
+                                borderTop: '3px solid var(--accent)',
+                                borderRadius: '4px',
+                                padding: 'clamp(1.5rem, 2.8vw, 2.2rem)',
+                            }}>
+                                <h3 style={{
+                                    fontFamily: 'var(--font-heading)',
+                                    fontSize: 'clamp(1.3rem, 2.4vw, 1.8rem)',
+                                    fontWeight: 800, letterSpacing: '0.03em', margin: 0,
+                                }}>
+                                    {g.name}
+                                </h3>
+                                <p style={{
+                                    fontFamily: 'var(--font-main)', fontSize: '0.78rem',
+                                    letterSpacing: '0.14em', textTransform: 'uppercase',
+                                    color: 'var(--accent)', margin: '0.5rem 0 1.5rem',
+                                }}>
+                                    {g.tag}
+                                </p>
+
+                                <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+                                    {g.advantages.map((a) => (
+                                        <li key={a} style={{
+                                            display: 'grid', gridTemplateColumns: '18px 1fr',
+                                            gap: '0.7rem', alignItems: 'start',
+                                            padding: '0.55rem 0',
+                                            borderBottom: '1px solid var(--glass-border)',
+                                        }}>
+                                            <Check size={15} color="var(--accent)" style={{ marginTop: '0.28rem' }} />
+                                            <span style={{
+                                                fontFamily: 'var(--font-main)', fontSize: '0.94rem',
+                                                lineHeight: 1.65, color: 'var(--subtext)',
+                                            }}>
+                                                {a}
+                                            </span>
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                <button
+                                    onClick={askForQuote}
+                                    style={{
+                                        marginTop: '1.6rem', width: '100%',
+                                        background: 'var(--accent)', color: '#fff', border: 'none',
+                                        padding: '0.85rem 1.5rem', borderRadius: '4px',
+                                        fontFamily: 'var(--font-main)', fontSize: '0.78rem',
+                                        fontWeight: 700, letterSpacing: '0.14em',
+                                        textTransform: 'uppercase', cursor: 'pointer',
+                                    }}
+                                >
+                                    Request a quotation
+                                </button>
+                            </article>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* ---------------------------------------------------------- */}
+            {/* APPLICATIONS */}
+            {/* ---------------------------------------------------------- */}
+            <section style={{
+                minHeight: 'auto', display: 'block',
+                paddingTop: SECTION_PAD, paddingBottom: SECTION_PAD,
+                paddingLeft: 0, paddingRight: 0,
+            }}>
+                <div style={CONTAINER}>
+                    {heading('WHERE IT GOES', 'Built for strength')}
+
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+                        gap: 'clamp(1rem, 2vw, 1.75rem)',
+                    }}>
+                        {APPLICATIONS.map(({ icon: Icon, name }) => (
+                            <div key={name} className="pr-reveal" style={{
+                                display: 'flex', alignItems: 'center', gap: '1rem',
+                                padding: '1.15rem 0',
+                                borderTop: '1px solid var(--glass-border)',
+                            }}>
+                                <Icon size={22} color="var(--accent)" />
+                                <span style={{
+                                    fontFamily: 'var(--font-heading)',
+                                    fontSize: 'clamp(1rem, 1.5vw, 1.15rem)',
+                                    fontWeight: 800, letterSpacing: '0.03em',
+                                    textTransform: 'none',
+                                }}>
+                                    {name}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* ---------------------------------------------------------- */}
+            {/* SIZES */}
+            {/* ---------------------------------------------------------- */}
+            <section style={{
+                minHeight: 'auto', display: 'block',
+                paddingTop: SECTION_PAD, paddingBottom: SECTION_PAD,
+                paddingLeft: 0, paddingRight: 0,
+                background: 'var(--glass)',
+                borderTop: '1px solid var(--glass-border)',
+                borderBottom: '1px solid var(--glass-border)',
+            }}>
+                <div style={CONTAINER}>
+                    {heading('SPECIFICATIONS', 'Available diameters')}
+
+                    {SIZES.map(({ grade, mm }) => (
+                        <div key={grade} className="pr-reveal" style={{
+                            display: 'grid',
+                            gridTemplateColumns: isMobile ? '1fr' : '150px 1fr',
+                            gap: isMobile ? '0.75rem' : '1.5rem',
+                            alignItems: 'center',
+                            padding: '1.15rem 0',
+                            borderTop: '1px solid var(--glass-border)',
+                        }}>
+                            <span style={{
+                                fontFamily: 'var(--font-heading)',
+                                fontSize: 'clamp(1rem, 1.5vw, 1.15rem)',
+                                fontWeight: 800, letterSpacing: '0.04em',
+                            }}>
+                                {grade}
+                            </span>
+
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                {mm.map((d) => (
+                                    <span key={d} style={{
+                                        fontFamily: 'var(--font-main)', fontSize: '0.82rem',
+                                        fontWeight: 600, color: 'var(--text)',
+                                        border: '1px solid var(--glass-border)',
+                                        borderRadius: '3px',
+                                        padding: '0.35rem 0.7rem',
+                                        background: 'var(--primary)',
+                                    }}>
+                                        {d} mm
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+
+                    <p style={{
+                        fontFamily: 'var(--font-main)', fontSize: '0.85rem',
+                        color: 'var(--subtext)', margin: '1.4rem 0 0',
+                        paddingTop: '1.15rem', borderTop: '1px solid var(--glass-border)',
+                    }}>
+                        420DWR is not produced in 8 mm. For any size or quantity, send us the
+                        requirement and we will confirm availability.
+                    </p>
+                </div>
+            </section>
+
+            {/* ---------------------------------------------------------- */}
+            {/* CATALOGUE — অ্যাডমিন প্যানেল থেকে যোগ করা প্রোডাক্ট */}
+            {/* ---------------------------------------------------------- */}
+            {(loadingProducts || products.length > 0) && (
+                <section style={{
+                    minHeight: 'auto', display: 'block',
+                    paddingTop: SECTION_PAD,
+                    paddingBottom: `calc(${SECTION_PAD} * 1.4)`,
+                    paddingLeft: 0, paddingRight: 0,
+                }}>
+                    <div style={CONTAINER}>
+                        {heading('CATALOGUE', 'From our product line')}
+
+                        {loadingProducts ? (
+                            <p style={{ color: 'var(--subtext)', fontSize: '0.95rem', margin: 0 }}>
+                                Loading products…
+                            </p>
+                        ) : (
+                            <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: isMobile
+                                    ? 'repeat(auto-fit, minmax(260px, 1fr))'
+                                    : 'repeat(3, 1fr)',
+                                gap: 'clamp(1rem, 1.8vw, 1.5rem)',
+                            }}>
+                                {products.map((p) => (
+                                    <article key={p.id} className="pr-reveal" style={{
+                                        border: '1px solid var(--glass-border)',
+                                        borderRadius: '4px',
+                                        overflow: 'hidden',
+                                        background: 'var(--surface)',
+                                        display: 'flex', flexDirection: 'column',
+                                    }}>
+                                        <div style={{
+                                            aspectRatio: '4 / 3',
+                                            background: 'var(--glass)',
+                                            borderBottom: '1px solid var(--glass-border)',
+                                        }}>
+                                            <img
+                                                src={p.image_url || '/product_image.png'}
+                                                alt={p.title}
+                                                loading="lazy"
+                                                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                                            />
+                                        </div>
+
+                                        <div style={{ padding: 'clamp(1.1rem, 2vw, 1.5rem)', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                                            <h3 style={{
+                                                fontFamily: 'var(--font-heading)',
+                                                fontSize: 'clamp(1.02rem, 1.5vw, 1.2rem)',
+                                                fontWeight: 800, letterSpacing: '0.03em',
+                                                margin: '0 0 0.6rem', textTransform: 'none',
+                                            }}>
+                                                {p.title}
+                                            </h3>
+
+                                            {p.description && (
+                                                <p style={{
+                                                    fontFamily: 'var(--font-main)', fontSize: '0.92rem',
+                                                    lineHeight: 1.75, color: 'var(--subtext)',
+                                                    margin: '0 0 1.2rem',
+                                                }}>
+                                                    {p.description}
+                                                </p>
+                                            )}
+
+                                            <button
+                                                onClick={askForQuote}
+                                                style={{
+                                                    marginTop: 'auto', alignSelf: 'flex-start',
+                                                    background: 'transparent', color: 'var(--accent)',
+                                                    border: '1px solid var(--accent)',
+                                                    padding: '0.6rem 1.2rem', borderRadius: '4px',
+                                                    fontFamily: 'var(--font-main)', fontSize: '0.74rem',
+                                                    fontWeight: 700, letterSpacing: '0.12em',
+                                                    textTransform: 'uppercase', cursor: 'pointer',
+                                                }}
+                                            >
+                                                Get a quote
+                                            </button>
+                                        </div>
+                                    </article>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </section>
+            )}
         </div>
-      </section>
-
-      <section className="pr-compare-section" style={{
-        maxWidth: '1060px', margin: '0 auto',
-        padding: isMobile ? '0 20px 56px' : '0 40px 80px',
-        opacity: 0, transform: 'translateY(30px)',
-      }}>
-        <div style={{ borderTop: '1px solid var(--glass-border)', paddingTop: isMobile ? '40px' : '56px' }}>
-          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <div style={{ fontSize: '11px', letterSpacing: '4px', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '10px' }}>Side by Side</div>
-            <h2 style={{ fontSize: isMobile ? '26px' : '32px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '-0.5px', fontFamily: 'var(--font-heading)' }}>Product Comparison</h2>
-          </div>
-          <div style={{ border: '1px solid var(--glass-border)', borderRadius: '12px', overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr>
-                  <th style={{ background: 'rgba(227,24,45,0.08)', padding: '14px 20px', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--accent)', textAlign: 'left', borderBottom: '1px solid var(--glass-border)' }}>Feature</th>
-                  <th style={{ background: 'rgba(227,24,45,0.08)', padding: '14px 20px', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--accent)', textAlign: 'center', borderBottom: '1px solid var(--glass-border)' }}>500DWR</th>
-                  <th style={{ background: 'rgba(227,24,45,0.08)', padding: '14px 20px', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--accent)', textAlign: 'center', borderBottom: '1px solid var(--glass-border)' }}>420DWR</th>
-                  <th style={{ background: 'rgba(227,24,45,0.08)', padding: '14px 20px', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--accent)', textAlign: 'center', borderBottom: '1px solid var(--glass-border)' }}>500W TMT</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ['High Strength Steel', true, false, true],
-                  ['Earthquake Resistance', false, true, false],
-                  ['Superior Weldability', true, false, false],
-                  ['ACI & BNBC Certified', false, true, true],
-                  ['TS/YS Ratio > 1.25', true, false, false],
-                  ['High Ductility', false, true, false],
-                  ['Weather Resistant', true, false, true],
-                  ['Excellent Durability', true, true, true],
-                  ['Thermo Mechanical Treatment', false, false, true],
-                  ['Corrosion Resistance', false, false, true],
-                ].map(([feature, v1, v2, v3], i) => (
-                  <tr key={i} style={{ borderBottom: '1px solid var(--glass-border)' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.02)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
-                    <td style={{ padding: '12px 20px', fontSize: '13px', color: 'var(--subtext)' }}>{feature}</td>
-                    <td style={{ padding: '12px 20px', textAlign: 'center', fontSize: '15px', fontWeight: 700, color: v1 ? 'var(--accent)' : 'rgba(255,255,255,0.15)' }}>{v1 ? '✓' : '—'}</td>
-                    <td style={{ padding: '12px 20px', textAlign: 'center', fontSize: '15px', fontWeight: 700, color: v2 ? 'var(--accent)' : 'rgba(255,255,255,0.15)' }}>{v2 ? '✓' : '—'}</td>
-                    <td style={{ padding: '12px 20px', textAlign: 'center', fontSize: '15px', fontWeight: 700, color: v3 ? 'var(--accent)' : 'rgba(255,255,255,0.15)' }}>{v3 ? '✓' : '—'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-    </div>
-  );
+    );
 };
 
 export default ProductRangePage;
