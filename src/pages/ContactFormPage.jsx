@@ -31,7 +31,7 @@ const ContactFormPage = () => {
         {/* COMPACT HEADER */}
         <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', marginBottom:'32px', paddingBottom:'24px', borderBottom:'1px solid var(--glass-border)', flexWrap:'wrap', gap:'12px' }}>
           <div>
-            <div style={{ fontSize:'10px', letterSpacing:'4px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'6px' }}>// Get In Touch</div>
+            <div style={{ fontSize:'10px', letterSpacing:'4px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'6px' }}>Get In Touch</div>
             <h1 style={{ fontSize:'clamp(28px,4vw,48px)', fontWeight:900, textTransform:'uppercase', letterSpacing:'-1px', lineHeight:1, fontFamily:'var(--font-heading)' }}>
               Contact <span style={{ color:'var(--accent)' }}>Form</span>
             </h1>

@@ -266,7 +266,7 @@ const ProductRangePage = () => {
       <section style={{ padding: isMobile ? '56px 24px 40px' : '80px 40px 56px', borderBottom: '1px solid var(--glass-border)', position: 'relative', overflow: 'hidden', textAlign: 'center' }}>
         <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '600px', height: '250px', background: 'radial-gradient(ellipse, rgba(227,24,45,0.16) 0%, transparent 70%)', pointerEvents: 'none' }} />
         <div style={{ maxWidth: '860px', margin: '0 auto' }}>
-          <div className="pr-hero-tag" style={{ fontSize: '11px', letterSpacing: '4px', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '18px', opacity: 0 }}>// Product Line</div>
+          <div className="pr-hero-tag" style={{ fontSize: '11px', letterSpacing: '4px', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '18px', opacity: 0 }}>Product Line</div>
           <h1 className="pr-hero-title" style={{ fontSize: 'clamp(32px,5vw,54px)', fontWeight: 900, lineHeight: 1.05, textTransform: 'uppercase', letterSpacing: '-1px', marginBottom: '20px', opacity: 0, fontFamily: 'var(--font-heading)' }}>
             Our Product <span style={{ color: 'var(--accent)' }}>Range</span>
           </h1>
@@ -298,7 +298,7 @@ const ProductRangePage = () => {
       }}>
         <div style={{ borderTop: '1px solid var(--glass-border)', paddingTop: isMobile ? '40px' : '56px' }}>
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <div style={{ fontSize: '11px', letterSpacing: '4px', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '10px' }}>// Side by Side</div>
+            <div style={{ fontSize: '11px', letterSpacing: '4px', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '10px' }}>Side by Side</div>
             <h2 style={{ fontSize: isMobile ? '26px' : '32px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '-0.5px', fontFamily: 'var(--font-heading)' }}>Product Comparison</h2>
           </div>
           <div style={{ border: '1px solid var(--glass-border)', borderRadius: '12px', overflow: 'hidden' }}>

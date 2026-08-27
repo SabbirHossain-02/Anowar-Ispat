@@ -94,7 +94,7 @@ const HeritagePage = () => {
 
       <section style={{ position: 'relative', padding: isMobile ? '60px 20px 40px' : '80px 40px 60px', textAlign: 'center', borderBottom: '1px solid #1a1a1a', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '600px', height: '300px', background: 'radial-gradient(ellipse, rgba(180,20,20,0.2) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        <div ref={heroTagRef} style={{ fontSize: '11px', letterSpacing: '4px', color: '#E24B4A', textTransform: 'uppercase', marginBottom: '20px', opacity: 0, transform: 'translateY(20px)' }}>// Our Legacy</div>
+        <div ref={heroTagRef} style={{ fontSize: '11px', letterSpacing: '4px', color: '#E24B4A', textTransform: 'uppercase', marginBottom: '20px', opacity: 0, transform: 'translateY(20px)' }}>Our Legacy</div>
         <h1 style={{ fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 700, lineHeight: 1.1, marginBottom: '20px' }}>
           Built on <span style={{ color: '#E24B4A' }}>48 Years</span><br />of Steel Strength
         </h1>
@@ -125,7 +125,7 @@ const HeritagePage = () => {
       </div>
 
       <div style={{ padding: isMobile ? '40px 20px 0' : '56px 40px 0', textAlign: 'center' }}>
-        <div style={{ fontSize: '11px', letterSpacing: '4px', color: '#E24B4A', textTransform: 'uppercase', marginBottom: '12px' }}>// AIL Timeline</div>
+        <div style={{ fontSize: '11px', letterSpacing: '4px', color: '#E24B4A', textTransform: 'uppercase', marginBottom: '12px' }}>AIL Timeline</div>
         <div style={{ fontSize: '36px', fontWeight: 700, marginBottom: '12px' }}>Anwar Ispat: Strength in Every Build</div>
         <div style={{ fontSize: '15px', color: 'var(--subtext)', lineHeight: 1.8, maxWidth: '640px', margin: '0 auto' }}>From Khaled Iron to Bangladesh's most trusted steel brand  a journey of innovation and quality.</div>
       </div>
@@ -169,7 +169,7 @@ const HeritagePage = () => {
 
       <div style={{ padding: isMobile ? '0 20px 60px' : '0 40px 80px', background: 'var(--primary)', borderTop: '1px solid var(--glass-border)' }}>
         <div style={{ padding: '56px 0 32px', textAlign: 'center' }}>
-          <div style={{ fontSize: '11px', letterSpacing: '4px', color: '#E24B4A', textTransform: 'uppercase', marginBottom: '12px' }}>// A Legacy to Value and Preserve</div>
+          <div style={{ fontSize: '11px', letterSpacing: '4px', color: '#E24B4A', textTransform: 'uppercase', marginBottom: '12px' }}>A Legacy to Value and Preserve</div>
           <div style={{ fontSize: '36px', fontWeight: 700, marginBottom: '12px' }}>The Anwar Group Heritage</div>
           <div style={{ fontSize: '15px', color: 'var(--subtext)', lineHeight: 1.8, maxWidth: '640px', margin: '0 auto' }}>A Legacy to Value and Enjoy in the Present and to Preserve and Pass on to Future Generations</div>
         </div>

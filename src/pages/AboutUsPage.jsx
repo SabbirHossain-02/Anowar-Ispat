@@ -156,7 +156,7 @@ const AboutUsPage = () => {
                             fontFamily: 'var(--font-main)', fontSize: '0.72rem', fontWeight: 700,
                             letterSpacing: '0.28em', color: 'var(--accent)',
                         }}>
-                            // WHY ANWAR ISPAT
+                            WHY ANWAR ISPAT
                         </span>
                         <h2 style={{
                             fontFamily: 'var(--font-heading)', fontSize: 'clamp(1.9rem, 4vw, 3rem)',
@@ -208,7 +208,7 @@ const AboutUsPage = () => {
                             fontFamily: 'var(--font-main)', fontSize: '0.72rem', fontWeight: 700,
                             letterSpacing: '0.28em', color: 'var(--accent)',
                         }}>
-                            // OUR LEADERSHIP
+                            OUR LEADERSHIP
                         </span>
                         <h2 style={{
                             fontFamily: 'var(--font-heading)', fontSize: 'clamp(1.9rem, 4vw, 3rem)',

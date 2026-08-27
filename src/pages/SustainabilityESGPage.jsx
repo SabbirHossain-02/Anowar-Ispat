@@ -129,7 +129,7 @@ const SustainabilityESGPage = () => {
       <section style={{ padding: isMobile ? '56px 24px 40px' : '80px 40px 56px', borderBottom: '1px solid var(--glass-border)', position: 'relative', overflow: 'hidden', textAlign: 'center' }}>
         <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '700px', height: '280px', background: 'radial-gradient(ellipse, rgba(227,24,45,0.13) 0%, transparent 70%)', pointerEvents: 'none' }} />
         <div style={{ maxWidth: '860px', margin: '0 auto' }}>
-          <div className="esg-hero-tag" style={{ fontSize: '11px', letterSpacing: '4px', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '18px', opacity: 0 }}>// Environmental, Social, Governance</div>
+          <div className="esg-hero-tag" style={{ fontSize: '11px', letterSpacing: '4px', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '18px', opacity: 0 }}>Environmental, Social, Governance</div>
           <h1 className="esg-hero-title" style={{ fontSize: 'clamp(32px,5vw,58px)', fontWeight: 900, lineHeight: 1.05, textTransform: 'uppercase', letterSpacing: '-1px', marginBottom: '20px', opacity: 0, fontFamily: 'var(--font-heading)' }}>
             Sustainable <span style={{ color: 'var(--accent)' }}>Steel</span><br />Development
           </h1>
@@ -173,7 +173,7 @@ const SustainabilityESGPage = () => {
       <section style={{ padding: isMobile ? '48px 24px' : '60px 40px' }}>
         <div style={{ maxWidth: '1040px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-            <div className="esg-fade" data-delay="0" style={{ fontSize: '11px', letterSpacing: '4px', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '10px', opacity: 0, transform: 'translateY(20px)' }}>// Three Pillars</div>
+            <div className="esg-fade" data-delay="0" style={{ fontSize: '11px', letterSpacing: '4px', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '10px', opacity: 0, transform: 'translateY(20px)' }}>Three Pillars</div>
             <h2 className="esg-fade" data-delay="0.1" style={{ fontSize: isMobile ? '26px' : '32px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '-0.5px', fontFamily: 'var(--font-heading)', opacity: 0, transform: 'translateY(20px)' }}>Our ESG Framework</h2>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3,1fr)', gap: '20px' }}>
@@ -203,7 +203,7 @@ const SustainabilityESGPage = () => {
       <section style={{ padding: isMobile ? '0 24px 56px' : '0 40px 64px', borderTop: '1px solid var(--glass-border)' }}>
         <div style={{ maxWidth: '1040px', margin: '0 auto', paddingTop: isMobile ? '40px' : '56px' }}>
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <div className="esg-fade" data-delay="0" style={{ fontSize: '11px', letterSpacing: '4px', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '10px', opacity: 0, transform: 'translateY(20px)' }}>// United Nations</div>
+            <div className="esg-fade" data-delay="0" style={{ fontSize: '11px', letterSpacing: '4px', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '10px', opacity: 0, transform: 'translateY(20px)' }}>United Nations</div>
             <h2 className="esg-fade" data-delay="0.1" style={{ fontSize: isMobile ? '24px' : '30px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '-0.5px', fontFamily: 'var(--font-heading)', opacity: 0, transform: 'translateY(20px)' }}>SDG Commitments</h2>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(3,1fr)', gap: '12px' }}>
@@ -223,7 +223,7 @@ const SustainabilityESGPage = () => {
       <section style={{ padding: isMobile ? '0 24px 60px' : '0 40px 80px', borderTop: '1px solid var(--glass-border)' }}>
         <div style={{ maxWidth: '1040px', margin: '0 auto', paddingTop: isMobile ? '40px' : '56px', display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '40px', alignItems: 'start' }}>
           <div className="esg-fade" data-delay="0" style={{ opacity: 0, transform: 'translateY(30px)' }}>
-            <div style={{ fontSize: '11px', letterSpacing: '4px', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '10px' }}>// Our Commitment</div>
+            <div style={{ fontSize: '11px', letterSpacing: '4px', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '10px' }}>Our Commitment</div>
             <h2 style={{ fontSize: isMobile ? '22px' : '26px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '-0.5px', fontFamily: 'var(--font-heading)', marginBottom: '22px' }}>Sustainable Business Practices</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               {['At Anwar Group of Industries, we recognize that our operations have an impact on the environment, and we are committed to minimizing that impact through sustainable practices.',

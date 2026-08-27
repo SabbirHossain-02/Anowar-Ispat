@@ -193,7 +193,7 @@ const VisionMissionPage = () => {
                             fontFamily: 'var(--font-main)', fontSize: '0.72rem', fontWeight: 700,
                             letterSpacing: '0.28em', color: 'var(--accent)',
                         }}>
-                            // OUR VALUES
+                            OUR VALUES
                         </span>
                         <h2 style={{
                             fontFamily: 'var(--font-heading)', fontSize: 'clamp(1.9rem, 4vw, 3rem)',

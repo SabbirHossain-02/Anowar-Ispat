@@ -149,7 +149,7 @@ const SustainabilityCSRPage = () => {
       <section style={{ padding: isMobile ? '56px 24px 40px' : '80px 40px 56px', borderBottom: '1px solid var(--glass-border)', position: 'relative', overflow: 'hidden', textAlign: 'center' }}>
         <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '700px', height: '280px', background: 'radial-gradient(ellipse, rgba(227,24,45,0.13) 0%, transparent 70%)', pointerEvents: 'none' }} />
         <div style={{ maxWidth: '860px', margin: '0 auto' }}>
-          <div className="csr-hero-tag" style={{ fontSize: '11px', letterSpacing: '4px', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '18px', opacity: 0 }}>// Corporate Social Responsibility</div>
+          <div className="csr-hero-tag" style={{ fontSize: '11px', letterSpacing: '4px', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '18px', opacity: 0 }}>Corporate Social Responsibility</div>
           <h1 className="csr-hero-title" style={{ fontSize: 'clamp(32px,5vw,58px)', fontWeight: 900, lineHeight: 1.05, textTransform: 'uppercase', letterSpacing: '-1px', marginBottom: '20px', opacity: 0, fontFamily: 'var(--font-heading)' }}>
             Community <span style={{ color: 'var(--accent)' }}>Outreach</span><br />& Welfare
           </h1>
@@ -189,7 +189,7 @@ const SustainabilityCSRPage = () => {
       <section style={{ padding: isMobile ? '48px 24px' : '60px 40px' }}>
         <div style={{ maxWidth: '1040px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-            <div className="csr-fade" data-delay="0" style={{ fontSize: '11px', letterSpacing: '4px', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '10px', opacity: 0, transform: 'translateY(20px)' }}>// CSR Initiatives</div>
+            <div className="csr-fade" data-delay="0" style={{ fontSize: '11px', letterSpacing: '4px', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '10px', opacity: 0, transform: 'translateY(20px)' }}>CSR Initiatives</div>
             <h2 className="csr-fade" data-delay="0.1" style={{ fontSize: isMobile ? '26px' : '32px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '-0.5px', fontFamily: 'var(--font-heading)', opacity: 0, transform: 'translateY(20px)' }}>What We Do</h2>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3,1fr)', gap: '20px' }}>
@@ -211,7 +211,7 @@ const SustainabilityCSRPage = () => {
       <section style={{ padding: isMobile ? '0 24px 56px' : '0 40px 64px', borderTop: '1px solid var(--glass-border)' }}>
         <div style={{ maxWidth: '1040px', margin: '0 auto', paddingTop: isMobile ? '40px' : '56px' }}>
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <div className="csr-fade" data-delay="0" style={{ fontSize: '11px', letterSpacing: '4px', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '10px', opacity: 0, transform: 'translateY(20px)' }}>// Our Impact</div>
+            <div className="csr-fade" data-delay="0" style={{ fontSize: '11px', letterSpacing: '4px', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '10px', opacity: 0, transform: 'translateY(20px)' }}>Our Impact</div>
             <h2 className="csr-fade" data-delay="0.1" style={{ fontSize: isMobile ? '24px' : '30px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '-0.5px', fontFamily: 'var(--font-heading)', opacity: 0, transform: 'translateY(20px)' }}>Making a Difference</h2>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4,1fr)', gap: '14px' }}>
@@ -229,7 +229,7 @@ const SustainabilityCSRPage = () => {
       <section style={{ padding: isMobile ? '0 24px 60px' : '0 40px 80px', borderTop: '1px solid var(--glass-border)' }}>
         <div style={{ maxWidth: '1040px', margin: '0 auto', paddingTop: isMobile ? '40px' : '56px', display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '40px', alignItems: 'start' }}>
           <div className="csr-fade" data-delay="0" style={{ opacity: 0, transform: 'translateY(30px)' }}>
-            <div style={{ fontSize: '11px', letterSpacing: '4px', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '10px' }}>// Our Commitment</div>
+            <div style={{ fontSize: '11px', letterSpacing: '4px', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '10px' }}>Our Commitment</div>
             <h2 style={{ fontSize: isMobile ? '22px' : '26px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '-0.5px', fontFamily: 'var(--font-heading)', marginBottom: '22px' }}>Standing Close to Communities</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <p style={{ fontSize: '14px', color: 'var(--subtext)', lineHeight: 1.85, margin: 0 }}>Anwar Group and Anwar Ispat stand close to communities. We fund schools, distribute scholarships, and run medical camps to ensure quality healthcare and education for low-income families.</p>
