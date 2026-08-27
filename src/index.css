@@ -1159,6 +1159,98 @@ body.light-mode .hero-title.muted {
 }
 
 /* ============================================================
+   Why Anwar Ispat — বাক্সে না রেখে সম্পাদকীয় ধাঁচের তালিকা।
+   কার্ড গ্রিডে সব কার্ড সমান উচ্চতার হয় কিন্তু লেখা অসমান,
+   তাই ছোট লেখার নিচে ফাঁকা পড়ে থাকে। তালিকায় সেই সমস্যা নেই।
+   ============================================================ */
+.why-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: clamp(1rem, 2vw, 1.75rem);
+  align-items: start;
+  padding: clamp(1.5rem, 2.6vw, 2.1rem) 0;
+  border-top: 1px solid var(--glass-border);
+}
+
+.why-num {
+  font-family: var(--font-heading);
+  font-size: clamp(1.6rem, 2.6vw, 2.3rem);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--accent);
+  opacity: 0.42;
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.why-head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.7rem;
+}
+
+.why-icon {
+  color: var(--accent);
+  flex-shrink: 0;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.why-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.02rem, 1.5vw, 1.2rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.why-text {
+  font-family: var(--font-main);
+  font-size: 0.94rem;
+  line-height: 1.82;
+  color: var(--subtext);
+  margin: 0;
+  max-width: 46ch;
+}
+
+/* বাঁ প্রান্তে সরু লাল রেখা, হোভারে উপর থেকে নিচে নেমে আসে */
+.why-item::before {
+  content: '';
+  position: absolute;
+  left: calc(-1 * clamp(0.75rem, 1.4vw, 1.15rem));
+  top: clamp(1.5rem, 2.6vw, 2.1rem);
+  width: 2px;
+  height: 0;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (hover: hover) {
+  .why-item:hover::before {
+    height: calc(100% - 2 * clamp(1.5rem, 2.6vw, 2.1rem));
+  }
+
+  .why-item:hover .why-num {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+
+  .why-item:hover .why-icon {
+    transform: scale(1.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .why-item::before,
+  .why-num,
+  .why-icon {
+    transition: none;
+  }
+}
+
+/* ============================================================
    ভ্যালু কার্ড — ডিফল্টে পুরো ছবি + শিরোনাম, হোভারে ছবি ছোট
    হয়ে উপরে চলে যায় আর বিস্তারিত লেখা ফুটে ওঠে।
    ============================================================ */

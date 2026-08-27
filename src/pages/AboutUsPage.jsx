@@ -168,63 +168,23 @@ const AboutUsPage = () => {
 
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: isMobile
-                            ? 'repeat(auto-fit, minmax(260px, 1fr))'
-                            : 'repeat(3, 1fr)',
-                        gap: 'clamp(1rem, 1.6vw, 1.4rem)',
+                        gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+                        columnGap: 'clamp(2rem, 5vw, 4.5rem)',
                     }}>
                         {WHY.map(({ icon: Icon, title, body }, i) => (
-                            <article key={title} className="ab-reveal" style={{
-                                position: 'relative',
-                                background: 'var(--surface)',
-                                border: '1px solid var(--glass-border)',
-                                borderRadius: '16px',
-                                padding: 'clamp(1.4rem, 2.2vw, 1.8rem)',
-                                overflow: 'hidden',
-                            }}>
-                                {/* উপরে সরু লাল রেখা — কার্ডগুলো একসারিতে থাকলে
-                                    চোখ সহজে আলাদা করতে পারে */}
-                                <span aria-hidden="true" style={{
-                                    position: 'absolute', top: 0, left: 0,
-                                    width: '52px', height: '3px', background: 'var(--accent)',
-                                    borderRadius: '0 0 3px 0',
-                                }} />
-
-                                <span aria-hidden="true" style={{
-                                    position: 'absolute', top: '0.9rem', right: '1.1rem',
-                                    fontFamily: 'var(--font-heading)', fontSize: '2.6rem',
-                                    fontWeight: 800, lineHeight: 1,
-                                    color: 'var(--accent)', opacity: 0.1,
-                                }}>
+                            <div key={title} className="ab-reveal why-item">
+                                <span className="why-num" aria-hidden="true">
                                     {String(i + 1).padStart(2, '0')}
                                 </span>
 
-                                <span style={{
-                                    width: '44px', height: '44px', borderRadius: '12px',
-                                    background: 'rgba(227,24,45,0.12)',
-                                    border: '1px solid rgba(227,24,45,0.25)',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    marginBottom: '1.15rem',
-                                }}>
-                                    <Icon size={21} color="var(--accent)" />
-                                </span>
-
-                                <h3 style={{
-                                    fontFamily: 'var(--font-heading)',
-                                    fontSize: 'clamp(1.05rem, 1.5vw, 1.22rem)',
-                                    fontWeight: 800, letterSpacing: '0.03em',
-                                    margin: '0 0 0.7rem',
-                                }}>
-                                    {title}
-                                </h3>
-
-                                <p style={{
-                                    fontFamily: 'var(--font-main)', fontSize: '0.93rem',
-                                    lineHeight: 1.8, color: 'var(--subtext)', margin: 0,
-                                }}>
-                                    {body}
-                                </p>
-                            </article>
+                                <div>
+                                    <div className="why-head">
+                                        <Icon className="why-icon" size={19} />
+                                        <h3 className="why-title">{title}</h3>
+                                    </div>
+                                    <p className="why-text">{body}</p>
+                                </div>
+                            </div>
                         ))}
                     </div>
                 </div>
