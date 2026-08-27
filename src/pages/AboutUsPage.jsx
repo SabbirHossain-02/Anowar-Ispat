@@ -30,6 +30,15 @@ const LEADERSHIP = [
     },
 ];
 
+// পুরো পেজে একটাই স্পেসিং স্কেল — আগে প্রতি সেকশনে আলাদা clamp আর %
+// প্যাডিং ছিল, ফলে ফাঁকা জায়গা অনুমান করা যেত না এবং অনেক বেড়ে যেত
+const SECTION_PAD = 'clamp(2.25rem, 4vw, 3.5rem)';
+const CONTAINER = {
+    maxWidth: '1180px',
+    margin: '0 auto',
+    padding: '0 clamp(1.25rem, 5vw, 3rem)',
+};
+
 const AboutUsPage = () => {
     const rootRef = useRef(null);
     const bannerRef = useRef(null);
@@ -164,11 +173,11 @@ const AboutUsPage = () => {
             {/* ---------------------------------------------------------- */}
             {/* BREADCRUMB */}
             {/* ---------------------------------------------------------- */}
-            <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '1.75rem 5% 0' }}>
+            <div style={{ ...CONTAINER, paddingTop: '1.15rem' }}>
                 <nav style={{
                     display: 'flex', alignItems: 'center', gap: '0.6rem',
                     fontSize: '0.82rem', color: 'var(--subtext)',
-                    paddingBottom: '1.4rem', borderBottom: '1px solid var(--glass-border)',
+                    paddingBottom: '0.9rem', borderBottom: '1px solid var(--glass-border)',
                 }}>
                     <Link to="/" style={{ color: 'var(--subtext)', textDecoration: 'none' }}>Home</Link>
                     <span style={{ opacity: 0.5 }}>&gt;</span>
@@ -179,11 +188,12 @@ const AboutUsPage = () => {
             {/* ---------------------------------------------------------- */}
             {/* BACKGROUND */}
             {/* ---------------------------------------------------------- */}
-            <section style={{ maxWidth: '980px', margin: '0 auto', padding: 'clamp(3.5rem, 8vw, 6.5rem) 5%' }}>
+            <section style={{ ...CONTAINER, paddingTop: SECTION_PAD, paddingBottom: SECTION_PAD }}>
                 <p className="ab-reveal" style={{
                     fontFamily: 'var(--font-main)',
-                    fontSize: 'clamp(1.05rem, 2vw, 1.45rem)',
-                    lineHeight: 1.75, color: 'var(--text)', textAlign: 'center', margin: 0,
+                    fontSize: 'clamp(1rem, 1.5vw, 1.22rem)',
+                    lineHeight: 1.8, color: 'var(--text)', textAlign: 'center',
+                    margin: '0 auto', maxWidth: '860px',
                 }}>
                     As a proud concern of the century-old Anwar Group, Anwar Ispat has led the mild steel
                     industry since 1978. We were the first to introduce 60-grade steel to Bangladesh and
@@ -198,12 +208,13 @@ const AboutUsPage = () => {
             {/* LEADERSHIP */}
             {/* ---------------------------------------------------------- */}
             <section style={{
-                padding: 'clamp(3rem, 7vw, 5.5rem) 0 clamp(5rem, 10vw, 8rem)',
+                paddingTop: SECTION_PAD,
+                paddingBottom: `calc(${SECTION_PAD} * 1.4)`,
                 background: 'var(--glass)',
                 borderTop: '1px solid var(--glass-border)',
             }}>
-                <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 5%' }}>
-                    <div className="ab-reveal" style={{ marginBottom: 'clamp(2.5rem, 6vw, 4.5rem)' }}>
+                <div style={CONTAINER}>
+                    <div className="ab-reveal" style={{ marginBottom: SECTION_PAD }}>
                         <span style={{
                             fontFamily: 'var(--font-main)', fontSize: '0.72rem', fontWeight: 700,
                             letterSpacing: '0.28em', color: 'var(--accent)',
@@ -225,9 +236,9 @@ const AboutUsPage = () => {
                             style={{
                                 display: 'grid',
                                 gridTemplateColumns: isMobile ? '1fr' : '340px 1fr',
-                                gap: isMobile ? '1.75rem' : 'clamp(2.5rem, 5vw, 4.5rem)',
+                                gap: isMobile ? '1.5rem' : 'clamp(2rem, 4vw, 3.5rem)',
                                 alignItems: 'start',
-                                padding: 'clamp(2rem, 5vw, 3.5rem) 0',
+                                padding: `${SECTION_PAD} 0`,
                                 borderTop: i === 0 ? 'none' : '1px solid var(--glass-border)',
                                 direction: !isMobile && i % 2 === 1 ? 'rtl' : 'ltr',
                             }}
