@@ -1158,6 +1158,177 @@ body.light-mode .hero-title.muted {
   color: var(--subtext) !important;
 }
 
+/* ============================================================
+   ভ্যালু কার্ড — ডিফল্টে পুরো ছবি + শিরোনাম, হোভারে ছবি ছোট
+   হয়ে উপরে চলে যায় আর বিস্তারিত লেখা ফুটে ওঠে।
+   ============================================================ */
+.vmv-card {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #0C0C0E;
+  border: 1px solid var(--glass-border);
+  isolation: isolate;
+}
+
+.vmv-media {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 20px;
+  transition: inset 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+              border-radius 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.vmv-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ছবির ওপর নিচ থেকে গাঢ় হয়ে আসা আবরণ — শিরোনাম পড়ার জন্য */
+.vmv-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.35) 38%, transparent 65%);
+  transition: opacity 0.45s ease;
+  pointer-events: none;
+}
+
+.vmv-body {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1.4rem;
+  z-index: 2;
+  transition: bottom 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.vmv-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1rem, 1.5vw, 1.18rem);
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  line-height: 1.25;
+  margin: 0;
+  color: #fff;
+}
+
+.vmv-text {
+  font-family: var(--font-main);
+  font-size: 0.9rem;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.72);
+  margin: 0.85rem 0 0;
+  /* হোভারের আগে লেখাটা জায়গা নেবে না, তাই grid-rows দিয়ে ভাঁজ করা */
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.4s ease, margin 0.55s ease;
+}
+
+.vmv-text > span {
+  overflow: hidden;
+}
+
+.vmv-num {
+  position: absolute;
+  top: 1rem;
+  right: 1.2rem;
+  z-index: 2;
+  font-family: var(--font-heading);
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #fff;
+  opacity: 0.28;
+  transition: opacity 0.45s ease;
+}
+
+.vmv-plus {
+  position: absolute;
+  right: 1.2rem;
+  bottom: 1.3rem;
+  z-index: 3;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+}
+
+/* ---- হোভার অবস্থা (শুধু যেসব ডিভাইসে সত্যিই হোভার আছে) ---- */
+@media (hover: hover) {
+  .vmv-card:hover .vmv-media {
+    inset: 14px 14px 54% 14px;
+    border-radius: 14px;
+  }
+
+  .vmv-card:hover .vmv-media img {
+    transform: scale(1.06);
+  }
+
+  .vmv-card:hover .vmv-scrim {
+    opacity: 0;
+  }
+
+  .vmv-card:hover .vmv-text {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+  .vmv-card:hover .vmv-num {
+    opacity: 0.14;
+  }
+
+  .vmv-card:hover .vmv-plus {
+    transform: rotate(135deg);
+    opacity: 0;
+  }
+}
+
+/* টাচ ডিভাইসে হোভার নেই — তাই বিস্তারিত সবসময় দেখানো হয় */
+@media (hover: none) {
+  .vmv-media {
+    inset: 14px 14px 54% 14px;
+    border-radius: 14px;
+  }
+
+  .vmv-scrim {
+    opacity: 0;
+  }
+
+  .vmv-text {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+  .vmv-plus {
+    display: none;
+  }
+}
+
+/* যাঁদের অ্যানিমেশনে অস্বস্তি হয় */
+@media (prefers-reduced-motion: reduce) {
+  .vmv-media,
+  .vmv-media img,
+  .vmv-scrim,
+  .vmv-text,
+  .vmv-num,
+  .vmv-plus {
+    transition: none;
+  }
+}
+
 /* About পেজের ব্যানারের লেখা ছবির ওপর বসে, তাই দুই থিমেই সাদা থাকতে হয়।
    inline এ সাদা দিলে নিচের [style*="color: rgb(255,255,255)"] নিয়মটা
    লাইট মোডে সেটাকে কালো করে দেয় — তাই ক্লাস দিয়ে সেট করা হচ্ছে। */

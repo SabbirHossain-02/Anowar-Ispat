@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Eye, Target, Lightbulb, Layers, Leaf, Award, Users } from 'lucide-react';
+import { Eye, Target, Plus } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
@@ -16,27 +16,27 @@ const CONTAINER = {
 
 const VALUES = [
     {
-        icon: Lightbulb,
+        image: '/value-1.jpg',
         title: 'Continuous Innovation',
         text: 'Aspire to continuously introduce new products and services to support the economic growth of Bangladesh.',
     },
     {
-        icon: Layers,
+        image: '/value-2.jpg',
         title: 'Business Diversity',
         text: 'Strive to maintain our position as the most diversified group in Bangladesh, to respond efficiently to evolving customer needs and market trends.',
     },
     {
-        icon: Leaf,
+        image: '/value-3.jpg',
         title: 'Environmental Consciousness',
         text: 'Embrace environmental responsibility and social accountability by adhering to sustainable and ethical business practices.',
     },
     {
-        icon: Award,
+        image: '/value-4.jpg',
         title: 'Quality Leadership',
         text: 'Uphold a reputation for quality leadership in every industry we operate in by upholding the highest standards of quality in all our products and services.',
     },
     {
-        icon: Users,
+        image: '/value-5.jpg',
         title: 'Employee Friendliness',
         text: 'Facilitate professional growth of our people through investment in training and development programs.',
     },
@@ -203,57 +203,35 @@ const VisionMissionPage = () => {
                         </h2>
                     </div>
 
+                    {/* ৫টি কার্ড — auto-fit দিলে চওড়া স্ক্রিনে ৩+২ হয়ে দ্বিতীয়
+                        সারিতে ফাঁকা পড়ে থাকে। তাই স্পষ্টভাবে কলাম ঠিক করা। */}
                     <div style={{
                         display: 'grid',
                         gridTemplateColumns: isMobile
-                            ? '1fr'
-                            : 'repeat(auto-fit, minmax(300px, 1fr))',
-                        gap: 'clamp(1rem, 2vw, 1.5rem)',
+                            ? 'repeat(auto-fit, minmax(220px, 1fr))'
+                            : 'repeat(5, 1fr)',
+                        gap: 'clamp(0.85rem, 1.4vw, 1.15rem)',
                     }}>
-                        {VALUES.map(({ icon: Icon, title, text }, i) => (
-                            <article key={title} className="vm-reveal" style={{
-                                background: 'var(--surface)',
-                                border: '1px solid var(--glass-border)',
-                                borderRadius: '16px',
-                                padding: 'clamp(1.4rem, 2.4vw, 1.9rem)',
-                                position: 'relative',
-                                overflow: 'hidden',
-                            }}>
-                                {/* কোণায় হালকা ক্রমিক সংখ্যা — কার্ডগুলো একঘেয়ে না লাগার জন্য */}
-                                <span aria-hidden="true" style={{
-                                    position: 'absolute', top: '0.6rem', right: '1rem',
-                                    fontFamily: 'var(--font-heading)', fontSize: '3.2rem',
-                                    fontWeight: 800, lineHeight: 1,
-                                    color: 'var(--accent)', opacity: 0.09,
-                                }}>
+                        {VALUES.map(({ image, title, text }, i) => (
+                            <article key={title} className="vm-reveal vmv-card">
+                                <div className="vmv-media">
+                                    <img src={image} alt={title} loading="lazy" />
+                                </div>
+                                <div className="vmv-scrim" />
+
+                                <span className="vmv-num" aria-hidden="true">
                                     {String(i + 1).padStart(2, '0')}
                                 </span>
 
-                                <span style={{
-                                    width: '40px', height: '40px', borderRadius: '10px',
-                                    background: 'rgba(227,24,45,0.12)',
-                                    border: '1px solid rgba(227,24,45,0.25)',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    marginBottom: '1.1rem',
-                                }}>
-                                    <Icon size={19} color="var(--accent)" />
+                                <span className="vmv-plus" aria-hidden="true">
+                                    <Plus size={17} />
                                 </span>
 
-                                <h3 style={{
-                                    fontFamily: 'var(--font-heading)',
-                                    fontSize: 'clamp(1.05rem, 1.6vw, 1.25rem)',
-                                    fontWeight: 800, letterSpacing: '0.03em',
-                                    margin: '0 0 0.7rem',
-                                }}>
-                                    {title}
-                                </h3>
-
-                                <p style={{
-                                    fontFamily: 'var(--font-main)', fontSize: '0.93rem',
-                                    lineHeight: 1.8, color: 'var(--subtext)', margin: 0,
-                                }}>
-                                    {text}
-                                </p>
+                                <div className="vmv-body">
+                                    <h3 className="vmv-title">{title}</h3>
+                                    {/* grid-rows দিয়ে ভাঁজ খোলে, তাই ভেতরে একটা span লাগে */}
+                                    <p className="vmv-text"><span>{text}</span></p>
+                                </div>
                             </article>
                         ))}
                     </div>
