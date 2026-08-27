@@ -1,382 +1,286 @@
-﻿import React, { useRef, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-// -------------------------------------------------------------
-// HELPER: Magnetic 3D Card
-// -------------------------------------------------------------
-const MagneticCard = ({ children, className, style }) => {
-    const cardRef = useRef(null);
+const LEADERSHIP = [
+    {
+        name: 'Manwar Hossain',
+        role: 'Chairman',
+        org: 'Anwar Group of Industries',
+        photo: '/Manwar-Hossain-transparent-1by1-ar.png',
+        bio: `Manwar Hossain succeeded his Father, founder of the conglomerate, Late Anwar Hossain as the new chairman of Anwar Group of Industries in September 2021. He is the eldest son of Late Anwar Hossain and Bibi Amena. He was sent to St Paul's School Darjeeling, India under the tutorship of Harry Dang. Later, he went to the University of New Hampshire, USA and completed his MBA in 1992. He joined the family business in 1993. Under his leadership, the group continues to expand its industrial footprint across Bangladesh.`,
+    },
+    {
+        name: 'Furkaan N Hossain',
+        role: 'Deputy Managing Director',
+        org: 'Anwar Group of Industries',
+        photo: '/Furkaan-Hossain-transparent-1by1-ar.png',
+        bio: `Mr. Furkaan N Hossain joined Anwar Group as the Deputy Managing Director and oversees Anwar Ispat, Anwar Cement, Anwar Cement Sheet, and A1 Polymer. He is also the Founder Deputy Managing Director of Anwar Technologies, a venture he established in 2021 to lead the group's transformation in the technology sector. In addition, he is responsible for leading the Building Material Division, driving strategic initiatives across the group's industrial operations. With a Bachelor of Science degree in Computer Science from Colorado State University, Mr. Furkaan showcases exceptional technical acumen and market insights in his role. He envisions Anwar Technologies as a global tech powerhouse, driving the organization toward exponential growth. Mr. Furkaan fosters a culture of innovation, collaboration, and excellence, empowering his team to thrive in the ever-evolving technology landscape. Beyond his professional endeavors, he actively advocates for leveraging technology for social good, supporting initiatives that bridge the digital divide and empower underserved communities. With his blend of technical expertise, strategic thinking, and passion for positive impact, Mr. Furkaan Hossain is propelling Anwar Technologies and the wider Anwar Group to new heights in the technology and manufacturing industries.`,
+    },
+    {
+        name: 'Waeez R Hossain',
+        role: 'Deputy Managing Director',
+        org: 'Anwar Group of Industries',
+        photo: '/Waeez-R-Hossain-transparent-1by1-ar.png',
+        bio: `Mr. Waeez R Hossain joined Anwar Group of Industries in 2022 as the Deputy Managing Director and currently oversees Anwar Ispat, Anwar Cement, Anwar Cement Sheet, and A1 Polymer. He is also the Founder Deputy Managing Director of Anwar Technologies, a venture established to lead the group's transformation in the technology sector. In addition, he is responsible for leading the Building Material Division, driving strategic initiatives across the group's industrial operations. With an MBA from Georgetown University McDonough School of Business and a Bachelor's degree in Marketing & Management from Northeastern University, he brings a strong educational foundation and global perspective to his role. His strategic thinking and hands-on approach have successfully guided the division toward growth, efficiency, and innovation. Mr. Waeez fosters a collaborative work environment, empowering his teams to lead transformative projects that align with the group's long-term vision. Beyond his professional responsibilities, he actively supports community initiatives focused on sustainable development and social welfare. With his entrepreneurial spirit, forward-thinking leadership, and commitment to excellence, Mr. Waeez R Hossain is playing a vital role in advancing the Building Materials sector within Anwar Group of Industries.`,
+    },
+];
 
-    const handleMouseMove = (e) => {
-        if (!cardRef.current) return;
-        const rect = cardRef.current.getBoundingClientRect();
-        const x = e.clientX - rect.left - rect.width / 2;
-        const y = e.clientY - rect.top - rect.height / 2;
-        
-        // 3D Tilt + lighting movement
-        gsap.to(cardRef.current, {
-            rotationY: x * 0.05,
-            rotationX: -y * 0.05,
-            transformPerspective: 1500,
-            ease: "power2.out",
-            duration: 0.6
-        });
-        
-        // Find internal image and give it parallax
-        const img = cardRef.current.querySelector('.pop-out-img');
-        if (img) {
-            gsap.to(img, {
-                x: x * 0.1,
-                y: y * 0.1,
-                scale: 1.05,
-                duration: 0.6,
-                ease: "power2.out"
-            });
-        }
-    };
-
-    const handleMouseLeave = () => {
-        if (!cardRef.current) return;
-        gsap.to(cardRef.current, {
-            rotationY: 0,
-            rotationX: 0,
-            ease: "power3.out",
-            duration: 1.2
-        });
-        
-        const img = cardRef.current.querySelector('.pop-out-img');
-        if (img) {
-            gsap.to(img, {
-                x: 0,
-                y: 0,
-                scale: 1,
-                duration: 1.2,
-                ease: "power3.out"
-            });
-        }
-    };
-
-    return (
-        <div 
-            ref={cardRef} 
-            onMouseMove={handleMouseMove} 
-            onMouseLeave={handleMouseLeave} 
-            className={className} 
-            style={{ transformStyle: "preserve-3d", position: 'relative', ...style }}
-        >
-            {children}
-        </div>
-    );
-};
-
-// -------------------------------------------------------------
-// HELPER: Word Reveal (Cinematic text entrance)
-// -------------------------------------------------------------
-const RevealText = ({ text, className, style, wordClass = "reveal-word" }) => {
-    const words = text.split(' ');
-    return (
-        <div className={className} style={style}>
-            {words.map((word, i) => (
-                <span key={i} style={{ display: 'inline-flex', overflow: 'hidden', verticalAlign: 'top', marginRight: '0.25em' }}>
-                    <span className={wordClass} style={{ transform: 'translateY(120%)', paddingBottom: '0.1em', display: 'inline-block', willChange: 'transform' }}>
-                        {word}
-                    </span>
-                </span>
-            ))}
-        </div>
-    );
-};
-
-
-// -------------------------------------------------------------
-// MAIN COMPONENT: About Us Page
-// -------------------------------------------------------------
 const AboutUsPage = () => {
-    const containerRef = useRef(null);
+    const rootRef = useRef(null);
+    const bannerRef = useRef(null);
+    const bannerImgRef = useRef(null);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const onResize = () => setIsMobile(window.innerWidth < 900);
+        onResize();
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+    }, []);
 
     useGSAP(() => {
-        // 1. Hero Reveal Animation
-        const heroTl = gsap.timeline();
-        
-        heroTl.fromTo('.hero-subtitle', 
-            { opacity: 0, letterSpacing: '0em', filter: 'blur(10px)' },
-            { opacity: 1, letterSpacing: '0.2em', filter: 'blur(0px)', duration: 1.5, ease: "power3.out" }
-        )
-        .fromTo('.hero-title .reveal-word',
-            { y: '120%', rotationZ: 5 },
-            { y: '0%', rotationZ: 0, duration: 1.2, stagger: 0.05, ease: "power4.out" },
-            "-=1.0"
-        )
-        .fromTo('.hero-desc',
-            { opacity: 0, y: 30, clipPath: 'polygon(0 0, 100% 0, 100% 0, 0 0)' },
-            { opacity: 1, y: 0, clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)', duration: 1.5, ease: "power3.out" },
-            "-=0.8"
-        );
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        // Scroll Parallax for Background Orbs
-        gsap.to('.ambient-orb', {
-            yPercent: 50,
-            ease: "none",
-            scrollTrigger: {
-                trigger: containerRef.current,
-                start: "top top",
-                end: "bottom top",
-                scrub: true
-            }
-        });
-
-        // 2. Sections Cinematic Entrance
-        const sections = gsap.utils.toArray('.cinematic-section');
-        sections.forEach((sec) => {
-            const tl = gsap.timeline({
-                scrollTrigger: {
-                    trigger: sec,
-                    start: "top 75%",
-                    toggleActions: "play none none reverse"
+        // ব্যানার শুরুতে দুই পাশে জায়গা রেখে বসে, স্ক্রলের সাথে
+        // ধীরে ধীরে ফুল স্ক্রিন হয়ে যায়। clip-path ব্যবহার করছি কারণ
+        // width বদলালে প্রতি ফ্রেমে layout হিসাব হয়, ফলে আটকে আটকে চলে।
+        if (!reduced && bannerRef.current) {
+            gsap.fromTo(
+                bannerRef.current,
+                { clipPath: 'inset(0% 7% 0% 7% round 20px)' },
+                {
+                    clipPath: 'inset(0% 0% 0% 0% round 0px)',
+                    ease: 'none',
+                    scrollTrigger: {
+                        trigger: bannerRef.current,
+                        start: 'top top',
+                        end: '+=420',
+                        scrub: 0.6,
+                    },
                 }
-            });
-
-            // Card body entrance
-            tl.fromTo(sec.querySelector('.glass-card-bg'),
-                { opacity: 0, scale: 0.95, y: 50, filter: 'blur(20px)' },
-                { opacity: 1, scale: 1, y: 0, filter: 'blur(0px)', duration: 1.2, ease: "power3.out" }
             );
 
-            // Text reveal
-            const words = sec.querySelectorAll('.sec-title .reveal-word');
-            if (words.length > 0) {
-                tl.fromTo(words, 
-                    { y: '120%', rotationX: 45 },
-                    { y: '0%', rotationX: 0, duration: 0.8, stagger: 0.05, ease: "power3.out" },
-                    "-=0.8"
-                );
-            }
+            gsap.fromTo(
+                bannerImgRef.current,
+                { scale: 1.18 },
+                {
+                    scale: 1,
+                    ease: 'none',
+                    scrollTrigger: {
+                        trigger: bannerRef.current,
+                        start: 'top top',
+                        end: '+=420',
+                        scrub: 0.6,
+                    },
+                }
+            );
+        }
 
-            // Image pop-in
-            const img = sec.querySelector('.pop-out-img');
-            if (img) {
-                tl.fromTo(img,
-                    { opacity: 0, y: 100, scale: 0.9, filter: 'brightness(0)' },
-                    { opacity: 1, y: 0, scale: 1, filter: 'brightness(1)', duration: 1.5, ease: "expo.out" },
-                    "-=1"
-                );
-            }
-            
-            // Description fade
-            const desc = sec.querySelector('.sec-desc');
-            if (desc) {
-                tl.fromTo(desc, 
-                    { opacity: 0, x: -30 },
-                    { opacity: 1, x: 0, duration: 1, ease: "power2.out" },
-                    "-=1"
-                );
-            }
+        gsap.from('.ab-hero-line', {
+            y: 40, opacity: 0, duration: 0.9, stagger: 0.12, ease: 'power3.out', delay: 0.15,
         });
 
-        // 3. The Bloodline Vertical Thread Draw
-        gsap.fromTo('.bloodline-thread',
-            { scaleY: 0, filter: 'blur(5px)' },
-            { 
-                scaleY: 1, 
-                filter: 'blur(0px)',
-                duration: 2, 
-                ease: "power2.inOut",
-                scrollTrigger: {
-                    trigger: '.bloodline-thread',
-                    start: "top 60%",
-                    end: "bottom 40%",
-                }
-            }
-        );
-
-    }, { scope: containerRef });
+        gsap.utils.toArray('.ab-reveal').forEach((el) => {
+            gsap.from(el, {
+                y: 48, opacity: 0, duration: 0.8, ease: 'power3.out',
+                scrollTrigger: { trigger: el, start: 'top 85%' },
+            });
+        });
+        // useGSAP scope এর ভেতরের সব animation ও ScrollTrigger
+        // কম্পোনেন্ট unmount হলে নিজেই পরিষ্কার করে দেয়
+    }, { scope: rootRef });
 
     return (
-        <div ref={containerRef} style={{ background: 'var(--primary)', color: 'var(--text)', minHeight: '100vh', padding: '0 0 150px 0', overflowX: 'hidden', position: 'relative' }}>
-            
-            {/* Ambient Backgrounds (Molten Orbs) */}
-            <div className="ambient-orb" style={{ position: 'absolute', top: '-10%', left: '-10%', width: '50vw', height: '50vw', background: 'radial-gradient(circle, rgba(255,80,0,0.15) 0%, transparent 60%)', filter: 'blur(100px)', zIndex: 0, pointerEvents: 'none' }} />
-            <div className="ambient-orb" style={{ position: 'absolute', top: '40%', right: '-20%', width: '60vw', height: '60vw', background: 'radial-gradient(circle, var(--orb-neutral) 0%, transparent 60%)', filter: 'blur(120px)', zIndex: 0, pointerEvents: 'none' }} />
-            <div className="ambient-orb" style={{ position: 'absolute', bottom: '-10%', left: '10%', width: '40vw', height: '40vw', background: 'radial-gradient(circle, rgba(227,24,45,0.1) 0%, transparent 70%)', filter: 'blur(100px)', zIndex: 0, pointerEvents: 'none' }} />
-            
-            <div style={{ position: 'absolute', inset: 0, background: 'url(/noise.png)', opacity: 0.03, pointerEvents: 'none', mixBlendMode: 'overlay', zIndex: 1 }}></div>
+        <div
+            ref={rootRef}
+            style={{ background: 'var(--primary)', color: 'var(--text)', minHeight: '100vh', overflowX: 'hidden' }}
+        >
+            {/* ---------------------------------------------------------- */}
+            {/* HERO BANNER — স্ক্রলে দুই পাশ থেকে খুলে ফুল স্ক্রিন হয় */}
+            {/* ---------------------------------------------------------- */}
+            <section
+                ref={bannerRef}
+                style={{
+                    position: 'relative',
+                    height: isMobile ? '68vh' : 'min(88vh, 820px)',
+                    marginTop: '72px',
+                    overflow: 'hidden',
+                    willChange: 'clip-path',
+                    // ব্যানারের ছবি লোড হওয়ার আগে বা না থাকলেও যেন ফাঁকা সাদা না দেখায়
+                    background: 'linear-gradient(140deg, #1b2733 0%, #0d1319 60%, #1a0e11 100%)',
+                }}
+            >
+                <img
+                    ref={bannerImgRef}
+                    src="/about-banner.jpg"
+                    alt="Anwar Ispat manufacturing facility"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                    style={{
+                        position: 'absolute', inset: 0, width: '100%', height: '100%',
+                        objectFit: 'cover', willChange: 'transform',
+                    }}
+                />
+                {/* লেখা পড়ার জন্য নিচ থেকে গাঢ় হয়ে আসা আবরণ */}
+                <div style={{
+                    position: 'absolute', inset: 0,
+                    background: 'linear-gradient(90deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.45) 45%, rgba(0,0,0,0.12) 100%)',
+                }} />
 
-            {/* ------------------------------------------------------------- */}
-            {/* HERO SECTION */}
-            {/* ------------------------------------------------------------- */}
-            <section style={{ height: 'auto', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingTop: '15vh', position: 'relative', zIndex: 2, paddingLeft: '5%', paddingRight: '5%', paddingBottom: '10vh' }}>
-                <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
-                    <p className="hero-subtitle" style={{ fontFamily: 'monospace', color: 'var(--accent)', fontSize: '1rem', marginBottom: '2rem', display: 'inline-block', borderBottom: '1px solid rgba(255,106,0,0.3)', paddingBottom: '0.5rem' }}>
-                        // A CENTURY OF STRENGTH
-                    </p>
-                    
-                    <RevealText 
-                        text="FORGED IN FIRE." 
-                        className="hero-title" 
-                        style={{ fontSize: 'clamp(4rem, 8vw, 8rem)', lineHeight: 0.9, textTransform: 'uppercase', fontWeight: 900, marginBottom: '0.5rem', color: 'var(--text)' }} 
-                    />
-                    <RevealText
-                        text="BUILT FOR ETERNITY."
-                        className="hero-title muted"
-                        style={{ fontSize: 'clamp(4rem, 8vw, 8rem)', lineHeight: 0.9, textTransform: 'uppercase', fontWeight: 900, marginBottom: '3rem', color: 'var(--subtext)' }}
-                    />
-                    
-                    <div className="hero-desc" style={{ maxWidth: '800px', background: 'var(--surface)', backdropFilter: 'blur(20px)', borderLeft: '4px solid var(--accent)', padding: '2rem', borderRadius: '0 12px 12px 0' }}>
-                        <p style={{ color: 'var(--subtext)', fontSize: '1.25rem', lineHeight: 1.8, margin: 0 }}>
-                            As a proud concern of the century-old Anwar Group, Anwar Ispat has led the mild steel industry since 1978. 
-                            We were the first to introduce 60-grade steel to Bangladesh. From the tallest skyscrapers to complex nuclear power plants, 
-                            our commitment to exceptional metallurgy ensures every structure is resilient, durable, and safe.
-                        </p>
-                    </div>
+                <div style={{
+                    position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
+                    justifyContent: 'center', padding: isMobile ? '0 8%' : '0 9%',
+                }}>
+                    <span className="ab-hero-line" style={{
+                        fontFamily: 'var(--font-main)', fontSize: '0.8rem', fontWeight: 700,
+                        letterSpacing: '0.32em', color: '#fff', opacity: 0.9, marginBottom: '1.1rem',
+                    }}>
+                        ABOUT US
+                    </span>
+                    <h1 className="ab-hero-line" style={{
+                        fontFamily: 'var(--font-heading)', fontSize: 'clamp(2.4rem, 6vw, 5.2rem)',
+                        lineHeight: 1.02, fontWeight: 800, letterSpacing: '0.01em',
+                        color: '#fff', margin: 0, maxWidth: '16ch',
+                        textShadow: '0 4px 30px rgba(0,0,0,0.45)',
+                    }}>
+                        Forged in Fire,<br />Built for <span style={{ color: 'var(--accent)' }}>Eternity</span>
+                    </h1>
                 </div>
             </section>
 
-            {/* ------------------------------------------------------------- */}
-            {/* THE CORE (FATHER) */}
-            {/* ------------------------------------------------------------- */}
-            <section className="cinematic-section" style={{ position: 'relative', zIndex: 3, padding: '5rem 5%', display: 'flex', justifyContent: 'center' }}>
-                <MagneticCard className="core-card" style={{ width: '100%', maxWidth: '1200px' }}>
-                    <div className="glass-card-bg" style={{ position: 'relative', display: 'flex', flexWrap: 'wrap', alignItems: 'stretch', background: 'var(--surface)', backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', borderRadius: '24px', border: '1px solid var(--glass-border)', borderTop: '1px solid rgba(255,106,0,0.2)', boxShadow: 'var(--card-shadow)' }}>
-                        
-                        {/* Text Content */}
-                        <div style={{ flex: '1 1 500px', padding: '4rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', zIndex: 2 }}>
-                            <p style={{ fontFamily: 'monospace', color: 'var(--accent)', letterSpacing: '0.15em', marginBottom: '1rem', opacity: 0.8 }}>01 — THE VANGUARD</p>
-                            <RevealText text="MANWAR HOSSAIN" className="sec-title" style={{ fontSize: 'clamp(3rem, 5vw, 4.5rem)', color: 'var(--text)', marginBottom: '0.5rem', lineHeight: 1, fontWeight: 800 }} />
-                            <h4 style={{ color: 'var(--subtext)', fontSize: '1.2rem', marginBottom: '2.5rem', fontStyle: 'italic', borderBottom: '1px solid var(--glass-border)', paddingBottom: '1rem' }}>
-                                Chairman, Anwar Group of Industries
-                            </h4>
-                            <p className="sec-desc" style={{ color: 'var(--subtext)', lineHeight: 1.8, fontSize: '1.1rem' }}>
-                                Succeeding his father, the legendary Late Anwar Hossain, Manwar oversees a massive empire of industry. Having joined the family business in 1993, his leadership is the bedrock upon which the entire group expands its monumental footprint across Bangladesh.
-                            </p>
-                        </div>
-
-                        {/* Image Container (Overflow visible for 3D Pop from top/sides) */}
-                        <div style={{ flex: '1 1 500px', position: 'relative', minHeight: '600px', pointerEvents: 'none' }}>
-                            {/* Inner ambient glow behind subject */}
-                            <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '70%', background: 'radial-gradient(ellipse at bottom, rgba(227,24,45,0.25) 0%, transparent 70%)', borderBottomRightRadius: '24px' }}></div>
-                            
-                            {/* The Pop Out Image */}
-                            <img 
-                                src="/Manwar-Hossain-transparent-1by1-ar.png" 
-                                alt="Manwar Hossain" 
-                                width="600"
-                                height="800"
-                                className="pop-out-img"
-                                style={{ 
-                                    position: 'absolute', 
-                                    bottom: 0, 
-                                    right: '5%', 
-                                    width: '110%', 
-                                    height: 'auto', 
-                                    maxHeight: '120%', 
-                                    objectFit: 'contain', 
-                                    objectPosition: 'bottom', 
-                                    transformOrigin: 'bottom center',
-                                    filter: 'drop-shadow(0px -10px 30px rgba(0,0,0,0.8))' 
-                                }} 
-                            />
-                        </div>
-                    </div>
-                </MagneticCard>
-            </section>
-
-            {/* ------------------------------------------------------------- */}
-            {/* THE BLOODLINE (Connecting Thread) */}
-            {/* ------------------------------------------------------------- */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', position: 'relative', zIndex: 1, height: '150px' }}>
-                <div className="bloodline-thread" style={{ 
-                    width: '3px', 
-                    height: '100%', 
-                    background: 'linear-gradient(to bottom, rgba(255,106,0,1) 0%, rgba(227,24,45,0.5) 50%, rgba(255,255,255,0) 100%)', 
-                    boxShadow: '0 0 20px rgba(255,106,0,0.6)',
-                    transformOrigin: 'top center'
-                }} />
+            {/* ---------------------------------------------------------- */}
+            {/* BREADCRUMB */}
+            {/* ---------------------------------------------------------- */}
+            <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '1.75rem 5% 0' }}>
+                <nav style={{
+                    display: 'flex', alignItems: 'center', gap: '0.6rem',
+                    fontSize: '0.82rem', color: 'var(--subtext)',
+                    paddingBottom: '1.4rem', borderBottom: '1px solid var(--glass-border)',
+                }}>
+                    <Link to="/" style={{ color: 'var(--subtext)', textDecoration: 'none' }}>Home</Link>
+                    <span style={{ opacity: 0.5 }}>&gt;</span>
+                    <span style={{ color: 'var(--text)' }}>About us</span>
+                </nav>
             </div>
 
-            {/* ------------------------------------------------------------- */}
-            {/* THE EXPANDING FORCE (SONS) */}
-            {/* ------------------------------------------------------------- */}
-            <section style={{ position: 'relative', zIndex: 3, padding: '0 2%', maxWidth: '1400px', margin: '0 auto' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '3rem' }}>
-                    
-                    {/* Furkaan */}
-                    <div className="cinematic-section">
-                        <MagneticCard style={{ height: '100%' }}>
-                            <div className="glass-card-bg" style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--surface-grad)', backdropFilter: 'blur(20px)', borderRadius: '20px', border: '1px solid var(--glass-border)', borderTop: '1px solid var(--glass-border)', overflow: 'visible', position: 'relative' }}>
-                                
-                                {/* Image popping out top */}
-                                <div style={{ height: '450px', width: '100%', position: 'relative', pointerEvents: 'none' }}>
-                                    <div style={{ position: 'absolute', bottom: 0, width: '100%', height: '50%', background: 'radial-gradient(ellipse at bottom, rgba(255,255,255,0.1) 0%, transparent 80%)' }} />
-                                    <img 
-                                        src="/Furkaan-Hossain-transparent-1by1-ar.png" 
-                                        alt="Furkaan N Hossain" 
-                                        width="500"
-                                        height="600"
-                                        className="pop-out-img"
-                                        style={{ 
-                                            position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', 
-                                            height: '115%', width: 'auto', objectFit: 'contain', objectPosition: 'bottom',
-                                            transformOrigin: 'bottom center', filter: 'drop-shadow(0 0 20px rgba(0,0,0,0.8))'
-                                        }} 
-                                    />
-                                </div>
-                                
-                                {/* Info Box */}
-                                <div style={{ padding: '3rem 2.5rem', flexGrow: 1, zIndex: 10, background: 'var(--surface-solid)', borderBottomLeftRadius: '20px', borderBottomRightRadius: '20px' }}>
-                                    <RevealText text="FURKAAN N HOSSAIN" className="sec-title" style={{ fontSize: '2.5rem', color: 'var(--text)', marginBottom: '0.5rem', lineHeight: 1.1, fontWeight: 700 }} />
-                                    <p style={{ color: 'var(--accent)', fontFamily: 'monospace', letterSpacing: '0.1em', marginBottom: '1.5rem' }}>// DEPUTY MANAGING DIRECTOR</p>
-                                    <p className="sec-desc" style={{ color: 'var(--subtext)', lineHeight: 1.7, fontSize: '1.05rem', margin: 0 }}>
-                                        Oversees Anwar Ispat and leads the Building Material Division. As the Founder Deputy MD of Anwar Technologies, he champions the group's global tech transformation, embedding innovation deeply into traditional industry.
-                                    </p>
-                                </div>
-                            </div>
-                        </MagneticCard>
-                    </div>
-
-                    {/* Waeez */}
-                    <div className="cinematic-section">
-                        <MagneticCard style={{ height: '100%' }}>
-                            <div className="glass-card-bg" style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--surface-grad)', backdropFilter: 'blur(20px)', borderRadius: '20px', border: '1px solid var(--glass-border)', borderTop: '1px solid var(--glass-border)', overflow: 'visible', position: 'relative' }}>
-                                
-                                {/* Image popping out top */}
-                                <div style={{ height: '450px', width: '100%', position: 'relative', pointerEvents: 'none' }}>
-                                    <div style={{ position: 'absolute', bottom: 0, width: '100%', height: '50%', background: 'radial-gradient(ellipse at bottom, rgba(255,255,255,0.1) 0%, transparent 80%)' }} />
-                                    <img 
-                                        src="/Waeez-R-Hossain-transparent-1by1-ar.png" 
-                                        alt="Waeez R Hossain" 
-                                        width="500"
-                                        height="600"
-                                        className="pop-out-img"
-                                        style={{ 
-                                            position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', 
-                                            height: '115%', width: 'auto', objectFit: 'contain', objectPosition: 'bottom',
-                                            transformOrigin: 'bottom center', filter: 'drop-shadow(0 0 20px rgba(0,0,0,0.8))'
-                                        }} 
-                                    />
-                                </div>
-                                
-                                {/* Info Box */}
-                                <div style={{ padding: '3rem 2.5rem', flexGrow: 1, zIndex: 10, background: 'var(--surface-solid)', borderBottomLeftRadius: '20px', borderBottomRightRadius: '20px' }}>
-                                    <RevealText text="WAEEZ R HOSSAIN" className="sec-title" style={{ fontSize: '2.5rem', color: 'var(--text)', marginBottom: '0.5rem', lineHeight: 1.1, fontWeight: 700 }} />
-                                    <p style={{ color: 'var(--accent)', fontFamily: 'monospace', letterSpacing: '0.1em', marginBottom: '1.5rem' }}>// DEPUTY MANAGING DIRECTOR</p>
-                                    <p className="sec-desc" style={{ color: 'var(--subtext)', lineHeight: 1.7, fontSize: '1.05rem', margin: 0 }}>
-                                        A brilliant strategic thinker guiding the Building Material Division toward exponential growth. Fostering efficiency and sustainable innovation, he aligns long-term visions with immediate, heavy-infrastructure impacts.
-                                    </p>
-                                </div>
-                            </div>
-                        </MagneticCard>
-                    </div>
-
-                </div>
+            {/* ---------------------------------------------------------- */}
+            {/* BACKGROUND */}
+            {/* ---------------------------------------------------------- */}
+            <section style={{ maxWidth: '980px', margin: '0 auto', padding: 'clamp(3.5rem, 8vw, 6.5rem) 5%' }}>
+                <p className="ab-reveal" style={{
+                    fontFamily: 'var(--font-main)',
+                    fontSize: 'clamp(1.05rem, 2vw, 1.45rem)',
+                    lineHeight: 1.75, color: 'var(--text)', textAlign: 'center', margin: 0,
+                }}>
+                    As a proud concern of the century-old Anwar Group, Anwar Ispat has led the mild steel
+                    industry since 1978. We were the first to introduce 60-grade steel to Bangladesh and
+                    have consistently upgraded our facilities to bring the world's most advanced technology
+                    to the local market. From the tallest skyscrapers to complex nuclear power plants, our
+                    commitment to quality ensures that every structure built with Anwar Ispat is resilient,
+                    durable, and safe.
+                </p>
             </section>
 
+            {/* ---------------------------------------------------------- */}
+            {/* LEADERSHIP */}
+            {/* ---------------------------------------------------------- */}
+            <section style={{
+                padding: 'clamp(3rem, 7vw, 5.5rem) 0 clamp(5rem, 10vw, 8rem)',
+                background: 'var(--glass)',
+                borderTop: '1px solid var(--glass-border)',
+            }}>
+                <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 5%' }}>
+                    <div className="ab-reveal" style={{ marginBottom: 'clamp(2.5rem, 6vw, 4.5rem)' }}>
+                        <span style={{
+                            fontFamily: 'var(--font-main)', fontSize: '0.72rem', fontWeight: 700,
+                            letterSpacing: '0.28em', color: 'var(--accent)',
+                        }}>
+                            // OUR LEADERSHIP
+                        </span>
+                        <h2 style={{
+                            fontFamily: 'var(--font-heading)', fontSize: 'clamp(1.9rem, 4vw, 3rem)',
+                            fontWeight: 800, margin: '0.8rem 0 0', letterSpacing: '0.02em',
+                        }}>
+                            The people behind the steel
+                        </h2>
+                    </div>
+
+                    {LEADERSHIP.map((person, i) => (
+                        <article
+                            key={person.name}
+                            className="ab-reveal"
+                            style={{
+                                display: 'grid',
+                                gridTemplateColumns: isMobile ? '1fr' : '340px 1fr',
+                                gap: isMobile ? '1.75rem' : 'clamp(2.5rem, 5vw, 4.5rem)',
+                                alignItems: 'start',
+                                padding: 'clamp(2rem, 5vw, 3.5rem) 0',
+                                borderTop: i === 0 ? 'none' : '1px solid var(--glass-border)',
+                                direction: !isMobile && i % 2 === 1 ? 'rtl' : 'ltr',
+                            }}
+                        >
+                            <div style={{ direction: 'ltr' }}>
+                                <div style={{
+                                    position: 'relative',
+                                    borderRadius: '18px',
+                                    overflow: 'hidden',
+                                    background: 'linear-gradient(160deg, rgba(227,24,45,0.14) 0%, var(--surface) 70%)',
+                                    border: '1px solid var(--glass-border)',
+                                    aspectRatio: '1 / 1',
+                                    maxWidth: isMobile ? '260px' : 'none',
+                                }}>
+                                    <img
+                                        src={person.photo}
+                                        alt={person.name}
+                                        loading="lazy"
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                                    />
+                                </div>
+                            </div>
+
+                            <div style={{ direction: 'ltr' }}>
+                                <h3 style={{
+                                    fontFamily: 'var(--font-heading)',
+                                    fontSize: 'clamp(1.5rem, 3vw, 2.2rem)',
+                                    fontWeight: 800, margin: 0, letterSpacing: '0.02em',
+                                }}>
+                                    {person.name}
+                                </h3>
+                                <p style={{
+                                    fontFamily: 'var(--font-main)', fontSize: '0.85rem', fontWeight: 600,
+                                    letterSpacing: '0.14em', textTransform: 'uppercase',
+                                    color: 'var(--accent)', margin: '0.6rem 0 0.2rem',
+                                }}>
+                                    {person.role}
+                                </p>
+                                <p style={{
+                                    fontFamily: 'var(--font-main)', fontSize: '0.82rem',
+                                    color: 'var(--subtext)', margin: '0 0 1.5rem',
+                                }}>
+                                    {person.org}
+                                </p>
+                                <div style={{
+                                    width: '48px', height: '3px', background: 'var(--accent)',
+                                    borderRadius: '2px', marginBottom: '1.5rem',
+                                }} />
+                                <p style={{
+                                    fontFamily: 'var(--font-main)',
+                                    fontSize: 'clamp(0.92rem, 1.3vw, 1.02rem)',
+                                    lineHeight: 1.85, color: 'var(--subtext)', margin: 0,
+                                }}>
+                                    {person.bio}
+                                </p>
+                            </div>
+                        </article>
+                    ))}
+                </div>
+            </section>
         </div>
     );
 };
 
 export default AboutUsPage;
-
