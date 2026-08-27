@@ -628,6 +628,97 @@ section {
   transform: translateX(-50%) translateY(0);
 }
 
+/* সব ড্রপডাউনের আইটেমগুলো একটা মোড়কের ভেতরে থাকে, তাই সেটিও কলাম */
+.mega-menu-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* মেগা-মেনু — বাঁয়ে পরিচিতি, ডানে লিংকের তালিকা */
+.dropdown-menu.mega-menu {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 2.5rem;
+  min-width: min(760px, 90vw);
+  padding: 2rem 2.25rem;
+  /* চওড়া প্যানেল কেন্দ্রে বসালে ছোট স্ক্রিনে বাঁ দিক দিয়ে বেরিয়ে যায়,
+     তাই আইটেমের বাঁ প্রান্ত থেকে শুরু করি */
+  left: 0;
+  transform: translateX(0) translateY(10px);
+}
+
+.nav-item:hover .dropdown-menu.mega-menu {
+  transform: translateX(0) translateY(0);
+}
+
+.mega-menu-intro {
+  flex: 1 1 46%;
+  min-width: 0;
+  border-right: 1px solid var(--glass-border);
+  padding-right: 2.25rem;
+}
+
+.mega-menu-title {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text);
+  margin: 0 0 0.9rem;
+}
+
+.mega-menu-blurb {
+  font-family: var(--font-main);
+  font-size: 0.78rem;
+  line-height: 1.75;
+  color: var(--subtext);
+  margin: 0;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.mega-menu .mega-menu-links {
+  flex: 1 1 54%;
+  gap: 0;
+}
+
+/* তালিকার আইটেমগুলো JSW এর মতো লাইন দিয়ে আলাদা */
+.mega-menu .dropdown-item {
+  padding: 0.85rem 0;
+  font-size: 0.78rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.mega-menu .dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.mega-menu .dropdown-item::before {
+  left: 0;
+}
+
+.mega-menu .dropdown-item:hover {
+  background: transparent;
+  padding-left: 1.1rem;
+}
+
+@media (max-width: 1100px) {
+  .dropdown-menu.mega-menu {
+    flex-direction: column;
+    min-width: 320px;
+    gap: 1.25rem;
+    padding: 1.5rem;
+  }
+
+  .mega-menu-intro {
+    border-right: none;
+    border-bottom: 1px solid var(--glass-border);
+    padding-right: 0;
+    padding-bottom: 1.25rem;
+  }
+}
+
 .dropdown-item {
   padding: 0.75rem 1.5rem;
   color: var(--subtext);
@@ -677,6 +768,15 @@ body.light-mode .dropdown-menu {
 
 body.light-mode .dropdown-item {
   color: #555;
+}
+
+body.light-mode .mega-menu-blurb {
+  color: #4A4A4C;
+}
+
+body.light-mode .mega-menu-intro,
+body.light-mode .mega-menu .dropdown-item {
+  border-color: rgba(0, 0, 0, 0.09);
 }
 
 body.light-mode .dropdown-item:hover {
