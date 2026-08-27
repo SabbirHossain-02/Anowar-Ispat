@@ -203,14 +203,15 @@ const VisionMissionPage = () => {
                         </h2>
                     </div>
 
-                    {/* ৫টি কার্ড — auto-fit দিলে চওড়া স্ক্রিনে ৩+২ হয়ে দ্বিতীয়
-                        সারিতে ফাঁকা পড়ে থাকে। তাই স্পষ্টভাবে কলাম ঠিক করা। */}
+                    {/* ৫টি কার্ড এক সারিতে দিলে প্রতিটি ~২১৫px হয়ে যায় —
+                        ছবি ও লেখা দুটোই চাপা লাগে। তাই সারিতে ৩টি,
+                        প্রতিটি ~৩৭০px, রেফারেন্স সাইটের কাছাকাছি। */}
                     <div style={{
                         display: 'grid',
                         gridTemplateColumns: isMobile
-                            ? 'repeat(auto-fit, minmax(220px, 1fr))'
-                            : 'repeat(5, 1fr)',
-                        gap: 'clamp(0.85rem, 1.4vw, 1.15rem)',
+                            ? 'repeat(auto-fit, minmax(260px, 1fr))'
+                            : 'repeat(3, 1fr)',
+                        gap: 'clamp(1rem, 1.6vw, 1.4rem)',
                     }}>
                         {VALUES.map(({ image, title, text }, i) => (
                             <article key={title} className="vm-reveal vmv-card">
