@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Check, Layers, Grid3x3, Building } from 'lucide-react';
+import { Check } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
@@ -41,20 +41,6 @@ const GRADES = [
     },
 ];
 
-// স্লাইডের টেবিলটি প্রতিটি গ্রেডের জন্য দুই কলামে সাল সাজানো ছিল;
-// এখানে গ্রেড অনুযায়ী এক সারিতে আনা হয়েছে, পড়তে সহজ হয়।
-// 420DWR এ ৮ মি.মি. নেই — টেবিলে ওই ঘরটি ফাঁকা ছিল।
-const SIZES = [
-    { grade: '500CWR', mm: [8, 10, 12, 16, 20, 22, 25, 28, 32, 40] },
-    { grade: '500DWR', mm: [8, 10, 12, 16, 20, 22, 25, 28, 32, 40] },
-    { grade: '420DWR', mm: [10, 12, 16, 20, 22, 25, 28, 32, 40] },
-];
-
-const APPLICATIONS = [
-    { icon: Layers, name: 'Piling foundation' },
-    { icon: Grid3x3, name: 'Slab construction' },
-    { icon: Building, name: 'Constructing pillars' },
-];
 
 const ProductRangePage = () => {
     const rootRef = useRef(null);
@@ -226,101 +212,6 @@ const ProductRangePage = () => {
                 </div>
             </section>
 
-            {/* ---------------------------------------------------------- */}
-            {/* APPLICATIONS */}
-            {/* ---------------------------------------------------------- */}
-            <section style={{
-                minHeight: 'auto', display: 'block',
-                paddingTop: SECTION_PAD, paddingBottom: SECTION_PAD,
-                paddingLeft: 0, paddingRight: 0,
-            }}>
-                <div style={CONTAINER}>
-                    {heading('WHERE IT GOES', 'Built for strength')}
-
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-                        gap: 'clamp(1rem, 2vw, 1.75rem)',
-                    }}>
-                        {APPLICATIONS.map(({ icon: Icon, name }) => (
-                            <div key={name} className="pr-reveal" style={{
-                                display: 'flex', alignItems: 'center', gap: '1rem',
-                                padding: '1.15rem 0',
-                                borderTop: '1px solid var(--glass-border)',
-                            }}>
-                                <Icon size={22} color="var(--accent)" />
-                                <span style={{
-                                    fontFamily: 'var(--font-heading)',
-                                    fontSize: 'clamp(1rem, 1.5vw, 1.15rem)',
-                                    fontWeight: 800, letterSpacing: '0.03em',
-                                    textTransform: 'none',
-                                }}>
-                                    {name}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* ---------------------------------------------------------- */}
-            {/* SIZES */}
-            {/* ---------------------------------------------------------- */}
-            <section style={{
-                minHeight: 'auto', display: 'block',
-                paddingTop: SECTION_PAD, paddingBottom: SECTION_PAD,
-                paddingLeft: 0, paddingRight: 0,
-                background: 'var(--glass)',
-                borderTop: '1px solid var(--glass-border)',
-                borderBottom: '1px solid var(--glass-border)',
-            }}>
-                <div style={CONTAINER}>
-                    {heading('SPECIFICATIONS', 'Available diameters')}
-
-                    {SIZES.map(({ grade, mm }) => (
-                        <div key={grade} className="pr-reveal" style={{
-                            display: 'grid',
-                            gridTemplateColumns: isMobile ? '1fr' : '150px 1fr',
-                            gap: isMobile ? '0.75rem' : '1.5rem',
-                            alignItems: 'center',
-                            padding: '1.15rem 0',
-                            borderTop: '1px solid var(--glass-border)',
-                        }}>
-                            <span style={{
-                                fontFamily: 'var(--font-heading)',
-                                fontSize: 'clamp(1rem, 1.5vw, 1.15rem)',
-                                fontWeight: 800, letterSpacing: '0.04em',
-                            }}>
-                                {grade}
-                            </span>
-
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                                {mm.map((d) => (
-                                    <span key={d} style={{
-                                        fontFamily: 'var(--font-main)', fontSize: '0.82rem',
-                                        fontWeight: 600, color: 'var(--text)',
-                                        border: '1px solid var(--glass-border)',
-                                        borderRadius: '3px',
-                                        padding: '0.35rem 0.7rem',
-                                        background: 'var(--primary)',
-                                    }}>
-                                        {d} mm
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-
-                    <p style={{
-                        fontFamily: 'var(--font-main)', fontSize: '0.85rem',
-                        color: 'var(--subtext)', margin: '1.4rem 0 0',
-                        paddingTop: '1.15rem', borderTop: '1px solid var(--glass-border)',
-                    }}>
-                        420DWR is not produced in 8 mm. For any size or quantity, send us the
-                        requirement and we will confirm availability.
-                    </p>
-                </div>
-            </section>
 
             {/* ---------------------------------------------------------- */}
             {/* CATALOGUE — অ্যাডমিন প্যানেল থেকে যোগ করা প্রোডাক্ট */}

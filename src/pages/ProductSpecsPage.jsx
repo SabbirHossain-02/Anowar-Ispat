@@ -1,142 +1,264 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
+import { Layers, Grid3x3, Building } from 'lucide-react';
 import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Binary, ShieldAlert, Award, Layers } from 'lucide-react';
+import { useGSAP } from '@gsap/react';
+import PageBanner from '../components/PageBanner';
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-const RevealText = ({ text, className, style, wordClass = "reveal-word" }) => {
-    const words = text.split(' ');
-    return (
-        <div className={className} style={style}>
-            {words.map((word, i) => (
-                <span key={i} style={{ display: 'inline-flex', overflow: 'hidden', verticalAlign: 'top', marginRight: '0.25em' }}>
-                    <span className={wordClass} style={{ transform: 'translateY(120%)', paddingBottom: '0.1em', display: 'inline-block', willChange: 'transform' }}>
-                        {word}
-                    </span>
-                </span>
-            ))}
-        </div>
-    );
+const SECTION_PAD = 'clamp(2.25rem, 4vw, 3.5rem)';
+const CONTAINER = {
+    maxWidth: '1180px',
+    margin: '0 auto',
+    padding: '0 clamp(1.25rem, 5vw, 3rem)',
 };
 
+const APPLICATIONS = [
+    {
+        icon: Layers,
+        name: 'Piling foundation',
+        text: 'Deep foundation cages where corrosion resistance and bond strength decide the life of the structure.',
+    },
+    {
+        icon: Grid3x3,
+        name: 'Slab construction',
+        text: 'Mesh and distribution bars, where bendability and consistent diameter keep placement fast and accurate.',
+    },
+    {
+        icon: Building,
+        name: 'Constructing pillars',
+        text: 'Columns carrying the load of the building, where yield strength and ductility matter most.',
+    },
+];
+
+// স্লাইডের টেবিলটি প্রতিটি গ্রেডের নিচে দুই কলামে সাইজ সাজিয়ে রেখেছিল।
+// গ্রেড অনুযায়ী এক সারিতে আনলে তুলনা করা সহজ, আর 420DWR এ ৮ মি.মি. যে
+// নেই সেটাও চোখে পড়ে — টেবিলে ওটা কেবল একটা ফাঁকা ঘর ছিল।
+const SIZES = [
+    { grade: '500CWR', mm: [8, 10, 12, 16, 20, 22, 25, 28, 32, 40] },
+    { grade: '500DWR', mm: [8, 10, 12, 16, 20, 22, 25, 28, 32, 40] },
+    { grade: '420DWR', mm: [10, 12, 16, 20, 22, 25, 28, 32, 40] },
+];
+
+const ALL_SIZES = [8, 10, 12, 16, 20, 22, 25, 28, 32, 40];
+
 const ProductSpecsPage = () => {
-    const containerRef = useRef(null);
+    const rootRef = useRef(null);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const onResize = () => setIsMobile(window.innerWidth < 900);
+        onResize();
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+    }, []);
 
     useGSAP(() => {
-        const heroTl = gsap.timeline();
-        heroTl.fromTo('.hero-subtitle', 
-            { opacity: 0, letterSpacing: '0em', filter: 'blur(10px)' },
-            { opacity: 1, letterSpacing: '0.2em', filter: 'blur(0px)', duration: 1.2, ease: "power3.out" }
-        )
-        .fromTo('.hero-title .reveal-word',
-            { y: '120%', rotationZ: 4 },
-            { y: '0%', rotationZ: 0, duration: 1.0, stagger: 0.05, ease: "power4.out" },
-            "-=0.8"
-        )
-        .fromTo('.hero-desc',
-            { opacity: 0, y: 30 },
-            { opacity: 1, y: 0, duration: 1.2, ease: "power3.out" },
-            "-=0.6"
-        );
-
-        const sections = gsap.utils.toArray('.specs-section');
-        sections.forEach((sec) => {
-            gsap.fromTo(sec.querySelectorAll('.fade-in-element'),
-                { opacity: 0, y: 40, filter: 'blur(5px)' },
-                {
-                    opacity: 1,
-                    y: 0,
-                    filter: 'blur(0px)',
-                    duration: 1.0,
-                    stagger: 0.15,
-                    scrollTrigger: {
-                        trigger: sec,
-                        start: "top 80%",
-                        toggleActions: "play none none reverse"
-                    }
-                }
-            );
+        gsap.utils.toArray('.ps-reveal').forEach((el) => {
+            gsap.from(el, {
+                y: 38, opacity: 0, duration: 0.75, ease: 'power3.out',
+                scrollTrigger: { trigger: el, start: 'top 86%' },
+            });
         });
-    }, { scope: containerRef });
+    }, { scope: rootRef });
+
+    const heading = (eyebrow, title) => (
+        <div className="ps-reveal" style={{ marginBottom: SECTION_PAD }}>
+            <span style={{
+                fontFamily: 'var(--font-main)', fontSize: '0.72rem', fontWeight: 700,
+                letterSpacing: '0.28em', color: 'var(--accent)',
+            }}>
+                {eyebrow}
+            </span>
+            <h2 style={{
+                fontFamily: 'var(--font-heading)', fontSize: 'clamp(1.7rem, 3.4vw, 2.6rem)',
+                fontWeight: 800, margin: '0.8rem 0 0', letterSpacing: '0.02em',
+                textTransform: 'none',
+            }}>
+                {title}
+            </h2>
+        </div>
+    );
 
     return (
-        <div ref={containerRef} style={{ background: 'var(--primary)', color: 'var(--text)', minHeight: '100vh', padding: '0 0 150px 0', overflowX: 'hidden', position: 'relative' }}>
-            
-            {/* Ambient glows */}
-            <div className="ambient-orb" style={{ position: 'absolute', top: '-10%', left: '-10%', width: '50vw', height: '50vw', background: 'radial-gradient(circle, rgba(227,24,45,0.08) 0%, transparent 65%)', filter: 'blur(100px)', zIndex: 0, pointerEvents: 'none' }} />
-            <div className="ambient-orb" style={{ position: 'absolute', top: '40%', right: '-20%', width: '60vw', height: '60vw', background: 'radial-gradient(circle, rgba(255,106,0,0.06) 0%, transparent 65%)', filter: 'blur(120px)', zIndex: 0, pointerEvents: 'none' }} />
+        <div
+            ref={rootRef}
+            style={{ background: 'var(--primary)', color: 'var(--text)', minHeight: '100vh', overflowX: 'hidden' }}
+        >
+            <PageBanner
+                image="/Product-Specifications.jpeg"
+                label="PRODUCT SPECIFICATIONS"
+                title="Built for"
+                accent="Strength"
+                crumbs={[
+                    { label: 'Home', to: '/' },
+                    { label: 'Products', to: '/products' },
+                    { label: 'Product Specifications' },
+                ]}
+            />
 
-            {/* HERO SECTION */}
-            <section style={{ minHeight: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: '15vh', position: 'relative', zIndex: 2, paddingLeft: '5%', paddingRight: '5%' }}>
-                <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-                    <p className="hero-subtitle" style={{ fontFamily: 'monospace', color: 'var(--accent)', fontSize: '0.9rem', marginBottom: '1.5rem', textTransform: 'uppercase' }}>
-                        Engineering Specifications
-                    </p>
-                    <RevealText 
-                        text="TECHNICAL COMPLIANCE" 
-                        className="hero-title" 
-                        style={{ fontSize: 'clamp(3rem, 6vw, 6rem)', lineHeight: 0.9, textTransform: 'uppercase', fontWeight: 900, color: 'var(--text)' }} 
-                    />
-                    <RevealText 
-                        text="AND METALLURGY." 
-                        className="hero-title" 
-                        style={{ fontSize: 'clamp(3rem, 6vw, 6rem)', lineHeight: 0.9, textTransform: 'uppercase', fontWeight: 900, marginBottom: '2.5rem', color: 'var(--subtext)' }} 
-                    />
-                    <div className="hero-desc" style={{ maxWidth: '750px', background: 'var(--glass)', backdropFilter: 'blur(20px)', borderBottom: '4px solid var(--accent)', padding: '2rem', borderRadius: '12px', borderTop: '1px solid var(--glass-border)', borderRight: '1px solid var(--glass-border)', borderLeft: '1px solid var(--glass-border)' }}>
-                        <p style={{ color: 'var(--subtext)', fontSize: '1.2rem', lineHeight: 1.8, margin: 0 }}>
-                            Anwar Ispat manufactures 500W Grade rebars using highly automated processes. Explore our engineering specifications, chemical composition tables, and structural parameters.
-                        </p>
+            {/* ---------------------------------------------------------- */}
+            {/* INTRO */}
+            {/* ---------------------------------------------------------- */}
+            <section style={{
+                minHeight: 'auto', display: 'block',
+                ...CONTAINER, paddingTop: '30px', paddingBottom: '30px',
+            }}>
+                <p className="ps-reveal" style={{
+                    fontFamily: 'var(--font-main)',
+                    fontSize: 'clamp(1rem, 1.5vw, 1.22rem)',
+                    lineHeight: 1.8, color: 'var(--text)', margin: 0, maxWidth: '62ch',
+                }}>
+                    Every batch is tested on a spectrometer across 28 elements before it leaves the mill,
+                    to hold the tolerances that piling, slabs and columns are designed against.
+                </p>
+            </section>
+
+            {/* ---------------------------------------------------------- */}
+            {/* APPLICATIONS */}
+            {/* ---------------------------------------------------------- */}
+            <section style={{
+                minHeight: 'auto', display: 'block',
+                paddingTop: SECTION_PAD, paddingBottom: SECTION_PAD,
+                paddingLeft: 0, paddingRight: 0,
+                background: 'var(--glass)',
+                borderTop: '1px solid var(--glass-border)',
+                borderBottom: '1px solid var(--glass-border)',
+            }}>
+                <div style={CONTAINER}>
+                    {heading('APPLICATIONS', 'Where the bar goes')}
+
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+                        gap: 'clamp(1.25rem, 2.5vw, 2.25rem)',
+                    }}>
+                        {APPLICATIONS.map(({ icon: Icon, name, text }) => (
+                            <div key={name} className="ps-reveal" style={{
+                                paddingTop: '1.35rem',
+                                borderTop: '2px solid var(--accent)',
+                            }}>
+                                <Icon size={24} color="var(--accent)" />
+                                <h3 style={{
+                                    fontFamily: 'var(--font-heading)',
+                                    fontSize: 'clamp(1.05rem, 1.6vw, 1.25rem)',
+                                    fontWeight: 800, letterSpacing: '0.03em',
+                                    margin: '0.9rem 0 0.6rem', textTransform: 'none',
+                                }}>
+                                    {name}
+                                </h3>
+                                <p style={{
+                                    fontFamily: 'var(--font-main)', fontSize: '0.93rem',
+                                    lineHeight: 1.78, color: 'var(--subtext)', margin: 0,
+                                }}>
+                                    {text}
+                                </p>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>
 
-            {/* DETAILED SPECS SECTION */}
-            <section className="specs-section" style={{ position: 'relative', zIndex: 2, padding: '6rem 5%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ width: '100%', maxWidth: '1200px', display: 'flex', flexWrap: 'wrap', gap: '3rem', alignItems: 'center', justifyContent: 'center' }}>
-                    
-                    {/* Left: Rebar geometry drawing image placeholder */}
-                    <div className="fade-in-element" style={{ flex: '1 1 450px', position: 'relative', aspectRatio: '4/3', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', background: 'var(--glass)', borderRadius: '24px', border: '1px solid var(--glass-border)', overflow: 'hidden' }}>
-                        <img 
-                            src="/images/specs_geometry.jpg" 
-                            alt="Steel rebar rib cross section geometric properties" 
-                            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                            onError={(e) => {
-                                e.target.style.display = 'none';
-                                e.target.nextSibling.style.display = 'flex';
-                            }}
-                        />
-                        <div style={{ position: 'absolute', inset: 0, display: 'none', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '2rem' }}>
-                            <Layers size={100} strokeWidth={1} color="var(--accent)" style={{ marginBottom: '1rem' }} />
-                            <p style={{ fontSize: '0.85rem', color: 'var(--subtext)', textAlign: 'center', fontFamily: 'monospace' }}>[ specs_geometry.jpg ]</p>
-                        </div>
-                        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'rgba(0,0,0,0.85)', padding: '0.75rem 1rem', backdropFilter: 'blur(10px)', borderTop: '1px solid var(--glass-border)' }}>
-                            <p style={{ margin: 0, fontSize: '0.8rem', color: '#fff', textAlign: 'center', fontFamily: 'var(--font-main)' }}>
-                                PROPOSED IMAGE: Rebar Rib Cross Section Diagram & Geometric Blueprint
-                            </p>
-                        </div>
+            {/* ---------------------------------------------------------- */}
+            {/* SIZE TABLE */}
+            {/* ---------------------------------------------------------- */}
+            <section style={{
+                minHeight: 'auto', display: 'block',
+                paddingTop: SECTION_PAD,
+                paddingBottom: `calc(${SECTION_PAD} * 1.4)`,
+                paddingLeft: 0, paddingRight: 0,
+            }}>
+                <div style={CONTAINER}>
+                    {heading('SIZE CHART', 'Available diameters')}
+
+                    {/* চওড়া টেবিল যেন পুরো পেজ পাশে ঠেলে না দেয়, তাই নিজের
+                        ভেতরেই স্ক্রল করে */}
+                    <div className="ps-reveal" style={{ overflowX: 'auto' }}>
+                        <table style={{
+                            width: '100%', minWidth: '640px',
+                            borderCollapse: 'collapse',
+                            fontFamily: 'var(--font-main)',
+                        }}>
+                            <thead>
+                                <tr>
+                                    <th style={{
+                                        textAlign: 'left', padding: '0.85rem 1rem',
+                                        fontSize: '0.72rem', fontWeight: 700,
+                                        letterSpacing: '0.16em', textTransform: 'uppercase',
+                                        color: 'var(--subtext)',
+                                        borderBottom: '1px solid var(--glass-border)',
+                                        whiteSpace: 'nowrap',
+                                    }}>
+                                        Diameter
+                                    </th>
+                                    {SIZES.map(({ grade }) => (
+                                        <th key={grade} style={{
+                                            padding: '0.85rem 1rem',
+                                            fontFamily: 'var(--font-heading)',
+                                            fontSize: '0.95rem', fontWeight: 800,
+                                            letterSpacing: '0.04em',
+                                            color: '#fff',
+                                            background: 'var(--accent)',
+                                            borderBottom: '1px solid var(--glass-border)',
+                                            whiteSpace: 'nowrap',
+                                        }}>
+                                            {grade}
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {ALL_SIZES.map((d) => (
+                                    <tr key={d}>
+                                        <td style={{
+                                            padding: '0.8rem 1rem',
+                                            fontFamily: 'var(--font-heading)',
+                                            fontSize: '0.92rem', fontWeight: 800,
+                                            letterSpacing: '0.03em',
+                                            borderBottom: '1px solid var(--glass-border)',
+                                            whiteSpace: 'nowrap',
+                                        }}>
+                                            {d} mm
+                                        </td>
+                                        {SIZES.map(({ grade, mm }) => (
+                                            <td key={grade} style={{
+                                                padding: '0.8rem 1rem',
+                                                textAlign: 'center',
+                                                fontSize: '0.9rem',
+                                                color: mm.includes(d) ? 'var(--accent)' : 'var(--subtext)',
+                                                borderBottom: '1px solid var(--glass-border)',
+                                            }}>
+                                                {mm.includes(d) ? 'Available' : '—'}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
 
-                    {/* Right: Specs description */}
-                    <div className="fade-in-element" style={{ flex: '1 1 500px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                            <Binary color="var(--accent)" size={24} />
-                            <h2 style={{ fontSize: '1.2rem', color: 'var(--accent)', fontFamily: 'monospace', letterSpacing: '0.15em', textTransform: 'uppercase', margin: 0 }}>GEOMETRIC PRECISION</h2>
-                        </div>
-                        <h3 style={{ fontSize: 'clamp(2rem, 3.5vw, 3rem)', color: 'var(--text)', marginBottom: '2rem', lineHeight: 1.1, fontFamily: 'var(--font-heading)' }}>
-                            TEMPERED RIB DESIGN
-                        </h3>
-                        <p style={{ color: 'var(--subtext)', fontSize: '1.15rem', lineHeight: 1.8, marginBottom: '1.5rem' }}>
-                            Our rebars feature an optimized rib geometry design that enhances concrete bonding by up to 30%. The chemical configuration and structural spacing comply with BSTI standards and the BNBC code.
-                        </p>
-                        <ul style={{ color: 'var(--subtext)', lineHeight: 1.8, paddingLeft: '1.2rem' }}>
-                            <li>Yield Strength: Min 500 MPa</li>
-                            <li>Ultimate Tensile Strength: Min 575 MPa</li>
-                            <li>Ratio (TS/YS): Min 1.15</li>
-                            <li>Elongation: Min 14%</li>
-                        </ul>
-                    </div>
+                    <p style={{
+                        fontFamily: 'var(--font-main)', fontSize: '0.85rem',
+                        color: 'var(--subtext)', margin: '1.4rem 0 0', maxWidth: '62ch',
+                    }}>
+                        420DWR is not produced in 8 mm. For any diameter or quantity, send us the
+                        requirement and we will confirm availability.
+                    </p>
+
+                    <button
+                        onClick={() => window.dispatchEvent(new CustomEvent('open-quote'))}
+                        style={{
+                            marginTop: '1.5rem',
+                            background: 'var(--accent)', color: '#fff', border: 'none',
+                            padding: '0.85rem 1.9rem', borderRadius: '4px',
+                            fontFamily: 'var(--font-main)', fontSize: '0.78rem',
+                            fontWeight: 700, letterSpacing: '0.14em',
+                            textTransform: 'uppercase', cursor: 'pointer',
+                        }}
+                    >
+                        Request a quotation
+                    </button>
                 </div>
             </section>
         </div>
