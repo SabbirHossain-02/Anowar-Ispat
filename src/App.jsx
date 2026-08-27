@@ -41,6 +41,7 @@ function App() {
     const lenisRef = useRef()
     const [isContactOpen, setIsContactOpen] = useState(false)
     const [isQuoteOpen, setIsQuoteOpen] = useState(false)
+    const [quotePreset, setQuotePreset] = useState(null)
     const [introDone, setIntroDone] = useState(false)
 
   useEffect(() => {
@@ -124,7 +125,12 @@ function App() {
     useEffect(() => {
         const handleStop = () => lenisRef.current?.stop();
         const handleStart = () => lenisRef.current?.start();
-        const handleOpenQuote = () => setIsQuoteOpen(true);
+        // টেবিল বা কার্ড থেকে খোলা হলে কোন গ্রেড ও সাইজ আগে থেকে
+        // বেছে থাকবে, সেটা ইভেন্টের detail এ আসে
+        const handleOpenQuote = (e) => {
+            setQuotePreset(e?.detail || null);
+            setIsQuoteOpen(true);
+        };
         
         window.addEventListener('lenis-stop', handleStop);
         window.addEventListener('lenis-start', handleStart);
@@ -142,7 +148,7 @@ function App() {
             {!introDone && <IntroLoader onComplete={() => setIntroDone(true)} />}
             <Navbar onOpenContact={() => setIsContactOpen(true)} onNavigate={handleNavigate} />
             <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
-            <QuoteModal isOpen={isQuoteOpen} onClose={() => setIsQuoteOpen(false)} />
+            <QuoteModal isOpen={isQuoteOpen} preset={quotePreset} onClose={() => setIsQuoteOpen(false)} />
 
             <div className="canvas-wrapper">
                 <Canvas

@@ -1159,6 +1159,79 @@ body.light-mode .hero-title.muted {
 }
 
 /* ============================================================
+   সাইজ চার্ট — ডকুমেন্টের টেবিলের মতোই প্রতিটি গ্রেডের নিচে দুই
+   কলামে সাইজ। প্রতিটি সাইজ একটি বোতাম: ক্লিক করলে ওই গ্রেড ও সাইজ
+   বাছা অবস্থায় কোটেশন ফর্ম খোলে।
+   ============================================================ */
+.ps-table {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: collapse;
+  font-family: var(--font-main);
+}
+
+.ps-table th {
+  padding: 0.9rem 1rem;
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #fff;
+  background: var(--accent);
+  border-right: 1px solid rgba(255, 255, 255, 0.22);
+  white-space: nowrap;
+}
+
+.ps-table th:last-child {
+  border-right: none;
+}
+
+.ps-table td {
+  padding: 0;
+  text-align: center;
+  border: 1px solid var(--glass-border);
+}
+
+/* প্রতিটি গ্রেডের দ্বিতীয় কলামের পর একটু গাঢ় সীমানা, যাতে কোন
+   দুটি কলাম একই গ্রেডের তা চোখে পড়ে */
+.ps-table td:nth-child(2n) {
+  border-right: 2px solid var(--glass-border);
+}
+
+.ps-size {
+  width: 100%;
+  padding: 0.8rem 0.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-main);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text);
+  transition: background 0.22s ease, color 0.22s ease;
+}
+
+.ps-size:hover,
+.ps-size:focus-visible {
+  background: var(--accent);
+  color: #fff;
+  outline: none;
+}
+
+.ps-empty {
+  display: block;
+  padding: 0.8rem 0.5rem;
+  color: var(--subtext);
+  opacity: 0.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ps-size {
+    transition: none;
+  }
+}
+
+/* ============================================================
    Heritage টাইমলাইন — বাঁ পাশে সাল, ডান পাশে ঘটনা, মাঝে একটানা
    রেখা। রেখাটাই ১৮৩৪ থেকে ২০২২ পর্যন্ত ধারাবাহিকতা বোঝায়।
    ============================================================ */

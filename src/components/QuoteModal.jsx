@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import gsap from 'gsap';
 
-const QuoteModal = ({ isOpen, onClose }) => {
+const QuoteModal = ({ isOpen, onClose, preset }) => {
     const modalRef = useRef(null);
     const contentRef = useRef(null);
     const gridLinesRef = useRef([]);
@@ -23,6 +23,14 @@ const QuoteModal = ({ isOpen, onClose }) => {
     const [message, setMessage] = useState("");
     const [submitting, setSubmitting] = useState(false);
     const [submitStatus, setSubmitStatus] = useState(null); // 'success' | 'error' | null
+
+    // সাইজ চার্ট বা প্রোডাক্ট কার্ড থেকে খোলা হলে সেই গ্রেড ও সাইজ
+    // আগে থেকেই বাছা থাকে — ব্যবহারকারীকে আবার খুঁজতে হয় না
+    useEffect(() => {
+        if (!isOpen || !preset) return;
+        if (preset.product) setSelectedProduct(preset.product);
+        if (preset.size) setSizeMM(String(preset.size));
+    }, [isOpen, preset]);
 
     useEffect(() => {
         if (!modalRef.current) return;

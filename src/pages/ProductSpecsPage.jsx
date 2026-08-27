@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Layers, Grid3x3, Building } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
@@ -16,32 +16,33 @@ const CONTAINER = {
 
 const APPLICATIONS = [
     {
-        icon: Layers,
+        image: '/app-piling.jpg',
         name: 'Piling foundation',
         text: 'Deep foundation cages where corrosion resistance and bond strength decide the life of the structure.',
     },
     {
-        icon: Grid3x3,
+        image: '/app-slab.jpg',
         name: 'Slab construction',
         text: 'Mesh and distribution bars, where bendability and consistent diameter keep placement fast and accurate.',
     },
     {
-        icon: Building,
+        image: '/app-pillars.jpg',
         name: 'Constructing pillars',
         text: 'Columns carrying the load of the building, where yield strength and ductility matter most.',
     },
 ];
 
-// স্লাইডের টেবিলটি প্রতিটি গ্রেডের নিচে দুই কলামে সাইজ সাজিয়ে রেখেছিল।
-// গ্রেড অনুযায়ী এক সারিতে আনলে তুলনা করা সহজ, আর 420DWR এ ৮ মি.মি. যে
-// নেই সেটাও চোখে পড়ে — টেবিলে ওটা কেবল একটা ফাঁকা ঘর ছিল।
-const SIZES = [
-    { grade: '500CWR', mm: [8, 10, 12, 16, 20, 22, 25, 28, 32, 40] },
-    { grade: '500DWR', mm: [8, 10, 12, 16, 20, 22, 25, 28, 32, 40] },
-    { grade: '420DWR', mm: [10, 12, 16, 20, 22, 25, 28, 32, 40] },
-];
+const GRADES = ['500CWR', '500DWR', '420DWR'];
 
-const ALL_SIZES = [8, 10, 12, 16, 20, 22, 25, 28, 32, 40];
+// স্লাইডের টেবিলের হুবহু গঠন — প্রতিটি গ্রেডের নিচে দুই কলামে সাইজ।
+// 420DWR এর প্রথম ঘরটি ফাঁকা, ওই গ্রেডে ৮ মি.মি. তৈরি হয় না।
+const SIZE_ROWS = [
+    { '500CWR': [8, 10], '500DWR': [8, 10], '420DWR': [null, 10] },
+    { '500CWR': [12, 16], '500DWR': [12, 16], '420DWR': [12, 16] },
+    { '500CWR': [20, 22], '500DWR': [20, 22], '420DWR': [20, 22] },
+    { '500CWR': [25, 28], '500DWR': [25, 28], '420DWR': [25, 28] },
+    { '500CWR': [32, 40], '500DWR': [32, 40], '420DWR': [32, 40] },
+];
 
 const ProductSpecsPage = () => {
     const rootRef = useRef(null);
@@ -62,6 +63,13 @@ const ProductSpecsPage = () => {
             });
         });
     }, { scope: rootRef });
+
+    // টেবিলের ঘরে ক্লিক করলে ওই গ্রেড ও সাইজ আগে থেকে বাছা অবস্থায়
+    // কোটেশন ফর্ম খোলে, তাই ব্যবহারকারীকে আবার ড্রপডাউন ঘাঁটতে হয় না
+    const askForQuote = (grade, mm) =>
+        window.dispatchEvent(new CustomEvent('open-quote', {
+            detail: { product: grade ? `Anwars ${grade}` : undefined, size: mm },
+        }));
 
     const heading = (eyebrow, title) => (
         <div className="ps-reveal" style={{ marginBottom: SECTION_PAD }}>
@@ -134,27 +142,26 @@ const ProductSpecsPage = () => {
                         gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
                         gap: 'clamp(1.25rem, 2.5vw, 2.25rem)',
                     }}>
-                        {APPLICATIONS.map(({ icon: Icon, name, text }) => (
-                            <div key={name} className="ps-reveal" style={{
-                                paddingTop: '1.35rem',
-                                borderTop: '2px solid var(--accent)',
-                            }}>
-                                <Icon size={24} color="var(--accent)" />
-                                <h3 style={{
-                                    fontFamily: 'var(--font-heading)',
-                                    fontSize: 'clamp(1.05rem, 1.6vw, 1.25rem)',
-                                    fontWeight: 800, letterSpacing: '0.03em',
-                                    margin: '0.9rem 0 0.6rem', textTransform: 'none',
-                                }}>
-                                    {name}
-                                </h3>
-                                <p style={{
-                                    fontFamily: 'var(--font-main)', fontSize: '0.93rem',
-                                    lineHeight: 1.78, color: 'var(--subtext)', margin: 0,
-                                }}>
-                                    {text}
-                                </p>
-                            </div>
+                        {APPLICATIONS.map(({ image, name, text }, i) => (
+                            <article key={name} className="ps-reveal vmv-card">
+                                <div className="vmv-media">
+                                    <img src={image} alt={name} loading="lazy" />
+                                </div>
+                                <div className="vmv-scrim" />
+
+                                <span className="vmv-num" aria-hidden="true">
+                                    {String(i + 1).padStart(2, '0')}
+                                </span>
+
+                                <span className="vmv-plus" aria-hidden="true">
+                                    <Plus size={17} />
+                                </span>
+
+                                <div className="vmv-body">
+                                    <h3 className="vmv-title">{name}</h3>
+                                    <p className="vmv-text"><span>{text}</span></p>
+                                </div>
+                            </article>
                         ))}
                     </div>
                 </div>
@@ -175,63 +182,35 @@ const ProductSpecsPage = () => {
                     {/* চওড়া টেবিল যেন পুরো পেজ পাশে ঠেলে না দেয়, তাই নিজের
                         ভেতরেই স্ক্রল করে */}
                     <div className="ps-reveal" style={{ overflowX: 'auto' }}>
-                        <table style={{
-                            width: '100%', minWidth: '640px',
-                            borderCollapse: 'collapse',
-                            fontFamily: 'var(--font-main)',
-                        }}>
+                        <table className="ps-table">
                             <thead>
                                 <tr>
-                                    <th style={{
-                                        textAlign: 'left', padding: '0.85rem 1rem',
-                                        fontSize: '0.72rem', fontWeight: 700,
-                                        letterSpacing: '0.16em', textTransform: 'uppercase',
-                                        color: 'var(--subtext)',
-                                        borderBottom: '1px solid var(--glass-border)',
-                                        whiteSpace: 'nowrap',
-                                    }}>
-                                        Diameter
-                                    </th>
-                                    {SIZES.map(({ grade }) => (
-                                        <th key={grade} style={{
-                                            padding: '0.85rem 1rem',
-                                            fontFamily: 'var(--font-heading)',
-                                            fontSize: '0.95rem', fontWeight: 800,
-                                            letterSpacing: '0.04em',
-                                            color: '#fff',
-                                            background: 'var(--accent)',
-                                            borderBottom: '1px solid var(--glass-border)',
-                                            whiteSpace: 'nowrap',
-                                        }}>
-                                            {grade}
-                                        </th>
+                                    {GRADES.map((g) => (
+                                        <th key={g} colSpan={2}>{g}</th>
                                     ))}
                                 </tr>
                             </thead>
                             <tbody>
-                                {ALL_SIZES.map((d) => (
-                                    <tr key={d}>
-                                        <td style={{
-                                            padding: '0.8rem 1rem',
-                                            fontFamily: 'var(--font-heading)',
-                                            fontSize: '0.92rem', fontWeight: 800,
-                                            letterSpacing: '0.03em',
-                                            borderBottom: '1px solid var(--glass-border)',
-                                            whiteSpace: 'nowrap',
-                                        }}>
-                                            {d} mm
-                                        </td>
-                                        {SIZES.map(({ grade, mm }) => (
-                                            <td key={grade} style={{
-                                                padding: '0.8rem 1rem',
-                                                textAlign: 'center',
-                                                fontSize: '0.9rem',
-                                                color: mm.includes(d) ? 'var(--accent)' : 'var(--subtext)',
-                                                borderBottom: '1px solid var(--glass-border)',
-                                            }}>
-                                                {mm.includes(d) ? 'Available' : '—'}
-                                            </td>
-                                        ))}
+                                {SIZE_ROWS.map((row, r) => (
+                                    <tr key={r}>
+                                        {GRADES.map((g) =>
+                                            row[g].map((mm, c) => (
+                                                <td key={`${g}-${c}`}>
+                                                    {mm === null ? (
+                                                        <span className="ps-empty">—</span>
+                                                    ) : (
+                                                        <button
+                                                            type="button"
+                                                            className="ps-size"
+                                                            onClick={() => askForQuote(g, mm)}
+                                                            title={`Request a quotation for ${g} ${mm}mm`}
+                                                        >
+                                                            {mm} mm
+                                                        </button>
+                                                    )}
+                                                </td>
+                                            ))
+                                        )}
                                     </tr>
                                 ))}
                             </tbody>
@@ -247,7 +226,7 @@ const ProductSpecsPage = () => {
                     </p>
 
                     <button
-                        onClick={() => window.dispatchEvent(new CustomEvent('open-quote'))}
+                        onClick={() => askForQuote()}
                         style={{
                             marginTop: '1.5rem',
                             background: 'var(--accent)', color: '#fff', border: 'none',
