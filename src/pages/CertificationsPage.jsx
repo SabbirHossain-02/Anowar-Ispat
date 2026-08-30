@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
@@ -13,57 +13,25 @@ const CONTAINER = {
     padding: '0 clamp(1.25rem, 5vw, 3rem)',
 };
 
-// স্লাইডে আটটি সার্টিফিকেট একসাথে সাজানো ছিল, কিন্তু সেগুলো তিন
-// রকমের জিনিস — পণ্য কোন মানে তৈরি, প্রতিষ্ঠান কীভাবে চলে, আর
-// বাইরের কেউ পরীক্ষা করেছে কি না। আলাদা করলে অর্থটা স্পষ্ট হয়।
-const GROUPS = [
-    {
-        eyebrow: 'PRODUCT STANDARDS',
-        title: 'What the bar is made to',
-        note: 'The specifications the rebar itself is manufactured and tested against.',
-        items: [
-            { code: 'BSTI', body: 'Bangladesh Standards and Testing Institution', note: 'Certified for standard quality' },
-            { code: 'BDS ISO 6935-2:2021', body: 'Bangladesh Standard for ribbed bars', note: 'Steel for the reinforcement of concrete' },
-            { code: 'BS-4449', body: 'British Standards Institution', note: 'Certified for British-standard quality' },
-            { code: 'IS-1786', body: 'Bureau of Indian Standards', note: 'Certified for strength and flexibility' },
-            { code: 'ASTM-A615 & A706', body: 'ASTM International', note: 'Certified for seismic safety' },
-        ],
-    },
-    {
-        eyebrow: 'MANAGEMENT SYSTEMS',
-        title: 'How the mill is run',
-        note: 'Audited systems covering how the plant produces and how it treats its surroundings.',
-        items: [
-            { code: 'ISO 9001:2015', body: 'Quality Management System', note: 'QMS certificate' },
-            { code: 'ISO 14001:2015', body: 'Environmental Management System', note: 'EMS certificate' },
-        ],
-    },
-    {
-        eyebrow: 'INDEPENDENT TESTING',
-        title: 'Checked by others',
-        note: 'Verification carried out outside the company.',
-        items: [
-            { code: 'BUET', body: 'Bangladesh University of Engineering and Technology', note: 'Independently certified' },
-        ],
-    },
+const CERTIFICATES = [
+    { logo: '/cert-buet.png', name: 'BUET', line: 'Certified by the Bangladesh University of Engineering and Technology' },
+    { logo: '/cert-bsti.jpg', name: 'BSTI', line: 'Certified for standard quality by the Bangladesh Standards and Testing Institution' },
+    { logo: '/cert-iso-ems.jpg', name: 'ISO 14001:2015', line: 'Environmental management system certificate' },
+    { logo: '/cert-iso-qms.png', name: 'ISO 9001:2015', line: 'Quality management system certificate' },
+    { logo: '/cert-is1786.jpg', name: 'IS-1786', line: 'Certified for strength and flexibility, Bureau of Indian Standards' },
+    { logo: '/cert-bs4449.png', name: 'BS-4449', line: 'Certified for British-standard quality' },
+    { logo: '/cert-bds-iso.png', name: 'BDS ISO 6935-2:2021', line: 'Bangladesh Standard for steel for the reinforcement of concrete' },
+    { logo: '/cert-astm.png', name: 'ASTM-A615 & A706', line: 'Certified for seismic safety' },
 ];
 
 const CertificationsPage = () => {
     const rootRef = useRef(null);
-    const [isMobile, setIsMobile] = useState(false);
-
-    useEffect(() => {
-        const onResize = () => setIsMobile(window.innerWidth < 900);
-        onResize();
-        window.addEventListener('resize', onResize);
-        return () => window.removeEventListener('resize', onResize);
-    }, []);
 
     useGSAP(() => {
         gsap.utils.toArray('.ct-reveal').forEach((el) => {
             gsap.from(el, {
-                y: 36, opacity: 0, duration: 0.75, ease: 'power3.out',
-                scrollTrigger: { trigger: el, start: 'top 87%' },
+                y: 28, opacity: 0, duration: 0.7, ease: 'power3.out',
+                scrollTrigger: { trigger: el, start: 'top 90%' },
             });
         });
     }, { scope: rootRef });
@@ -85,84 +53,40 @@ const CertificationsPage = () => {
                 ]}
             />
 
-            {/* ---------------------------------------------------------- */}
-            {/* INTRO */}
-            {/* ---------------------------------------------------------- */}
             <section style={{
                 minHeight: 'auto', display: 'block',
-                ...CONTAINER, paddingTop: '30px', paddingBottom: '30px',
+                ...CONTAINER,
+                paddingTop: '30px',
+                paddingBottom: `calc(${SECTION_PAD} * 1.4)`,
             }}>
                 <p className="ct-reveal" style={{
                     fontFamily: 'var(--font-main)',
                     fontSize: 'clamp(1rem, 1.5vw, 1.22rem)',
-                    lineHeight: 1.8, color: 'var(--text)', margin: 0, maxWidth: '62ch',
+                    lineHeight: 1.8, color: 'var(--text)',
+                    margin: `0 0 ${SECTION_PAD}`, maxWidth: '62ch',
                 }}>
                     Anwar Ispat rebar is certified against Bangladeshi, British, Indian and American
                     standards, and the mill is audited to ISO quality and environmental management
                     systems.
                 </p>
+
+                <div className="cert-grid">
+                    {CERTIFICATES.map((c) => (
+                        <figure key={c.name} className="ct-reveal cert-item">
+                            {/* লোগোগুলোর নিজস্ব রং আছে এবং কয়েকটির পটভূমি সাদা,
+                                তাই টাইলটা দুই থিমেই সাদা — নইলে ডার্ক মোডে
+                                কালো কালিতে আঁকা লোগো মিলিয়ে যায় */}
+                            <div className="cert-plate">
+                                <img src={c.logo} alt={`${c.name} certification`} loading="lazy" />
+                            </div>
+                            <figcaption>
+                                <h2 className="cert-name">{c.name}</h2>
+                                <p className="cert-line">{c.line}</p>
+                            </figcaption>
+                        </figure>
+                    ))}
+                </div>
             </section>
-
-            {/* ---------------------------------------------------------- */}
-            {/* GROUPS */}
-            {/* ---------------------------------------------------------- */}
-            {GROUPS.map((group, gi) => (
-                <section
-                    key={group.eyebrow}
-                    style={{
-                        minHeight: 'auto', display: 'block',
-                        paddingTop: SECTION_PAD,
-                        paddingBottom: gi === GROUPS.length - 1
-                            ? `calc(${SECTION_PAD} * 1.4)`
-                            : SECTION_PAD,
-                        paddingLeft: 0, paddingRight: 0,
-                        // পরপর সেকশন পালা করে রং বদলায়, নইলে সীমানা বোঝা যায় না
-                        background: gi % 2 === 0 ? 'var(--glass)' : 'transparent',
-                        borderTop: '1px solid var(--glass-border)',
-                    }}
-                >
-                    <div style={CONTAINER}>
-                        <div className="ct-reveal" style={{ marginBottom: SECTION_PAD }}>
-                            <span style={{
-                                fontFamily: 'var(--font-main)', fontSize: '0.72rem', fontWeight: 700,
-                                letterSpacing: '0.28em', color: 'var(--accent)',
-                            }}>
-                                {group.eyebrow}
-                            </span>
-                            <h2 style={{
-                                fontFamily: 'var(--font-heading)',
-                                fontSize: 'clamp(1.6rem, 3.2vw, 2.4rem)',
-                                fontWeight: 800, margin: '0.8rem 0 0.6rem',
-                                letterSpacing: '0.02em', textTransform: 'none',
-                            }}>
-                                {group.title}
-                            </h2>
-                            <p style={{
-                                fontFamily: 'var(--font-main)', fontSize: '0.93rem',
-                                lineHeight: 1.7, color: 'var(--subtext)', margin: 0, maxWidth: '58ch',
-                            }}>
-                                {group.note}
-                            </p>
-                        </div>
-
-                        <div style={{
-                            display: 'grid',
-                            gridTemplateColumns: isMobile
-                                ? 'repeat(auto-fit, minmax(240px, 1fr))'
-                                : 'repeat(auto-fit, minmax(280px, 1fr))',
-                            gap: 'clamp(1rem, 1.8vw, 1.5rem)',
-                        }}>
-                            {group.items.map((c) => (
-                                <article key={c.code} className="ct-reveal ct-card">
-                                    <p className="ct-note">{c.note}</p>
-                                    <h3 className="ct-code">{c.code}</h3>
-                                    <p className="ct-body">{c.body}</p>
-                                </article>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-            ))}
         </div>
     );
 };
