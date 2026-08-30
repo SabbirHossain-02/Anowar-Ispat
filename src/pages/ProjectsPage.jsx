@@ -107,18 +107,24 @@ const ProjectsPage = () => {
                         <button
                             key={p.img}
                             type="button"
-                            className={i === 0 ? 'gal-item is-feature' : 'gal-item'}
+                            className="gal-item"
                             onClick={() => setOpen(i)}
                             aria-label={'View ' + p.name}
                         >
-                            <img className="gal-img" src={p.img} alt={p.name} loading="lazy" />
-                            <span className="gal-scrim" aria-hidden="true" />
-                            <span className="gal-zoom" aria-hidden="true"><Maximize2 size={16} /></span>
-                            <span className="gal-body">
-                                <span className="gal-kind">{p.kind}</span>
-                                <span className="gal-name">{p.name}</span>
-                                <span className="gal-rule" aria-hidden="true" />
+                            <span className="gal-media">
+                                <img className="gal-img" src={p.img} alt={p.name} loading="lazy" />
+                                <span className="gal-zoom" aria-hidden="true"><Maximize2 size={16} /></span>
                             </span>
+
+                            {/* লেখা ছবির বাইরে, তাই থিমের রং সরাসরি খাটে —
+                                কালো আস্তরণ বা সাদা হরফের দরকার পড়ে না */}
+                            <span className="gal-meta">
+                                <span className="gal-index">{String(i + 1).padStart(2, '0')}</span>
+                                <span className="gal-dash" aria-hidden="true" />
+                                <span className="gal-kind">{p.kind}</span>
+                            </span>
+                            <span className="gal-name">{p.name}</span>
+                            <span className="gal-rule" aria-hidden="true" />
                         </button>
                     ))}
                 </div>
