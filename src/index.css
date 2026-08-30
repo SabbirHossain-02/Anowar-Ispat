@@ -3009,10 +3009,17 @@ body.light-mode .floating-quote-btn:hover {
 }
 
 /* ---------- প্রতিশ্রুতি ---------- */
-/* মাঝখানে নয়, ডান দিকে সরানো ও সরু মাপে */
+/* দুই কলামে — বড় বিবৃতি বাঁয়ে, ছোট লেখা ডানে। আগে পুরোটা ডানে
+   ঠেলা ছিল, তাতে বাঁ পাশটা কেবল ফাঁকা পড়ে থাকত */
 .csr-commit {
-  max-width: 60ch;
-  margin-left: auto;
+  display: grid;
+  grid-template-columns: 1.35fr 0.85fr;
+  gap: clamp(1.75rem, 5vw, 4.5rem);
+  align-items: start;
+}
+
+.csr-commit .csr-eyebrow {
+  grid-column: 1 / -1;
 }
 
 .csr-commit-lead {
@@ -3025,12 +3032,14 @@ body.light-mode .floating-quote-btn:hover {
   margin: 0.9rem 0 0;
 }
 
+/* বড় লেখার প্রথম লাইনের সমান্তরালে না বসে একটু নিচ থেকে শুরু */
 .csr-commit-text {
   font-family: var(--font-main);
   font-size: 0.95rem;
   line-height: 1.85;
   color: var(--subtext);
-  margin: 1.3rem 0 0;
+  margin: 0.9rem 0 0;
+  padding-top: 0.75rem;
 }
 
 @media (max-width: 900px) {
@@ -3064,6 +3073,11 @@ body.light-mode .floating-quote-btn:hover {
   }
 
   .csr-commit {
-    margin-left: 0;
+    grid-template-columns: 1fr;
+  }
+
+  .csr-commit-text {
+    padding-top: 0;
+    margin-top: 1.3rem;
   }
 }
