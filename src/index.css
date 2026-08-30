@@ -3956,17 +3956,21 @@ body.light-mode .floating-quote-btn:hover {
 /* ---------- দৃশ্যে এলে ফুটে ওঠা ---------- */
 /* বিন্দু আগে বসে, তারপর বোঁটা গজায়, শেষে লেখা ভেসে ওঠে — ডালে
    পাতা মেলার ক্রম */
+/* --tl-delay আসে JS থেকে: একসাথে কয়েকটি ঘটনা ঢুকলে সেগুলো বাঁ থেকে
+   ডানে একটু পরপর খোলে। ভেতরের তিন ধাপের দেরি তার সাথে যোগ হয়। */
 .tl-dot {
   opacity: 0;
   transform: scale(0);
   transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.34, 1.4, 0.5, 1),
               background 0.3s ease;
+  transition-delay: var(--tl-delay, 0s);
 }
 
 .tl-stem {
   opacity: 0;
   transform: scaleY(0);
-  transition: opacity 0.3s ease 0.12s, transform 0.4s ease 0.12s;
+  transition: opacity 0.3s ease, transform 0.4s ease;
+  transition-delay: calc(var(--tl-delay, 0s) + 0.12s);
 }
 
 .tl-item.is-above .tl-stem { transform-origin: bottom center; }
@@ -3974,7 +3978,8 @@ body.light-mode .floating-quote-btn:hover {
 
 .tl-card {
   opacity: 0;
-  transition: opacity 0.55s ease 0.24s, transform 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) 0.24s;
+  transition: opacity 0.55s ease, transform 0.6s cubic-bezier(0.2, 0.7, 0.3, 1);
+  transition-delay: calc(var(--tl-delay, 0s) + 0.24s);
 }
 
 /* লেখাটি ডালের দিক থেকে সরে এসে জায়গা নেয় */

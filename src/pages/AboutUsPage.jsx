@@ -104,13 +104,27 @@ const AboutUsPage = () => {
         const items = el.querySelectorAll('.tl-item');
         const io = new IntersectionObserver(
             (entries) => {
-                entries.forEach((entry) => {
-                    if (!entry.isIntersecting) return;
+                const arriving = entries.filter((e) => e.isIntersecting);
+                if (arriving.length === 0) return;
+
+                // এক পর্দায় সাতটা ঘটনা ধরে, তাই সেকশনটি চোখে আসতেই
+                // সবগুলো একসাথে ফুটে উঠত — দেখে মনে হত আগে থেকেই ছিল।
+                // বাঁ থেকে ডানে সাজিয়ে একটু পরপর ছাড়লে একটার পর একটা
+                // খোলে। পাশে গড়ানোর সময় একটাই আসে, তাই দেরি হয় না।
+                arriving.sort(
+                    (a, b) => a.boundingClientRect.left - b.boundingClientRect.left,
+                );
+
+                arriving.forEach((entry, i) => {
+                    entry.target.style.setProperty('--tl-delay', `${i * 0.11}s`);
                     entry.target.classList.add('is-in');
                     io.unobserve(entry.target); // একবার ফুটলেই যথেষ্ট
                 });
             },
-            { threshold: 0.35 },
+            // ধারের ৪% বাদ — ঘটনাটি পুরোপুরি ভেতরে ঢুকলে তবেই ফোটে।
+            // এর বেশি বাদ দিলে শেষ ঘটনাটি প্রান্তে আটকে থেকে কখনো
+            // threshold ছুঁত না।
+            { threshold: 0.4, rootMargin: '0px -4% 0px -4%' },
         );
 
         items.forEach((item) => io.observe(item));
