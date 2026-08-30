@@ -3081,3 +3081,390 @@ body.light-mode .floating-quote-btn:hover {
     margin-top: 1.3rem;
   }
 }
+
+/* ============================================================
+   নিউজরুম — আগের পাতায় নয়টি খবরই হাতে লেখা ছিল, ছয় রঙে, আর ছবির
+   জায়গায় প্লেসহোল্ডার। এখন সব আসে /api/media থেকে, অর্থাৎ অ্যাডমিন
+   প্যানেল থেকে যা আপলোড হয় তাই। শিরোনাম আর বড় হাতের নয় — খবরের
+   শিরোনাম বাক্যের ছাঁচেই লেখা হয়, বড় হাতের অক্ষর বিজ্ঞাপনের ভাষা।
+   ============================================================ */
+.nw-ticker {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow: hidden;
+  background: var(--glass);
+}
+
+.nw-ticker-tag {
+  flex-shrink: 0;
+  padding: 0.7rem clamp(1rem, 3vw, 1.6rem);
+  background: var(--accent);
+  color: #fff !important;
+  font-family: var(--font-main);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  white-space: nowrap;
+}
+
+.nw-ticker-track {
+  flex: 1;
+  overflow: hidden;
+}
+
+.nw-ticker-run {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.nw-ticker-item {
+  font-family: var(--font-main);
+  font-size: 0.8rem;
+  color: var(--subtext);
+  padding: 0 1.25rem;
+}
+
+/* শিরোনামের মাঝে বিভাজক — খবরের পট্টিতে যেমন থাকে */
+.nw-ticker-item::after {
+  content: '•';
+  margin-left: 1.25rem;
+  color: var(--accent);
+}
+
+/* ---------- বিভাগ ---------- */
+.nw-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+.nw-filter {
+  padding: 0.45rem 1.1rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 2px;
+  background: none;
+  color: var(--subtext);
+  font-family: var(--font-main);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.nw-filter.is-on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* ---------- সেকশনের শিরোনাম ---------- */
+/* খবরের কাগজের বিভাগ-শিরোনাম: নাম, তারপর পাতাজুড়ে একটি রেখা */
+.nw-rule {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: clamp(2.25rem, 4vw, 3.25rem) 0 clamp(1.25rem, 2.4vw, 1.9rem);
+}
+
+.nw-rule:first-child {
+  margin-top: 0;
+}
+
+.nw-rule span {
+  flex-shrink: 0;
+  font-family: var(--font-main);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  color: var(--accent);
+}
+
+.nw-rule::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--glass-border);
+}
+
+.nw-kicker {
+  display: block;
+  font-family: var(--font-main);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.7rem;
+}
+
+.nw-note {
+  font-family: var(--font-main);
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: var(--subtext);
+  margin: 0;
+  padding: clamp(1.5rem, 4vw, 3rem) 0;
+}
+
+.nw-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem 1.1rem;
+  margin-top: 1.1rem;
+  font-family: var(--font-main);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--subtext);
+}
+
+.nw-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: auto;
+  color: var(--accent);
+}
+
+/* ---------- প্রধান খবর ---------- */
+.nw-lead {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: clamp(1.5rem, 3.5vw, 3rem);
+  align-items: center;
+  margin: 0;
+  cursor: pointer;
+}
+
+.nw-lead-media {
+  overflow: hidden;
+  border-radius: 3px;
+  aspect-ratio: 4 / 3;
+  background: var(--secondary);
+}
+
+.nw-lead-media img,
+.nw-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.nw-noimg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--secondary);
+}
+
+/* শিরোনাম বাক্যের ছাঁচে, বড় হাতের নয় */
+.nw-lead-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.45rem, 3vw, 2.35rem);
+  font-weight: 800;
+  line-height: 1.18;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: var(--text);
+  margin: 0;
+}
+
+.nw-lead-text {
+  font-family: var(--font-main);
+  font-size: clamp(0.93rem, 1.15vw, 1.02rem);
+  line-height: 1.85;
+  color: var(--subtext);
+  margin: 1rem 0 0;
+}
+
+/* ---------- বাকি খবর ---------- */
+.nw-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(1.25rem, 2.4vw, 2.25rem);
+}
+
+.nw-card {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  cursor: pointer;
+}
+
+.nw-card-media {
+  overflow: hidden;
+  border-radius: 3px;
+  aspect-ratio: 16 / 10;
+  background: var(--secondary);
+  margin-bottom: 1.1rem;
+}
+
+.nw-card-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: var(--text);
+  margin: 0;
+}
+
+.nw-card-text {
+  font-family: var(--font-main);
+  font-size: 0.87rem;
+  line-height: 1.75;
+  color: var(--subtext);
+  margin: 0.6rem 0 0;
+}
+
+.nw-card .nw-meta {
+  margin-top: auto;
+  padding-top: 1.1rem;
+}
+
+@media (hover: hover) {
+  .nw-lead:hover .nw-lead-media img,
+  .nw-card:hover .nw-card-media img {
+    transform: scale(1.05);
+  }
+
+  .nw-lead:hover .nw-lead-title,
+  .nw-card:hover .nw-card-title {
+    color: var(--accent);
+  }
+}
+
+/* ---------- একটি খবরের পাতা ---------- */
+.na-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--subtext);
+  font-family: var(--font-main);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.na-back:hover {
+  color: var(--accent);
+}
+
+.na-article {
+  max-width: 74ch;
+  margin: clamp(1.75rem, 3vw, 2.75rem) 0 0;
+}
+
+.na-head {
+  margin-bottom: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.na-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.7rem, 4vw, 3rem);
+  font-weight: 800;
+  line-height: 1.14;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: var(--text);
+  margin: 0;
+}
+
+.na-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: auto;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.na-figure {
+  margin: 0 0 clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.na-figure img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 3px;
+}
+
+.na-body p {
+  font-family: var(--font-main);
+  font-size: 1rem;
+  line-height: 1.9;
+  color: var(--subtext);
+  margin: 0 0 1.35rem;
+}
+
+.na-body p:last-child {
+  margin-bottom: 0;
+}
+
+/* প্রথম অনুচ্ছেদ বড় হরফে — খবরের পাতার রীতি */
+.na-body .na-lead,
+.na-missing .na-lead {
+  font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+  line-height: 1.8;
+  color: var(--text);
+}
+
+.na-related {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+
+.na-missing {
+  max-width: 60ch;
+}
+
+.na-missing .na-lead {
+  margin: 1.1rem 0 1.75rem;
+}
+
+@media (max-width: 900px) {
+  .nw-lead {
+    grid-template-columns: 1fr;
+  }
+
+  .nw-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .nw-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nw-lead-media img,
+  .nw-card-media img,
+  .nw-filter {
+    transition: none;
+  }
+}
