@@ -1159,93 +1159,85 @@ body.light-mode .hero-title.muted {
 }
 
 /* ============================================================
-   সার্টিফিকেশন — কার্ডের গ্রিড নয়, একটা রেজিস্টারের মতো তালিকা।
-   বাঁ পাশের ভূমিকা স্ক্রলের সাথে আটকে থাকে।
+   সার্টিফিকেশন — সাইটের থিম ধরেই। লাইট মোডে ধূসর পটভূমিতে সাদা
+   কার্ড বসায় গভীরতা আসে; ডার্ক মোডে একই কাঠামো গাঢ় পৃষ্ঠতলে
+   উল্টে যায়। আটটি সার্টিফিকেট চার কলামে ঠিক দুই সারিতে বসে।
    ============================================================ */
-.cert-layout {
-  display: grid;
-  grid-template-columns: minmax(260px, 340px) 1fr;
-  gap: clamp(2rem, 5vw, 5rem);
-  align-items: start;
+.cert-head {
+  max-width: 62ch;
+  margin: 0 0 clamp(2rem, 3.5vw, 3rem);
 }
 
-.cert-aside {
-  position: sticky;
-  top: 120px;
-}
-
-.cert-count {
+.cert-eyebrow {
+  display: block;
   font-family: var(--font-main);
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--subtext);
-  margin: 0 0 1.1rem;
-}
-
-.cert-count span {
-  font-family: var(--font-heading);
-  font-size: 1.6rem;
-  font-weight: 800;
-  letter-spacing: 0;
+  letter-spacing: 0.28em;
   color: var(--accent);
-  margin-right: 0.5rem;
-  vertical-align: -0.15em;
 }
 
-.cert-lede {
+.cert-title {
   font-family: var(--font-heading);
-  font-size: clamp(1.25rem, 2vw, 1.6rem);
+  font-size: clamp(1.7rem, 3.4vw, 2.6rem);
   font-weight: 800;
-  line-height: 1.35;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
+  line-height: 1.22;
   text-transform: none;
-  margin: 0 0 1.1rem;
+  margin: 0.8rem 0 0;
 }
 
-.cert-intro {
+.cert-lead {
   font-family: var(--font-main);
-  font-size: 0.93rem;
+  font-size: clamp(0.95rem, 1.2vw, 1.05rem);
   line-height: 1.8;
   color: var(--subtext);
-  margin: 0;
+  margin: 1.1rem 0 0;
 }
 
-.cert-register {
-  border-top: 1px solid var(--glass-border);
-}
-
-.cert-row {
+.cert-grid {
   display: grid;
-  grid-template-columns: 34px 104px 1fr auto;
-  gap: clamp(1rem, 2vw, 1.75rem);
-  align-items: center;
-  padding: 1.15rem 0;
-  border-bottom: 1px solid var(--glass-border);
-  transition: background 0.25s ease;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(1rem, 1.8vw, 1.5rem);
 }
 
-.cert-index {
-  font-family: var(--font-heading);
-  font-size: 0.82rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  color: var(--subtext);
-  opacity: 0.6;
+.cert-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-solid);
+  border: 1px solid var(--glass-border);
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 0;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
 }
 
-/* কয়েকটি লোগো কালো কালিতে আঁকা — গাঢ় পটভূমিতে মিলিয়ে যেত,
-   তাই প্লেট দুই থিমেই সাদা */
+/* উপরের সরু লাল রেখাটা শুধু হোভারে বাড়ে — স্থির অবস্থায় কার্ড
+   একদম শান্ত থাকে */
+.cert-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+  z-index: 2;
+}
+
+/* কয়েকটি লোগো কালো কালিতে আঁকা, তাই প্লেট দুই থিমেই সাদা */
 .cert-plate {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 68px;
-  padding: 0.6rem;
+  height: 132px;
+  padding: 1.6rem;
   background: #fff;
-  border: 1px solid var(--glass-border);
-  border-radius: 2px;
+  border-bottom: 1px solid var(--glass-border);
 }
 
 .cert-plate img {
@@ -1255,71 +1247,86 @@ body.light-mode .hero-title.muted {
   display: block;
 }
 
+.cert-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 1.3rem 1.25rem 1.2rem;
+}
+
 .cert-code {
   font-family: var(--font-heading);
-  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  font-size: 1.02rem;
   font-weight: 800;
-  letter-spacing: 0.03em;
-  line-height: 1.25;
-  margin: 0 0 0.28rem;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
   text-transform: none;
+  margin: 0 0 0.45rem;
 }
 
 .cert-issuer {
   font-family: var(--font-main);
-  font-size: 0.88rem;
-  line-height: 1.6;
+  font-size: 0.82rem;
+  line-height: 1.65;
   color: var(--subtext);
-  margin: 0;
+  margin: 0 0 1.5rem;
 }
 
+/* margin-top:auto — বিবরণ দুই লাইন হোক বা চার, লেবেলটা প্রতিটি
+   কার্ডে একই উচ্চতায় বসে */
 .cert-scope {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
   font-family: var(--font-main);
-  font-size: 0.68rem;
+  font-size: 0.63rem;
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--subtext);
-  white-space: nowrap;
-  padding: 0.32rem 0.7rem;
-  border: 1px solid var(--glass-border);
-  border-radius: 2px;
+}
+
+.cert-scope::before {
+  content: '';
+  width: 16px;
+  height: 2px;
+  background: var(--accent);
+  flex-shrink: 0;
 }
 
 @media (hover: hover) {
-  .cert-row:hover {
-    background: var(--glass);
+  .cert-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--card-shadow);
+  }
+
+  .cert-card:hover::before {
+    transform: scaleX(1);
   }
 }
 
-@media (max-width: 900px) {
-  .cert-layout {
+/* আটটি কার্ড — চার বা দুই কলামেই সারি সম্পূর্ণ হয়, তাই তিন কলাম
+   বাদ দেওয়া হয়েছে */
+@media (max-width: 1000px) {
+  .cert-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .cert-grid {
     grid-template-columns: 1fr;
   }
 
-  .cert-aside {
-    position: static;
-  }
-
-  /* সরু পর্দায় ক্রমিক সংখ্যা ও scope লেবেল বাদ — মূল তথ্যের
-     জন্য জায়গা ছেড়ে দেওয়াই বেশি জরুরি */
-  .cert-row {
-    grid-template-columns: 76px 1fr;
-    gap: 1rem;
-  }
-
-  .cert-index,
-  .cert-scope {
-    display: none;
-  }
-
   .cert-plate {
-    height: 56px;
+    height: 112px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cert-row {
+  .cert-card,
+  .cert-card::before {
     transition: none;
   }
 }

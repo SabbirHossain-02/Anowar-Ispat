@@ -13,9 +13,9 @@ const CONTAINER = {
     padding: '0 clamp(1.25rem, 5vw, 3rem)',
 };
 
-// স্লাইডের ক্রম রাখা হয়েছে। scope টা ছোট লেবেল হিসেবে ডানে বসে —
-// আগের মতো তিনটি আলাদা সেকশনে ভাগ না করে, কারণ সেই শিরোনামগুলো
-// নথিতে ছিল না, আমার বানানো ছিল।
+// স্লাইডের ক্রম রাখা হয়েছে। scope টা কার্ডের নিচে ছোট লেবেল হিসেবে
+// বসে — আগের মতো তিনটি আলাদা শিরোনামে ভাগ করা হয়নি, কারণ সেই
+// শিরোনামগুলো নথিতে ছিল না।
 const CERTIFICATES = [
     {
         logo: '/cert-buet.png',
@@ -56,13 +56,13 @@ const CERTIFICATES = [
     {
         logo: '/cert-bds-iso.png',
         code: 'BDS ISO 6935-2:2021',
-        issuer: 'Bangladesh Standard — steel for the reinforcement of concrete',
+        issuer: 'Bangladesh Standard for steel reinforcement of concrete',
         scope: 'Product standard',
     },
     {
         logo: '/cert-astm.png',
         code: 'ASTM-A615 & A706',
-        issuer: 'ASTM International — seismic safety',
+        issuer: 'ASTM International — certified for seismic safety',
         scope: 'Product standard',
     },
 ];
@@ -71,9 +71,11 @@ const CertificationsPage = () => {
     const rootRef = useRef(null);
 
     useGSAP(() => {
-        gsap.utils.toArray('.cert-row').forEach((el) => {
+        gsap.utils.toArray('.cert-card').forEach((el, i) => {
             gsap.from(el, {
-                y: 22, opacity: 0, duration: 0.6, ease: 'power3.out',
+                y: 26, opacity: 0, duration: 0.6, ease: 'power3.out',
+                // একই সারির কার্ডগুলো একটু পরপর আসে, একসাথে ঝাঁপিয়ে পড়ে না
+                delay: (i % 4) * 0.06,
                 scrollTrigger: { trigger: el, start: 'top 92%' },
             });
         });
@@ -102,45 +104,36 @@ const CertificationsPage = () => {
                 paddingTop: SECTION_PAD,
                 paddingBottom: `calc(${SECTION_PAD} * 1.4)`,
             }}>
-                <div className="cert-layout">
-                    {/* বাঁ পাশের অংশটা স্ক্রলের সাথে আটকে থাকে, তাই লম্বা
-                        তালিকা দেখতে দেখতেও প্রসঙ্গটা চোখের সামনে থাকে */}
-                    <aside className="cert-aside">
-                        <p className="cert-count">
-                            <span>08</span> certifications
-                        </p>
-                        <h2 className="cert-lede">
-                            Every claim on this page is issued by a body outside Anwar Ispat.
-                        </h2>
-                        <p className="cert-intro">
-                            The rebar is certified against Bangladeshi, British, Indian and American
-                            standards. The mill itself is audited to ISO quality and environmental
-                            management systems, and tested independently by BUET.
-                        </p>
-                    </aside>
+                <div className="cert-head">
+                    <span className="cert-eyebrow">CERTIFICATIONS</span>
+                    <h2 className="cert-title">
+                        Every claim below is issued by a body outside Anwar Ispat
+                    </h2>
+                    <p className="cert-lead">
+                        The rebar is certified against Bangladeshi, British, Indian and American
+                        standards. The mill itself is audited to ISO quality and environmental
+                        management systems, and tested independently by BUET.
+                    </p>
+                </div>
 
-                    <div className="cert-register">
-                        {CERTIFICATES.map((c, i) => (
-                            <article key={c.code} className="cert-row">
-                                <span className="cert-index" aria-hidden="true">
-                                    {String(i + 1).padStart(2, '0')}
-                                </span>
+                <div className="cert-grid">
+                    {CERTIFICATES.map((c) => (
+                        <article key={c.code} className="cert-card">
+                            {/* প্লেট দুই থিমেই সাদা — কয়েকটি লোগো কালো কালিতে
+                                আঁকা, গাঢ় পটভূমিতে মিলিয়ে যেত */}
+                            <div className="cert-plate">
+                                <img src={c.logo} alt={`${c.code} certification`} loading="lazy" />
+                            </div>
 
-                                {/* লোগোর প্লেট দুই থিমেই সাদা — কয়েকটি লোগো
-                                    কালো কালিতে আঁকা, গাঢ় পটভূমিতে মিলিয়ে যেত */}
-                                <div className="cert-plate">
-                                    <img src={c.logo} alt={`${c.code} certification`} loading="lazy" />
-                                </div>
-
-                                <div className="cert-detail">
-                                    <h3 className="cert-code">{c.code}</h3>
-                                    <p className="cert-issuer">{c.issuer}</p>
-                                </div>
-
+                            <div className="cert-body">
+                                <h3 className="cert-code">{c.code}</h3>
+                                <p className="cert-issuer">{c.issuer}</p>
+                                {/* margin-top:auto — বিবরণ ছোট বা বড় যাই হোক,
+                                    লেবেলটা সব কার্ডে একই উচ্চতায় থাকে */}
                                 <span className="cert-scope">{c.scope}</span>
-                            </article>
-                        ))}
-                    </div>
+                            </div>
+                        </article>
+                    ))}
                 </div>
             </section>
         </div>
