@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, ArrowRight } from 'lucide-react';
 import gsap from 'gsap';
@@ -43,9 +43,26 @@ const STEPS = [
     },
 ];
 
+const APPLY_TO = 'careers@anwarispat.com';
+
 const CareersPositionsPage = () => {
     const rootRef = useRef(null);
     const navigate = useNavigate();
+
+    const [jobs, setJobs] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    // শূন্যপদ আসে অ্যাডমিন প্যানেল থেকে। কিছু না থাকলে পাতাটি খালি
+    // দেখায় না — খোলা আবেদনের আহ্বানই থেকে যায়।
+    useEffect(() => {
+        let cancelled = false;
+        fetch('/api/jobs')
+            .then((r) => (r.ok ? r.json() : []))
+            .then((d) => { if (!cancelled) setJobs(Array.isArray(d) ? d : []); })
+            .catch(() => { if (!cancelled) setJobs([]); })
+            .finally(() => { if (!cancelled) setLoading(false); });
+        return () => { cancelled = true; };
+    }, []);
 
     useGSAP(() => {
         gsap.utils.toArray('.cr-reveal').forEach((el) => {
@@ -54,7 +71,10 @@ const CareersPositionsPage = () => {
                 scrollTrigger: { trigger: el, start: 'top 90%' },
             });
         });
-    }, { scope: rootRef });
+    }, { scope: rootRef, dependencies: [jobs.length, loading] });
+
+    const mailtoFor = (title) =>
+        `mailto:${APPLY_TO}?subject=${encodeURIComponent('Application: ' + title)}`;
 
     return (
         <div
@@ -133,21 +153,74 @@ const CareersPositionsPage = () => {
                 paddingTop: `calc(${SECTION_PAD} * 1.2)`,
                 paddingBottom: `calc(${SECTION_PAD} * 1.4)`,
             }}>
+                {/* শূন্যপদ থাকলে সেগুলোই আগে, নইলে খোলা আবেদনের কথা */}
+                {jobs.length > 0 && (
+                    <div className="cr-vacancies">
+                        <span className="cr-reveal cr-eyebrow">
+                            CURRENT VACANCIES — {String(jobs.length).padStart(2, '0')}
+                        </span>
+
+                        {jobs.map((j) => (
+                            <article key={j.id} className="cr-reveal cr-job">
+                                <div className="cr-job-head">
+                                    <h2 className="cr-job-title">{j.title}</h2>
+                                    <a className="cr-job-apply" href={mailtoFor(j.title)}>
+                                        Apply <ArrowRight size={14} strokeWidth={2.2} />
+                                    </a>
+                                </div>
+
+                                <p className="cr-job-tags">
+                                    {[j.department, j.location, j.employment_type]
+                                        .filter(Boolean)
+                                        .map((t, i, arr) => (
+                                            <span key={t}>
+                                                {t}
+                                                {i < arr.length - 1 && (
+                                                    <span className="cr-sep" aria-hidden="true">·</span>
+                                                )}
+                                            </span>
+                                        ))}
+                                </p>
+
+                                {j.description && <p className="cr-job-text">{j.description}</p>}
+
+                                {(j.experience || j.education || j.deadline) && (
+                                    <dl className="cr-job-facts">
+                                        {j.experience && (
+                                            <div><dt>Experience</dt><dd>{j.experience}</dd></div>
+                                        )}
+                                        {j.education && (
+                                            <div><dt>Education</dt><dd>{j.education}</dd></div>
+                                        )}
+                                        {j.deadline && (
+                                            <div><dt>Apply by</dt><dd>{j.deadline}</dd></div>
+                                        )}
+                                    </dl>
+                                )}
+                            </article>
+                        ))}
+                    </div>
+                )}
+
                 <div className="cr-apply">
                     <div className="cr-reveal cr-apply-lead">
-                        <span className="cr-eyebrow">CURRENT VACANCIES</span>
+                        <span className="cr-eyebrow">
+                            {jobs.length > 0 ? 'OPEN APPLICATIONS' : 'CURRENT VACANCIES'}
+                        </span>
                         <h2 className="cr-apply-title">
-                            Specific openings are posted here as they arise
+                            {jobs.length > 0
+                                ? 'Nothing above a fit? Write to us anyway'
+                                : 'Specific openings are posted here as they arise'}
                         </h2>
                         <p className="cr-apply-text">
-                            We accept open applications year-round. If your experience fits one of
-                            the areas above, send it to us and it will be held against upcoming
-                            requirements.
+                            {loading
+                                ? 'Checking for current vacancies…'
+                                : 'We accept open applications year-round. If your experience fits one of the areas above, send it to us and it will be held against upcoming requirements.'}
                         </p>
 
-                        <a className="cr-cta" href="mailto:careers@anwarispat.com">
+                        <a className="cr-cta" href={`mailto:${APPLY_TO}`}>
                             <Mail size={16} strokeWidth={2} />
-                            careers@anwarispat.com
+                            {APPLY_TO}
                         </a>
                     </div>
 

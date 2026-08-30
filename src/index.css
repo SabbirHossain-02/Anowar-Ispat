@@ -3668,3 +3668,112 @@ body.light-mode .floating-quote-btn:hover {
     transition: none;
   }
 }
+
+/* ---------- অ্যাডমিন থেকে আসা শূন্যপদ ---------- */
+.cr-vacancies {
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+
+.cr-job {
+  margin: 1.25rem 0 0;
+  padding: clamp(1.4rem, 2.4vw, 2rem);
+  background: var(--surface-solid);
+  border-radius: 3px;
+}
+
+.cr-job-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+.cr-job-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.15rem, 2.2vw, 1.6rem);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 1.22;
+  text-transform: none;
+  margin: 0;
+}
+
+.cr-job-apply {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.6rem 1.15rem;
+  border-radius: 3px;
+  background: var(--accent);
+  color: #fff !important;
+  font-family: var(--font-main);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: transform 0.3s ease;
+}
+
+.cr-job-tags {
+  font-family: var(--font-main);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--subtext);
+  margin: 0.75rem 0 0;
+}
+
+.cr-job-text {
+  font-family: var(--font-main);
+  font-size: 0.93rem;
+  line-height: 1.8;
+  color: var(--subtext);
+  margin: 1rem 0 0;
+  max-width: 68ch;
+}
+
+/* যোগ্যতাগুলো পাশাপাশি — প্রতিটির লেবেল উপরে, মান নিচে */
+.cr-job-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2.75rem;
+  margin: 1.35rem 0 0;
+}
+
+.cr-job-facts dt {
+  font-family: var(--font-main);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--subtext);
+  opacity: 0.75;
+}
+
+.cr-job-facts dd {
+  font-family: var(--font-main);
+  font-size: 0.88rem;
+  color: var(--text);
+  margin: 0.3rem 0 0;
+}
+
+@media (hover: hover) {
+  .cr-job-apply:hover {
+    transform: translateY(-2px);
+  }
+}
+
+@media (max-width: 560px) {
+  .cr-job-head {
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cr-job-apply {
+    transition: none;
+  }
+}
