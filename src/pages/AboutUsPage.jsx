@@ -79,9 +79,14 @@ const AboutUsPage = () => {
             const atEnd = e.deltaY > 0 && el.scrollLeft >= max - 1;
             if (atStart || atEnd) return;
 
+            // deltaMode 1 = লাইন, 2 = পাতা। কিছু মাউস পিক্সেলের বদলে
+            // লাইন সংখ্যা পাঠায় (যেমন ৩), তখন সরণ চোখেই পড়ত না
+            const unit = e.deltaMode === 1 ? 24 : e.deltaMode === 2 ? el.clientWidth : 1;
+            const step = e.deltaY * unit;
+
             e.preventDefault();
             e.stopPropagation();
-            el.scrollLeft = Math.min(max, Math.max(0, el.scrollLeft + e.deltaY));
+            el.scrollLeft = Math.min(max, Math.max(0, el.scrollLeft + step));
         };
 
         el.addEventListener('wheel', onWheel, { passive: false });

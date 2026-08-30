@@ -3811,13 +3811,36 @@ body.light-mode .floating-quote-btn:hover {
   margin: 0.9rem 0 0;
 }
 
+/* scroll-snap এখানে ছিল, সরানো হয়েছে: চাকার এক ধাপে ~100px সরে
+   অথচ টাইল 250px চওড়া, তাই নিকটতম snap বিন্দু আগেরটাই থেকে যেত
+   এবং scrollLeft বদলানোর সাথে সাথে সেটি টেনে ফিরিয়ে আনত — বাইরে
+   থেকে মনে হত চাকা কাজই করছে না */
 .tl-scroll {
   overflow-x: auto;
   overflow-y: hidden;
-  /* গড়ানোর সময় প্রতিটি ঘটনা কিনারায় থেমে দাঁড়ায় */
-  scroll-snap-type: x proximity;
   -webkit-overflow-scrolling: touch;
   padding-bottom: 0.75rem;
+}
+
+/* সরু, থিমের রঙে — ডিফল্ট মোটা বারটা পাতার সাথে যায় না, কিন্তু
+   একেবারে লুকিয়ে দিলে পাশে যে সরানো যায় সেটাই বোঝা যেত না */
+.tl-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.tl-scroll::-webkit-scrollbar-track {
+  background: var(--glass);
+  border-radius: 3px;
+}
+
+.tl-scroll::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 3px;
+}
+
+.tl-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) var(--glass);
 }
 
 .tl-track {
@@ -3851,7 +3874,6 @@ body.light-mode .floating-quote-btn:hover {
   flex: 0 0 auto;
   width: clamp(200px, 20vw, 250px);
   height: 100%;
-  scroll-snap-align: center;
 }
 
 /* বিন্দুটি ঠিক রেখার উপর */
