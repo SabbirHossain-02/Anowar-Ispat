@@ -2446,3 +2446,342 @@ body.light-mode .floating-quote-btn:hover {
     animation: none;
   }
 }
+
+/* ============================================================
+   ESG — আগের পাতায় সবুজ, নীল ও লালে তিনটি স্তম্ভ রাঙানো ছিল।
+   সাইটের প্যালেটে ওই রং নেই, তাই সবটাই থিমের পৃষ্ঠতল ও একটিমাত্র
+   লাল উচ্চারণে আনা হয়েছে। স্তম্ভের পরিচয় দেয় তার নিজের আদ্যক্ষর।
+   ============================================================ */
+.esg-head {
+  margin: 0 0 clamp(1.75rem, 3vw, 2.6rem);
+}
+
+.esg-eyebrow {
+  display: block;
+  font-family: var(--font-main);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  color: var(--accent);
+}
+
+.esg-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.22;
+  text-transform: none;
+  margin: 0.8rem 0 0;
+}
+
+.esg-lede {
+  font-family: var(--font-main);
+  font-size: clamp(1rem, 1.5vw, 1.22rem);
+  line-height: 1.8;
+  color: var(--text);
+  margin: 0;
+  max-width: 62ch;
+}
+
+.esg-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(2rem, 5vw, 4.5rem);
+  margin-top: clamp(1.75rem, 3vw, 2.5rem);
+  padding-top: clamp(1.5rem, 2.5vw, 2rem);
+  border-top: 1px solid var(--glass-border);
+}
+
+.esg-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.esg-stat-n {
+  font-family: var(--font-heading);
+  font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: var(--accent);
+}
+
+.esg-stat-l {
+  font-family: var(--font-main);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--subtext);
+  margin-top: 0.55rem;
+}
+
+/* ---------- চেয়ারম্যানের উক্তি ---------- */
+.esg-quote {
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  gap: clamp(1.5rem, 3.5vw, 3rem);
+  align-items: center;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* ছবিটি কাটা-আউট PNG, তাই পেছনে একটি পৃষ্ঠতল লাগে */
+.esg-portrait {
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--secondary);
+}
+
+.esg-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+
+.esg-quote-body blockquote {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: clamp(1.1rem, 2vw, 1.55rem);
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  color: var(--text);
+}
+
+.esg-quote-body blockquote em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.esg-quote-body figcaption {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1.5rem;
+}
+
+.esg-quote-rule {
+  width: 34px;
+  height: 2px;
+  background: var(--accent);
+  margin-bottom: 0.9rem;
+}
+
+.esg-quote-name {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.esg-quote-role {
+  font-family: var(--font-main);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--subtext);
+  margin-top: 0.3rem;
+}
+
+/* ---------- তিনটি স্তম্ভ ---------- */
+.esg-pillars {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(1rem, 1.8vw, 1.5rem);
+}
+
+.esg-pillar {
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+  background: var(--surface-solid);
+  border: 1px solid var(--glass-border);
+  border-radius: 3px;
+  padding: clamp(1.5rem, 2.4vw, 2.1rem);
+}
+
+/* E, S, G — পাতার শিরোনামের আদ্যক্ষরই স্তম্ভের চিহ্ন। উপরের দিকটা
+   কেটে যায়, তাই এটা সাজসজ্জা নয়, জলছাপের মতো বসে */
+.esg-pillar-letter {
+  position: absolute;
+  top: -0.3em;
+  right: 0.02em;
+  font-family: var(--font-heading);
+  font-size: clamp(7rem, 11vw, 10rem);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--accent);
+  opacity: 0.09;
+  pointer-events: none;
+  user-select: none;
+}
+
+.esg-pillar-title {
+  position: relative;
+  font-family: var(--font-heading);
+  font-size: clamp(1.15rem, 1.7vw, 1.4rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  margin: 0;
+}
+
+.esg-pillar-sub {
+  font-family: var(--font-main);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--subtext);
+  margin: 0.5rem 0 0;
+}
+
+.esg-pillar-list {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.esg-pillar-list li {
+  position: relative;
+  padding-left: 1.1rem;
+  font-family: var(--font-main);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--subtext);
+}
+
+.esg-pillar-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 6px;
+  height: 1px;
+  background: var(--accent);
+}
+
+/* ---------- SDG ---------- */
+.esg-sdg {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0 clamp(1.5rem, 4vw, 4rem);
+}
+
+.esg-sdg li {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.95rem 0;
+  border-bottom: 1px solid var(--glass-border);
+  font-family: var(--font-main);
+  font-size: 0.93rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.esg-sdg-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--glass-border);
+  border-radius: 2px;
+  color: var(--accent);
+}
+
+/* ---------- প্রতিশ্রুতি ---------- */
+.esg-commit {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(1.75rem, 4vw, 3.5rem);
+  align-items: start;
+}
+
+.esg-commit-text p {
+  font-family: var(--font-main);
+  font-size: 0.95rem;
+  line-height: 1.85;
+  color: var(--subtext);
+  margin: 0 0 1.1rem;
+}
+
+.esg-commit-text p:last-child {
+  margin-bottom: 0;
+}
+
+.esg-practice {
+  display: flex;
+  gap: 1.1rem;
+  margin: 0;
+  padding: 1.15rem 0;
+  border-top: 1px solid var(--glass-border);
+}
+
+.esg-practice:last-child {
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.esg-practice-n {
+  flex-shrink: 0;
+  padding-top: 0.2rem;
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+
+.esg-practice-label {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  margin: 0 0 0.35rem;
+}
+
+.esg-practice-text {
+  font-family: var(--font-main);
+  font-size: 0.87rem;
+  line-height: 1.7;
+  color: var(--subtext);
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .esg-pillars,
+  .esg-commit,
+  .esg-sdg {
+    grid-template-columns: 1fr;
+  }
+
+  .esg-quote {
+    grid-template-columns: 1fr;
+  }
+
+  .esg-portrait {
+    max-width: 190px;
+  }
+}
+
+@media (max-width: 560px) {
+  .esg-stats {
+    gap: 1.75rem 2.5rem;
+  }
+}
