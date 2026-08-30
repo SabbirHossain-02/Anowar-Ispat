@@ -57,7 +57,36 @@ const CONTAINER = {
 
 const AboutUsPage = () => {
     const rootRef = useRef(null);
+    const timelineRef = useRef(null);
     const [isMobile, setIsMobile] = useState(false);
+
+    // মাউসের চাকা ঘোরালে টাইমলাইন পাশে সরে। Lenis (স্মুথ স্ক্রল)
+    // window এ bubble ফেজে শোনে, তাই এখানে stopPropagation করলে
+    // পেজটা আর নড়ে না। দুই প্রান্তে পৌঁছে গেলে ইভেন্ট ছেড়ে দিই —
+    // নইলে ব্যবহারকারী টাইমলাইনে আটকে যেত, পেজ স্ক্রল করতে পারত না।
+    useEffect(() => {
+        const el = timelineRef.current;
+        if (!el) return;
+
+        const onWheel = (e) => {
+            // ট্র্যাকপ্যাডে আড়াআড়ি সোয়াইপ হলে ব্রাউজারকেই করতে দিই
+            if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+
+            const max = el.scrollWidth - el.clientWidth;
+            if (max <= 0) return;
+
+            const atStart = e.deltaY < 0 && el.scrollLeft <= 0;
+            const atEnd = e.deltaY > 0 && el.scrollLeft >= max - 1;
+            if (atStart || atEnd) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+            el.scrollLeft = Math.min(max, Math.max(0, el.scrollLeft + e.deltaY));
+        };
+
+        el.addEventListener('wheel', onWheel, { passive: false });
+        return () => el.removeEventListener('wheel', onWheel);
+    }, []);
 
     useEffect(() => {
         const onResize = () => setIsMobile(window.innerWidth < 900);
@@ -128,20 +157,18 @@ const AboutUsPage = () => {
             }}>
                 <div style={CONTAINER}>
                     <div className="ab-reveal tl-head">
-                        <span className="tl-eyebrow">HERITAGE</span>
                         <h2 className="tl-title">
                             A legacy to value in the present, and to pass on to future generations
                         </h2>
                         <p className="tl-note">
                             {MILESTONES.length} milestones from {MILESTONES[0].year} to{' '}
-                            {MILESTONES[MILESTONES.length - 1].year}. Drag or scroll sideways to
-                            follow the line.
+                            {MILESTONES[MILESTONES.length - 1].year}. Scroll to follow the line.
                         </p>
                     </div>
                 </div>
 
                 {/* পুরো চওড়া জুড়ে — কনটেইনারে আটকালে রেখাটা ছোট দেখাত */}
-                <div className="tl-scroll">
+                <div className="tl-scroll" ref={timelineRef}>
                     <ol className="tl-track">
                         <span className="tl-line" aria-hidden="true" />
 

@@ -3790,15 +3790,8 @@ body.light-mode .floating-quote-btn:hover {
   margin: 0 0 clamp(1.5rem, 3vw, 2.5rem);
 }
 
-.tl-eyebrow {
-  display: block;
-  font-family: var(--font-main);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.28em;
-  color: var(--accent);
-}
-
+/* ৩৬ch — মাপটা হরফের আকারের সাথেই বাড়ে-কমে, তাই ছোট পর্দাতেও
+   শিরোনামটা দুই লাইনেই থাকে */
 .tl-title {
   font-family: var(--font-heading);
   font-size: clamp(1.5rem, 3vw, 2.3rem);
@@ -3806,7 +3799,8 @@ body.light-mode .floating-quote-btn:hover {
   letter-spacing: 0.02em;
   line-height: 1.25;
   text-transform: none;
-  margin: 0.8rem 0 0;
+  max-width: 36ch;
+  margin: 0;
 }
 
 .tl-note {
