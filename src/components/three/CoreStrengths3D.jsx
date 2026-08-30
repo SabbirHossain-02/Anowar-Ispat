@@ -20,7 +20,8 @@ const Planet = ({ data, index, total, inView }) => {
     const planetRef = useRef();
     
     // Orbit parameters
-    const baseRadius = 5.2;
+    // কেন্দ্রের কার্ডের গায়ে লেগে যাচ্ছিল, তাই ব্যাসার্ধ বাড়ানো
+    const baseRadius = 6.6;
     const angleOffset = (index / total) * Math.PI * 2;
     
     // Animation state
@@ -122,8 +123,10 @@ export default function CoreStrengths3D({ inView }) {
         }
     });
 
+    // কাত কমানো হয়েছে (0.7 → 0.55): কক্ষপথ চ্যাপ্টা হলে কার্ডগুলো পাশে
+    // ছড়ায়, নিচে নামে না — নিচে পর্দার কিনারা কাছেই
     return (
-        <group rotation={[0.7, 0, 0]}>
+        <group rotation={[0.55, 0, 0]}>
             <Environment preset="city" />
             <ambientLight intensity={0.5} />
             <directionalLight position={[10, 10, 5]} intensity={2} />
@@ -159,11 +162,11 @@ export default function CoreStrengths3D({ inView }) {
 
             {/* The Specific Orbit Track */}
             <mesh ref={ringRef} rotation-x={Math.PI / 2}>
-                <torusGeometry args={[5.2, 0.015, 16, 100]} />
+                <torusGeometry args={[6.6, 0.015, 16, 100]} />
                 <meshStandardMaterial color="#e3182d" metalness={1} roughness={0.5} emissive="#e3182d" emissiveIntensity={0.8} />
             </mesh>
             <mesh rotation-x={Math.PI / 2}>
-                <torusGeometry args={[5.7, 0.008, 16, 100]} />
+                <torusGeometry args={[7.2, 0.008, 16, 100]} />
                 <meshStandardMaterial color="#222" transparent opacity={0.4} />
             </mesh>
 
@@ -184,11 +187,11 @@ export default function CoreStrengths3D({ inView }) {
                         width: 'max-content'
                     }}
                 >
-                    <h3 style={{ color: 'var(--subtext)', fontSize: '0.9rem', letterSpacing: '0.2em', marginBottom: '0.5rem', fontFamily: 'monospace' }}>WHY CHOOSE</h3>
-                    <h1 style={{ color: 'var(--text)', fontSize: '2.5rem', fontWeight: '900', letterSpacing: '0.05em', lineHeight: 1, fontFamily: 'var(--font-heading)' }}>
+                    <h3 style={{ color: 'var(--subtext)', fontSize: '0.78rem', letterSpacing: '0.2em', marginBottom: '0.4rem', fontFamily: 'monospace' }}>WHY CHOOSE</h3>
+                    <h1 style={{ color: 'var(--text)', fontSize: '2rem', fontWeight: '900', letterSpacing: '0.05em', lineHeight: 1, fontFamily: 'var(--font-heading)' }}>
                         ANWAR <span style={{ color: 'var(--accent)' }}>ISPAT</span>
                     </h1>
-                    <p style={{ color: 'var(--text)', fontSize: '1rem', marginTop: '0.5rem', fontWeight: 600 }}>THE BEST?</p>
+                    <p style={{ color: 'var(--text)', fontSize: '0.88rem', marginTop: '0.4rem', fontWeight: 600 }}>THE BEST?</p>
                 </div>
             </Html>
         </group>
