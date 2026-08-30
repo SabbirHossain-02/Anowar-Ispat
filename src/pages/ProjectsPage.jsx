@@ -1,201 +1,174 @@
-﻿import React, { useRef, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { X, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
+import PageBanner from '../components/PageBanner';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-const projects = [
-    { title: "Padma Bridge", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777390678/Padma_Bridge_fnueme.mp4", desc: "A monumental infrastructure achievement connecting the nation." },
-    { title: "Rooppur Power Plant", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777390681/Rooppur_en98hz.mp4", desc: "Bangladesh's first nuclear power plant, empowering the future." },
-    { title: "Mayor Hanif Flyover", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777394650/mayor_hanif_msgq9d.mp4", desc: "Revolutionizing urban transit and reducing city congestion." },
-    { title: "Purbachal Express Highway", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777394690/Purbachal_Express_Highway_compressed_gxuze8.mp4", desc: "A massive arterial highway facilitating rapid economic growth." },
-    { title: "Airport 3rd Terminal", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777395501/Airport_3rd_Terminal_brxz6w.mp4", desc: "State-of-the-art aviation hub elevating global connectivity." },
-    { title: "Shahjalal Fertilizer Factory", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777395915/Shahjalal_Fertiliser_Factory_gefg5s.mp4", desc: "A critical industrial mega-project ensuring agricultural self-reliance." },
-    { title: "Hotel Intercontinental", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777396432/Hotel_Intercontinental_k6assz.mp4", desc: "Iconic luxury and heritage built on unwavering structural strength." },
-    { title: "City Center Dhaka", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777396567/City_Center_Dhaka_jzcyar.mp4", desc: "The tallest skyscraper defining the modern skyline of the capital." }
+const SECTION_PAD = 'clamp(2.25rem, 4vw, 3.5rem)';
+const CONTAINER = {
+    maxWidth: '1180px',
+    margin: '0 auto',
+    padding: '0 clamp(1.25rem, 5vw, 3rem)',
+};
+
+// স্লাইডের প্রজেক্টগুলো। ছবি থেকে স্লাইডের লেখা কেটে ফেলা হয়েছে,
+// তাই নামটা এখানে টাইপ হিসেবে বসে — ছবির ভেতরে আঁকা নয়।
+const PROJECTS = [
+    { img: '/padma-bridge.jpg', name: 'Padma Multipurpose Bridge', kind: 'Bridge' },
+    { img: '/airport-terminal-3.jpg', name: 'Hazrat Shahjalal International Airport Terminal-3', kind: 'Building' },
+    { img: '/rooppur-power-plant.jpg', name: 'Rooppur Nuclear Power Plant', kind: 'Energy' },
+    { img: '/bangladesh-bank.jpg', name: 'Bangladesh Bank', kind: 'Building' },
+    { img: '/payra-seaport.jpg', name: 'Payra Seaport', kind: 'Port' },
+    { img: '/lebukhali-bridge.jpg', name: 'Lebukhali Bridge', kind: 'Bridge' },
+    { img: '/purbachal-expressway.jpg', name: 'Purbachal Expressway', kind: 'Expressway' },
+    { img: '/dhaka-mawa-expressway.jpg', name: 'Dhaka-Mawa Expressway', kind: 'Expressway' },
+    { img: '/hatikumrul-interchange.jpg', name: 'Hatikumrul Interchange', kind: 'Interchange' },
+    { img: '/jatrabari-flyover.jpg', name: 'Jatrabari Flyover', kind: 'Flyover' },
+    { img: '/city-centre.jpg', name: 'City Center', kind: 'Building' },
+    { img: '/banani-bridge.jpg', name: 'Banani Bridge', kind: 'Bridge' },
 ];
 
 const ProjectsPage = () => {
-    const containerRef = useRef(null);
-    
+    const rootRef = useRef(null);
+    const [open, setOpen] = useState(null);
+
     useGSAP(() => {
-        const sections = gsap.utils.toArray('.project-slide');
-        
-        sections.forEach((section, index) => {
-            const videoContainer = section.querySelector('.video-container');
-            const textContainer = section.querySelector('.text-container');
-            const isEven = index % 2 === 0;
-
-            // Presentation slide morphing effect
-            gsap.set(videoContainer, { 
-                opacity: 0,
-                xPercent: isEven ? -50 : 50,
-                scale: 0.8,
-                rotationY: isEven ? -15 : 15
-            });
-            
-            gsap.set(textContainer, {
-                opacity: 0,
-                xPercent: isEven ? 50 : -50,
-                scale: 0.9
-            });
-
-            const tl = gsap.timeline({
-                scrollTrigger: {
-                    trigger: section,
-                    start: "top 80%",
-                    end: "top 20%",
-                    scrub: 1.5,
-                }
-            });
-
-            tl.to(videoContainer, {
-                opacity: 1,
-                xPercent: 0,
-                scale: 1,
-                rotationY: 0,
-                ease: "power3.out"
-            }, 0)
-            .to(textContainer, {
-                opacity: 1,
-                xPercent: 0,
-                scale: 1,
-                ease: "power3.out"
-            }, 0);
-            
-            // 3D Parallax inner elements
-            const video = section.querySelector('video');
-            gsap.to(video, {
-                yPercent: 20,
-                ease: "none",
-                scrollTrigger: {
-                    trigger: section,
-                    start: "top bottom",
-                    end: "bottom top",
-                    scrub: true
-                }
+        gsap.utils.toArray('.gal-item').forEach((el, i) => {
+            gsap.from(el, {
+                y: 30, opacity: 0, duration: 0.65, ease: 'power3.out',
+                delay: (i % 3) * 0.07,
+                scrollTrigger: { trigger: el, start: 'top 92%' },
             });
         });
-    }, { scope: containerRef });
+    }, { scope: rootRef });
+
+    const step = useCallback((d) => {
+        setOpen((i) => (i === null ? i : (i + d + PROJECTS.length) % PROJECTS.length));
+    }, []);
+
+    // লাইটবক্স খোলা থাকলে পেছনের স্মুথ স্ক্রল থামে, নইলে ছবির
+    // পেছনে পেজ নড়তে থাকে
+    useEffect(() => {
+        if (open === null) return;
+        window.dispatchEvent(new Event('lenis-stop'));
+        const onKey = (e) => {
+            if (e.key === 'Escape') setOpen(null);
+            else if (e.key === 'ArrowRight') step(1);
+            else if (e.key === 'ArrowLeft') step(-1);
+        };
+        window.addEventListener('keydown', onKey);
+        return () => {
+            window.removeEventListener('keydown', onKey);
+            window.dispatchEvent(new Event('lenis-start'));
+        };
+    }, [open, step]);
+
+    const current = open === null ? null : PROJECTS[open];
 
     return (
-        <div ref={containerRef} style={{ background: 'var(--primary)', minHeight: '100vh', paddingTop: '100px', overflow: 'hidden' }}>
-            <div style={{ textAlign: "center", marginBottom: "4rem", marginTop: "2rem" }}>
-                <p style={{ fontFamily: "monospace", color: "var(--accent)", letterSpacing: "0.2em", marginBottom: "1rem", fontSize: "1rem" }}>
-                    FORGED IN MOTION
-                </p>
-                <h1 style={{ fontSize: "clamp(3rem, 6vw, 5rem)", color: "var(--text)", lineHeight: 1.1, textTransform: "uppercase", fontFamily: "var(--font-heading)" }}>
-                    OUR <span className="accent-text">LEGACY</span>
-                </h1>
-            </div>
+        <div
+            ref={rootRef}
+            style={{ background: 'var(--primary)', color: 'var(--text)', minHeight: '100vh', overflowX: 'hidden' }}
+        >
+            <PageBanner
+                image="/gallery-banner.jpg"
+                label="PROJECT GALLERY"
+                title="Built with"
+                accent="Anwar Ispat"
+                crumbs={[
+                    { label: 'Home', to: '/' },
+                    { label: 'Landmarks' },
+                    { label: 'Project Gallery' },
+                ]}
+            />
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '15vh', paddingBottom: '10vh' }}>
-                {projects.map((proj, idx) => (
-                    <div key={idx} className="project-slide" style={{
-                        display: 'flex',
-                        flexDirection: idx % 2 === 0 ? 'row' : 'row-reverse',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '5vw',
-                        padding: '0 5vw',
-                        minHeight: '70vh',
-                        perspective: '1500px'
-                    }}>
-                        {/* Video Container */}
-                        <div className="video-container" style={{
-                            flex: 1,
-                            position: 'relative',
-                            aspectRatio: '16/9',
-                            overflow: 'hidden',
-                            borderRadius: '16px',
-                            boxShadow: '0 30px 60px rgba(0,0,0,0.5)',
-                            border: '1px solid rgba(255,255,255,0.05)',
-                            maxWidth: '60vw'
-                        }}>
-                            <video 
-                                src={proj.video} 
-                                autoPlay 
-                                loop 
-                                muted 
-                                playsInline 
-                                style={{
-                                    width: '100%',
-                                    height: '130%', // extra height for parallax
-                                    objectFit: 'cover',
-                                    position: 'absolute',
-                                    top: '-15%',
-                                    left: 0,
-                                    filter: 'brightness(0.7) contrast(1.1)'
-                                }}
-                            />
-                            {/* Overlay glow */}
-                            <div style={{
-                                position: 'absolute',
-                                inset: 0,
-                                background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%)',
-                                zIndex: 1
-                            }}></div>
-                        </div>
+            <section style={{
+                minHeight: 'auto', display: 'block',
+                ...CONTAINER,
+                paddingTop: SECTION_PAD,
+                paddingBottom: 'calc(' + SECTION_PAD + ' * 1.4)',
+            }}>
+                <div className="gal-head">
+                    <span className="gal-eyebrow">PROJECT GALLERY</span>
+                    <h2 className="gal-title">
+                        Twelve structures the country depends on
+                    </h2>
+                    <p className="gal-lead">
+                        Bridges, expressways, ports and power — each one carrying rebar rolled at
+                        our mill. Select any project to see it full size.
+                    </p>
+                </div>
 
-                        {/* Text Container */}
-                        <div className="text-container" style={{
-                            flex: 0.8,
-                            padding: '2rem',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                            zIndex: 2,
-                        }}>
-                            <div style={{
-                                width: '40px',
-                                height: '3px',
-                                background: 'var(--accent)',
-                                marginBottom: '1.5rem'
-                            }}></div>
-                            <h2 style={{
-                                fontSize: 'clamp(2rem, 4vw, 3.5rem)',
-                                color: 'var(--text)',
-                                marginBottom: '1.5rem',
-                                fontFamily: 'var(--font-heading)',
-                                lineHeight: 1.1,
-                                textTransform: 'uppercase'
-                            }}>
-                                {proj.title}
-                            </h2>
-                            <p style={{
-                                color: 'var(--subtext)',
-                                fontSize: '1.2rem',
-                                lineHeight: 1.6,
-                                maxWidth: '500px'
-                            }}>
-                                {proj.desc}
-                            </p>
-                        </div>
-                    </div>
-                ))}
-            </div>
-            
-            <style jsx>{`
-                @media (max-width: 900px) {
-                    .project-slide {
-                        flex-direction: column !important;
-                        gap: 2rem !important;
-                        padding: 0 5% !important;
-                    }
-                    .video-container {
-                        max-width: 100% !important;
-                    }
-                    .text-container {
-                        padding: 1rem 0 !important;
-                        align-items: flex-start !important;
-                        text-align: left !important;
-                    }
-                }
-            `}</style>
+                <div className="gal-grid">
+                    {PROJECTS.map((p, i) => (
+                        <button
+                            key={p.img}
+                            type="button"
+                            className={i === 0 ? 'gal-item is-feature' : 'gal-item'}
+                            onClick={() => setOpen(i)}
+                            aria-label={'View ' + p.name}
+                        >
+                            <img className="gal-img" src={p.img} alt={p.name} loading="lazy" />
+                            <span className="gal-scrim" aria-hidden="true" />
+                            <span className="gal-zoom" aria-hidden="true"><Maximize2 size={16} /></span>
+                            <span className="gal-body">
+                                <span className="gal-kind">{p.kind}</span>
+                                <span className="gal-name">{p.name}</span>
+                                <span className="gal-rule" aria-hidden="true" />
+                            </span>
+                        </button>
+                    ))}
+                </div>
+            </section>
+
+            {current && (
+                <div
+                    className="gal-lb"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label={current.name}
+                    onClick={() => setOpen(null)}
+                >
+                    <button type="button" className="gal-lb-close" onClick={() => setOpen(null)} aria-label="Close">
+                        <X size={22} />
+                    </button>
+
+                    <button
+                        type="button"
+                        className="gal-lb-nav is-prev"
+                        onClick={(e) => { e.stopPropagation(); step(-1); }}
+                        aria-label="Previous project"
+                    >
+                        <ChevronLeft size={26} />
+                    </button>
+
+                    {/* ছবির উপর ক্লিক করলে যেন বন্ধ না হয় */}
+                    <figure className="gal-lb-figure" onClick={(e) => e.stopPropagation()}>
+                        <img src={current.img} alt={current.name} />
+                        <figcaption>
+                            <span className="gal-lb-kind">{current.kind}</span>
+                            <span className="gal-lb-name">{current.name}</span>
+                            <span className="gal-lb-count">
+                                {String(open + 1).padStart(2, '0')} / {PROJECTS.length}
+                            </span>
+                        </figcaption>
+                    </figure>
+
+                    <button
+                        type="button"
+                        className="gal-lb-nav is-next"
+                        onClick={(e) => { e.stopPropagation(); step(1); }}
+                        aria-label="Next project"
+                    >
+                        <ChevronRight size={26} />
+                    </button>
+                </div>
+            )}
         </div>
     );
 };
 
 export default ProjectsPage;
-

@@ -2140,3 +2140,317 @@ body.light-mode .floating-quote-btn:hover {
   background: var(--accent);
   color: #fff;
 }
+
+/* ============================================================
+   প্রজেক্ট গ্যালারি — বারোটি ছবি তিন কলামে। প্রথমটি ২x২ জায়গা
+   নেয়, বাকি এগারোটি ঠিক ফাঁক পূরণ করে, তাই কোথাও ফাঁকা ঘর পড়ে
+   না। টাইলে ক্লিক করলে লাইটবক্সে ছবি বড় করে দেখা যায়।
+   ============================================================ */
+.gal-head {
+  max-width: 62ch;
+  margin: 0 0 clamp(2rem, 3.5vw, 3rem);
+}
+
+.gal-eyebrow {
+  display: block;
+  font-family: var(--font-main);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  color: var(--accent);
+}
+
+.gal-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.22;
+  text-transform: none;
+  margin: 0.8rem 0 0;
+}
+
+.gal-lead {
+  font-family: var(--font-main);
+  font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+  line-height: 1.8;
+  color: var(--subtext);
+  margin: 1.1rem 0 0;
+}
+
+.gal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: clamp(185px, 20vw, 258px);
+  gap: clamp(0.7rem, 1.2vw, 1.05rem);
+}
+
+/* প্রথম টাইলটি দুই কলাম ও দুই সারি — বাকি এগারোটি ঠিক বসে যায় */
+.gal-item.is-feature {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.gal-item {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 3px;
+  background: var(--secondary);
+  text-align: left;
+  cursor: pointer;
+  isolation: isolate;
+}
+
+.gal-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+/* লেখা ছবির উপরে বসে, তাই দুই থিমেই সাদা — নিচের দিকে
+   অন্ধকার ঢাল দিয়ে পড়ার মতো করা */
+.gal-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top,
+      rgba(8, 8, 8, 0.9) 0%,
+      rgba(8, 8, 8, 0.45) 38%,
+      rgba(8, 8, 8, 0) 68%);
+  z-index: 1;
+}
+
+.gal-body {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: clamp(0.9rem, 1.5vw, 1.35rem);
+}
+
+.gal-kind {
+  font-family: var(--font-main);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72) !important;
+  margin-bottom: 0.4rem;
+}
+
+.gal-name {
+  font-family: var(--font-heading);
+  font-size: clamp(0.95rem, 1.35vw, 1.12rem);
+  font-weight: 800;
+  line-height: 1.28;
+  letter-spacing: 0.01em;
+  color: #fff !important;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
+}
+
+.gal-item.is-feature .gal-name {
+  font-size: clamp(1.2rem, 2.1vw, 1.7rem);
+}
+
+.gal-rule {
+  display: block;
+  width: 0;
+  height: 2px;
+  background: var(--accent);
+  margin-top: 0.6rem;
+  transition: width 0.45s ease;
+}
+
+.gal-zoom {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+@media (hover: hover) {
+  .gal-item:hover .gal-img { transform: scale(1.07); }
+  .gal-item:hover .gal-rule { width: 42px; }
+  .gal-item:hover .gal-zoom { opacity: 1; transform: translateY(0); }
+}
+
+/* ছোঁয়ার পর্দায় হোভার নেই, তাই লাল দাগটা এমনিতেই দেখা যায় */
+@media (hover: none) {
+  .gal-rule { width: 34px; }
+}
+
+.gal-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* ---------- লাইটবক্স ---------- */
+.gal-lb {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.5rem, 2vw, 1.5rem);
+  padding: clamp(1rem, 4vw, 3rem);
+  background: rgba(6, 6, 6, 0.94);
+  backdrop-filter: blur(10px);
+  animation: galFade 0.28s ease;
+}
+
+@keyframes galFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.gal-lb-figure {
+  margin: 0;
+  max-width: min(1000px, 92vw);
+  display: flex;
+  flex-direction: column;
+}
+
+.gal-lb-figure img {
+  max-width: 100%;
+  max-height: 74vh;
+  object-fit: contain;
+  display: block;
+  border-radius: 3px;
+}
+
+.gal-lb-figure figcaption {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.gal-lb-kind {
+  font-family: var(--font-main);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent) !important;
+}
+
+.gal-lb-name {
+  font-family: var(--font-heading);
+  font-size: clamp(1rem, 1.8vw, 1.35rem);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: #fff !important;
+}
+
+.gal-lb-count {
+  margin-left: auto;
+  font-family: var(--font-main);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: rgba(255, 255, 255, 0.55) !important;
+}
+
+.gal-lb-nav,
+.gal-lb-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+
+.gal-lb-nav:hover,
+.gal-lb-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.gal-lb-close {
+  position: absolute;
+  top: clamp(1rem, 3vw, 2rem);
+  right: clamp(1rem, 3vw, 2rem);
+  width: 42px;
+  height: 42px;
+}
+
+@media (max-width: 900px) {
+  .gal-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* দুই কলামে বারোটি টাইল ঠিক ছয় সারি — বড় টাইলটা তখন
+     সারি ভেঙে দেয়, তাই সেখানে সবগুলো সমান */
+  .gal-item.is-feature {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+
+  .gal-item.is-feature .gal-name {
+    font-size: clamp(0.95rem, 1.35vw, 1.12rem);
+  }
+}
+
+@media (max-width: 700px) {
+  .gal-lb { padding: 1rem; }
+
+  .gal-lb-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+  }
+
+  .gal-lb-nav.is-prev { left: 0.5rem; }
+  .gal-lb-nav.is-next { right: 0.5rem; }
+  .gal-lb-figure { max-width: 100%; }
+}
+
+@media (max-width: 560px) {
+  .gal-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: 210px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gal-img,
+  .gal-rule,
+  .gal-zoom,
+  .gal-lb {
+    transition: none;
+    animation: none;
+  }
+}
