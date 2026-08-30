@@ -3779,3 +3779,193 @@ body.light-mode .floating-quote-btn:hover {
     transition: none;
   }
 }
+
+/* ============================================================
+   উত্তরাধিকারের অনুভূমিক টাইমলাইন (About পেজ) — একটানা একটি রেখা,
+   তার দুপাশে পালা করে ঘটনা, ডালে পাতার মতো। ২৯টি মাইলফলক এক পর্দায়
+   ধরে না, তাই পাশে গড়িয়ে দেখা যায়।
+   ============================================================ */
+.tl-head {
+  max-width: 62ch;
+  margin: 0 0 clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.tl-eyebrow {
+  display: block;
+  font-family: var(--font-main);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  color: var(--accent);
+}
+
+.tl-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.5rem, 3vw, 2.3rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  text-transform: none;
+  margin: 0.8rem 0 0;
+}
+
+.tl-note {
+  font-family: var(--font-main);
+  font-size: 0.9rem;
+  line-height: 1.75;
+  color: var(--subtext);
+  margin: 0.9rem 0 0;
+}
+
+.tl-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* গড়ানোর সময় প্রতিটি ঘটনা কিনারায় থেমে দাঁড়ায় */
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 0.75rem;
+}
+
+.tl-track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  /* প্রথম ও শেষ ঘটনা যেন পর্দার কিনারায় লেপ্টে না থাকে */
+  padding: 0 clamp(1.25rem, 5vw, 3rem);
+  height: 460px;
+  width: max-content;
+}
+
+/* গাছের ডাল — পুরো তালিকার নিচ দিয়ে একটানা */
+.tl-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  background: linear-gradient(to right,
+      transparent 0,
+      var(--glass-border) 3rem,
+      var(--glass-border) calc(100% - 3rem),
+      transparent 100%);
+}
+
+.tl-item {
+  position: relative;
+  flex: 0 0 auto;
+  width: clamp(200px, 20vw, 250px);
+  height: 100%;
+  scroll-snap-align: center;
+}
+
+/* বিন্দুটি ঠিক রেখার উপর */
+.tl-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 11px;
+  height: 11px;
+  margin: -5.5px 0 0 -5.5px;
+  border-radius: 50%;
+  background: var(--primary);
+  border: 2px solid var(--accent);
+  z-index: 2;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+/* পাতার বোঁটা — রেখা থেকে কার্ড পর্যন্ত */
+.tl-stem {
+  position: absolute;
+  left: 50%;
+  width: 1px;
+  height: 34px;
+  margin-left: -0.5px;
+  background: var(--glass-border);
+}
+
+.tl-item.is-above .tl-stem { bottom: 50%; }
+.tl-item.is-below .tl-stem { top: 50%; }
+
+.tl-card {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding: 0 0.75rem;
+  text-align: center;
+}
+
+.tl-item.is-above .tl-card { bottom: calc(50% + 34px); }
+.tl-item.is-below .tl-card { top: calc(50% + 34px); }
+
+.tl-year {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.tl-name {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+  text-transform: none;
+  color: var(--text);
+  margin: 0.55rem 0 0;
+}
+
+.tl-text {
+  font-family: var(--font-main);
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--subtext);
+  margin: 0.4rem 0 0;
+}
+
+/* আনোয়ার ইস্পাতের প্রতিষ্ঠা — এই পাতার মূল ঘটনা */
+.tl-item.is-key .tl-dot {
+  width: 15px;
+  height: 15px;
+  margin: -7.5px 0 0 -7.5px;
+  background: var(--accent);
+}
+
+.tl-item.is-key .tl-name {
+  color: var(--accent);
+}
+
+/* প্রতিষ্ঠাতার প্রয়াণ — উদ্‌যাপন নয়, তাই লাল নয় */
+.tl-item.is-memoriam .tl-year,
+.tl-item.is-memoriam .tl-dot {
+  color: var(--subtext);
+  border-color: var(--subtext);
+}
+
+@media (hover: hover) {
+  .tl-item:hover .tl-dot {
+    transform: scale(1.35);
+    background: var(--accent);
+  }
+}
+
+@media (max-width: 700px) {
+  .tl-track {
+    height: 420px;
+  }
+
+  .tl-item {
+    width: 175px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tl-dot {
+    transition: none;
+  }
+}

@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import PageBanner from '../components/PageBanner';
+import { MILESTONES } from '../lib/heritage';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -115,9 +116,62 @@ const AboutUsPage = () => {
             </section>
 
             {/* ---------------------------------------------------------- */}
+            {/* HERITAGE TIMELINE */}
+            {/* ---------------------------------------------------------- */}
+            {/* একটানা অনুভূমিক রেখা, দুপাশে পালা করে ঘটনা — ডালে পাতার
+                মতো। ২৯টি মাইলফলক পাশে গড়িয়ে দেখা যায়। */}
+            <section style={{
+                minHeight: 'auto', display: 'block',
+                paddingTop: SECTION_PAD,
+                paddingBottom: SECTION_PAD,
+                paddingLeft: 0, paddingRight: 0,
+            }}>
+                <div style={CONTAINER}>
+                    <div className="ab-reveal tl-head">
+                        <span className="tl-eyebrow">HERITAGE</span>
+                        <h2 className="tl-title">
+                            A legacy to value in the present, and to pass on to future generations
+                        </h2>
+                        <p className="tl-note">
+                            {MILESTONES.length} milestones from {MILESTONES[0].year} to{' '}
+                            {MILESTONES[MILESTONES.length - 1].year}. Drag or scroll sideways to
+                            follow the line.
+                        </p>
+                    </div>
+                </div>
+
+                {/* পুরো চওড়া জুড়ে — কনটেইনারে আটকালে রেখাটা ছোট দেখাত */}
+                <div className="tl-scroll">
+                    <ol className="tl-track">
+                        <span className="tl-line" aria-hidden="true" />
+
+                        {MILESTONES.map((m, i) => (
+                            <li
+                                key={`${m.year}-${m.name}`}
+                                className={[
+                                    'tl-item',
+                                    i % 2 === 0 ? 'is-above' : 'is-below',
+                                    m.highlight ? 'is-key' : '',
+                                    m.memoriam ? 'is-memoriam' : '',
+                                ].filter(Boolean).join(' ')}
+                            >
+                                <div className="tl-card">
+                                    <span className="tl-year">{m.year}</span>
+                                    <h3 className="tl-name">{m.name}</h3>
+                                    <p className="tl-text">{m.text}</p>
+                                </div>
+                                <span className="tl-stem" aria-hidden="true" />
+                                <span className="tl-dot" aria-hidden="true" />
+                            </li>
+                        ))}
+                    </ol>
+                </div>
+            </section>
+
+            {/* ---------------------------------------------------------- */}
             {/* WHY ANWAR ISPAT */}
             {/* ---------------------------------------------------------- */}
-            {/* লিডারশিপ সরানোর পর এটিই শেষ সেকশন, তাই ফুটারের আগে
+            {/* টাইমলাইনের পর এটিই শেষ সেকশন, তাই ফুটারের আগে
                 বাকি পেজগুলোর মতোই বেশি ফাঁক */}
             <section style={{
                 minHeight: 'auto', display: 'block',
