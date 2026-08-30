@@ -22,6 +22,7 @@ const HeritagePage = lazy(() => import('./pages/HeritagePage'))
 // New Dropdown pages
 const ProductSpecsPage = lazy(() => import('./pages/ProductSpecsPage'))
 const ProductRangePage = lazy(() => import('./pages/ProductRangePage'))
+const CertificationsPage = lazy(() => import('./pages/CertificationsPage'))
 const SustainabilityESGPage = lazy(() => import('./pages/SustainabilityESGPage'))
 const SustainabilityCSRPage = lazy(() => import('./pages/SustainabilityCSRPage'))
 const MediaNewsPage = lazy(() => import('./pages/MediaNewsPage'))
@@ -189,6 +190,7 @@ function App() {
                     <Route path="/products" element={<Suspense fallback={null}><ProductsPage /></Suspense>} />
                     <Route path="/products/range" element={<Suspense fallback={null}><ProductRangePage /></Suspense>} />
                     <Route path="/products/specifications" element={<Suspense fallback={null}><ProductSpecsPage /></Suspense>} />
+                    <Route path="/products/certifications" element={<Suspense fallback={null}><CertificationsPage /></Suspense>} />
                     <Route path="/sustainability/esg" element={<Suspense fallback={null}><SustainabilityESGPage /></Suspense>} />
                     <Route path="/sustainability/csr" element={<Suspense fallback={null}><SustainabilityCSRPage /></Suspense>} />
                     <Route path="/projects" element={<Suspense fallback={null}><ProjectsPage /></Suspense>} />
