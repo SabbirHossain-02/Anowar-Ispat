@@ -3822,25 +3822,15 @@ body.light-mode .floating-quote-btn:hover {
   padding-bottom: 0.75rem;
 }
 
-/* সরু, থিমের রঙে — ডিফল্ট মোটা বারটা পাতার সাথে যায় না, কিন্তু
-   একেবারে লুকিয়ে দিলে পাশে যে সরানো যায় সেটাই বোঝা যেত না */
-.tl-scroll::-webkit-scrollbar {
-  height: 6px;
-}
-
-.tl-scroll::-webkit-scrollbar-track {
-  background: var(--glass);
-  border-radius: 3px;
-}
-
-.tl-scroll::-webkit-scrollbar-thumb {
-  background: var(--accent);
-  border-radius: 3px;
-}
-
+/* স্ক্রলবার লুকানো — পাশে যে আরও আছে সেটা বোঝায় ঘটনাগুলোর ফুটে
+   ওঠা আর উপরের নির্দেশিকা */
 .tl-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: var(--accent) var(--glass);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tl-scroll::-webkit-scrollbar {
+  display: none;
 }
 
 .tl-track {
@@ -3963,8 +3953,57 @@ body.light-mode .floating-quote-btn:hover {
   border-color: var(--subtext);
 }
 
+/* ---------- দৃশ্যে এলে ফুটে ওঠা ---------- */
+/* বিন্দু আগে বসে, তারপর বোঁটা গজায়, শেষে লেখা ভেসে ওঠে — ডালে
+   পাতা মেলার ক্রম */
+.tl-dot {
+  opacity: 0;
+  transform: scale(0);
+  transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.34, 1.4, 0.5, 1),
+              background 0.3s ease;
+}
+
+.tl-stem {
+  opacity: 0;
+  transform: scaleY(0);
+  transition: opacity 0.3s ease 0.12s, transform 0.4s ease 0.12s;
+}
+
+.tl-item.is-above .tl-stem { transform-origin: bottom center; }
+.tl-item.is-below .tl-stem { transform-origin: top center; }
+
+.tl-card {
+  opacity: 0;
+  transition: opacity 0.55s ease 0.24s, transform 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) 0.24s;
+}
+
+/* লেখাটি ডালের দিক থেকে সরে এসে জায়গা নেয় */
+.tl-item.is-above .tl-card { transform: translateY(16px); }
+.tl-item.is-below .tl-card { transform: translateY(-16px); }
+
+.tl-item.is-in .tl-dot {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.tl-item.is-in .tl-stem {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+.tl-item.is-in .tl-card {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tl-item.is-key.is-in .tl-dot {
+  transform: scale(1);
+}
+
+/* হোভারের নিয়ম ফুটে ওঠার পরে — নইলে reveal এর transform একে
+   ছাপিয়ে যেত */
 @media (hover: hover) {
-  .tl-item:hover .tl-dot {
+  .tl-item.is-in:hover .tl-dot {
     transform: scale(1.35);
     background: var(--accent);
   }
@@ -3980,8 +4019,18 @@ body.light-mode .floating-quote-btn:hover {
   }
 }
 
+/* গতি কমানো থাকলে সবকিছু সাথে সাথেই দেখা যায় */
 @media (prefers-reduced-motion: reduce) {
-  .tl-dot {
+  .tl-dot,
+  .tl-stem,
+  .tl-card {
+    opacity: 1;
+    transform: none;
     transition: none;
+  }
+
+  .tl-item.is-above .tl-stem,
+  .tl-item.is-below .tl-stem {
+    transform: scaleY(1);
   }
 }

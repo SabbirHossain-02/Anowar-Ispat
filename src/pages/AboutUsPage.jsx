@@ -93,6 +93,30 @@ const AboutUsPage = () => {
         return () => el.removeEventListener('wheel', onWheel);
     }, []);
 
+    // পাশে গড়ানোর সাথে সাথে ঘটনাগুলো ফুটে ওঠে। root null রাখা হয়েছে
+    // ইচ্ছে করেই — তাতে দুটো শর্তই একসাথে মেলে: সেকশনটি পর্দায় এসেছে
+    // কি না, আর টাইলটি overflow এর ভেতরে দেখা যাচ্ছে কি না। root এ
+    // কনটেইনার দিলে পাতা নিচে নামার আগেই সব খুলে যেত।
+    useEffect(() => {
+        const el = timelineRef.current;
+        if (!el) return;
+
+        const items = el.querySelectorAll('.tl-item');
+        const io = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (!entry.isIntersecting) return;
+                    entry.target.classList.add('is-in');
+                    io.unobserve(entry.target); // একবার ফুটলেই যথেষ্ট
+                });
+            },
+            { threshold: 0.35 },
+        );
+
+        items.forEach((item) => io.observe(item));
+        return () => io.disconnect();
+    }, []);
+
     useEffect(() => {
         const onResize = () => setIsMobile(window.innerWidth < 900);
         onResize();
