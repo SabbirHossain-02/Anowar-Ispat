@@ -2819,3 +2819,223 @@ body.light-mode .floating-quote-btn:hover {
     gap: 1.75rem 2.5rem;
   }
 }
+
+/* ============================================================
+   CSR — আগে ছয়টি কার্ড ছয় রঙে রাঙানো ছিল (সবুজ, নীল, লাল, হলুদ,
+   বেগুনি, গোলাপি)। সাইটের প্যালেটে ওগুলো নেই। এখন সবটাই থিমের
+   পৃষ্ঠতলে, উচ্চারণ একটাই। রেখা কম — ফাঁক আর পটভূমিই ভাগ করে।
+   ============================================================ */
+.csr-head {
+  margin: 0 0 clamp(1.75rem, 3vw, 2.6rem);
+}
+
+.csr-eyebrow {
+  display: block;
+  font-family: var(--font-main);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  color: var(--accent);
+}
+
+.csr-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.22;
+  text-transform: none;
+  margin: 0.8rem 0 0;
+}
+
+.csr-lede {
+  font-family: var(--font-main);
+  font-size: clamp(1rem, 1.5vw, 1.22rem);
+  line-height: 1.8;
+  color: var(--text);
+  margin: 0;
+  max-width: 62ch;
+}
+
+.csr-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(2rem, 5vw, 4.5rem);
+  margin-top: clamp(2.25rem, 4vw, 3.25rem);
+}
+
+.csr-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.csr-stat-n {
+  font-family: var(--font-heading);
+  font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: var(--accent);
+}
+
+.csr-stat-l {
+  font-family: var(--font-main);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--subtext);
+  margin-top: 0.55rem;
+}
+
+/* ---------- মিশন ও ভিশন ---------- */
+/* বাক্স নয় — ব্যান্ডের পটভূমিই যথেষ্ট, তাই শুধু লেখা ও একটি দাগ */
+.csr-principles {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+}
+
+.csr-principle {
+  margin: 0;
+}
+
+.csr-principle-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.35rem, 2.4vw, 1.85rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  text-transform: none;
+  margin: 0.7rem 0 0;
+}
+
+.csr-principle-rule {
+  display: block;
+  width: 38px;
+  height: 2px;
+  background: var(--accent);
+  margin: 1.1rem 0;
+}
+
+.csr-principle-text {
+  font-family: var(--font-main);
+  font-size: 0.95rem;
+  line-height: 1.85;
+  color: var(--subtext);
+  margin: 0;
+  max-width: 46ch;
+}
+
+/* ---------- উদ্যোগ ---------- */
+.csr-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(1rem, 1.8vw, 1.5rem);
+}
+
+.csr-card {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: clamp(1.5rem, 2.4vw, 2rem);
+  background: var(--surface-solid);
+  border-radius: 3px;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.csr-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 2px;
+  background: var(--glass);
+  color: var(--accent);
+  margin-bottom: 1.25rem;
+}
+
+.csr-card-title {
+  font-family: var(--font-heading);
+  font-size: 1.08rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  margin: 0 0 0.6rem;
+}
+
+.csr-card-text {
+  font-family: var(--font-main);
+  font-size: 0.88rem;
+  line-height: 1.75;
+  color: var(--subtext);
+  /* সবচেয়ে কম যতটা ফাঁক থাকবেই; বাকিটা নিচের auto সামলায় */
+  margin: 0 0 1.5rem;
+}
+
+/* margin-top:auto — বিবরণ তিন লাইন হোক বা পাঁচ, দাগটা সব কার্ডে
+   একই উচ্চতায় বসে */
+.csr-card-rule {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--accent);
+  margin-top: auto;
+  transition: width 0.45s ease;
+}
+
+@media (hover: hover) {
+  .csr-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--card-shadow);
+  }
+
+  .csr-card:hover .csr-card-rule {
+    width: 52px;
+  }
+}
+
+/* ---------- প্রতিশ্রুতি ---------- */
+.csr-commit {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(1.75rem, 4vw, 3.5rem);
+  align-items: start;
+}
+
+.csr-commit p {
+  font-family: var(--font-main);
+  font-size: 0.95rem;
+  line-height: 1.85;
+  color: var(--subtext);
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .csr-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .csr-principles,
+  .csr-commit {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .csr-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .csr-stats {
+    gap: 1.75rem 2.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .csr-card,
+  .csr-card-rule {
+    transition: none;
+  }
+}
