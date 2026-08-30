@@ -3468,3 +3468,203 @@ body.light-mode .floating-quote-btn:hover {
     transition: none;
   }
 }
+
+/* ============================================================
+   ক্যারিয়ার — আগের পাতায় ছয়টি শূন্যপদ বিজ্ঞাপিত ছিল, প্রতিটির জেলা,
+   অভিজ্ঞতা, শিক্ষাগত যোগ্যতা ও তারিখসহ। কোনোটিই সত্যি নয় এবং
+   ব্যাকএন্ডে চাকরির টেবিলও নেই, তাই বদলানোরও উপায় ছিল না। এখানে
+   কেবল যেসব বিভাগে নিয়োগ হয় তার নাম আর আবেদনের আসল ঠিকানা।
+   ============================================================ */
+.cr-eyebrow {
+  display: block;
+  font-family: var(--font-main);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  color: var(--accent);
+}
+
+.cr-open {
+  display: grid;
+  grid-template-columns: 1.25fr 0.9fr;
+  gap: clamp(2rem, 6vw, 5rem);
+  align-items: end;
+}
+
+.cr-statement {
+  font-family: var(--font-heading);
+  font-size: clamp(1.6rem, 3.6vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1.22;
+  letter-spacing: 0.01em;
+  color: var(--text);
+  margin: 0.9rem 0 0;
+}
+
+.cr-open-text {
+  font-family: var(--font-main);
+  font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+  line-height: 1.85;
+  color: var(--subtext);
+  margin: 0;
+}
+
+/* ---------- যেসব বিভাগে নিয়োগ ---------- */
+/* কার্ড বা তালিকা নয় — নামগুলোই একটানা বড় হরফে, বিভাজক লালে */
+.cr-disciplines {
+  font-family: var(--font-heading);
+  font-size: clamp(1.4rem, 3.2vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  color: var(--text);
+  margin: 1.2rem 0 0;
+}
+
+.cr-sep {
+  color: var(--accent);
+  padding: 0 0.55em;
+}
+
+/* ---------- আবেদন ---------- */
+.cr-apply {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: start;
+}
+
+.cr-apply-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.35rem, 2.6vw, 1.95rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  text-transform: none;
+  margin: 0.8rem 0 0;
+}
+
+.cr-apply-text {
+  font-family: var(--font-main);
+  font-size: 0.95rem;
+  line-height: 1.85;
+  color: var(--subtext);
+  margin: 1.1rem 0 0;
+  max-width: 46ch;
+}
+
+.cr-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.75rem;
+  padding: 0.9rem 1.6rem;
+  border-radius: 3px;
+  background: var(--accent);
+  color: #fff !important;
+  font-family: var(--font-main);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+@media (hover: hover) {
+  .cr-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow);
+  }
+}
+
+/* ---------- আবেদনের ধাপ ---------- */
+.cr-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cr-steps li {
+  display: flex;
+  gap: 1.1rem;
+  margin-bottom: 1.75rem;
+}
+
+.cr-steps li:last-child {
+  margin-bottom: 0;
+}
+
+.cr-step-n {
+  flex-shrink: 0;
+  padding-top: 0.15rem;
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+
+.cr-step-title {
+  font-family: var(--font-heading);
+  font-size: 1.02rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  margin: 0 0 0.4rem;
+}
+
+.cr-step-text {
+  font-family: var(--font-main);
+  font-size: 0.88rem;
+  line-height: 1.75;
+  color: var(--subtext);
+  margin: 0;
+}
+
+/* এটি button — রাউটার দিয়ে যায় বলে, তাই ডিফল্ট চেহারা মুছে দিতে হয় */
+.cr-next {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: clamp(2.25rem, 4vw, 3.25rem);
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--accent);
+  font-family: var(--font-main);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.cr-next svg {
+  transition: transform 0.3s ease;
+}
+
+@media (hover: hover) {
+  .cr-next:hover svg {
+    transform: translateX(4px);
+  }
+}
+
+@media (max-width: 900px) {
+  .cr-open,
+  .cr-apply {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .cr-steps {
+    margin-top: 0.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cr-cta,
+  .cr-next svg {
+    transition: none;
+  }
+}
