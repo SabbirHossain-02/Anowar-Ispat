@@ -2821,14 +2821,12 @@ body.light-mode .floating-quote-btn:hover {
 }
 
 /* ============================================================
-   CSR — আগে ছয়টি কার্ড ছয় রঙে রাঙানো ছিল (সবুজ, নীল, লাল, হলুদ,
-   বেগুনি, গোলাপি)। সাইটের প্যালেটে ওগুলো নেই। এখন সবটাই থিমের
-   পৃষ্ঠতলে, উচ্চারণ একটাই। রেখা কম — ফাঁক আর পটভূমিই ভাগ করে।
+   CSR — আগের চেহারাটা ছাঁচে ঢালা ছিল: প্রতিটি সেকশনে একই ক্রম
+   (eyebrow → বড় শিরোনাম → দাগ → অনুচ্ছেদ), উপরে লাল সংখ্যার সারি,
+   নিচে গোল-কোনা বাক্সে আইকনের গ্রিড। তিনটিই সবচেয়ে চেনা টেমপ্লেট।
+   এখানে ভাগগুলো আর সমান নয়, সংখ্যা কলামে নামানো, আর উদ্যোগগুলো
+   বাক্সে না থেকে চওড়া সারিতে — আকারের তফাতই গঠন তৈরি করে।
    ============================================================ */
-.csr-head {
-  margin: 0 0 clamp(1.75rem, 3vw, 2.6rem);
-}
-
 .csr-eyebrow {
   display: block;
   font-family: var(--font-main);
@@ -2838,66 +2836,86 @@ body.light-mode .floating-quote-btn:hover {
   color: var(--accent);
 }
 
-.csr-title {
+/* ---------- শুরুর ভাগ ---------- */
+/* ১.৩ : ০.৯ — ইচ্ছে করেই সমান নয় */
+.csr-open {
+  display: grid;
+  grid-template-columns: 1.3fr 0.9fr;
+  gap: clamp(2rem, 6vw, 5.5rem);
+  align-items: start;
+}
+
+.csr-statement {
   font-family: var(--font-heading);
-  font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+  font-size: clamp(1.6rem, 3.6vw, 2.75rem);
   font-weight: 800;
-  letter-spacing: 0.02em;
   line-height: 1.22;
-  text-transform: none;
-  margin: 0.8rem 0 0;
-}
-
-.csr-lede {
-  font-family: var(--font-main);
-  font-size: clamp(1rem, 1.5vw, 1.22rem);
-  line-height: 1.8;
+  letter-spacing: 0.01em;
   color: var(--text);
+  margin: 0.9rem 0 0;
+}
+
+.csr-statement-sub {
+  font-family: var(--font-main);
+  font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+  line-height: 1.85;
+  color: var(--subtext);
+  margin: 1.35rem 0 0;
+  max-width: 52ch;
+}
+
+/* সংখ্যাগুলো পাশাপাশি সারিতে নয়, একটার নিচে একটা — লেবেল ডানে।
+   ডান কলামটা একটু নিচে শুরু হয়, তাই বাঁ পাশের বিবৃতির সমান্তরালে
+   দাঁড়ায় না */
+.csr-figures {
   margin: 0;
-  max-width: 62ch;
+  padding-top: clamp(0.5rem, 3vw, 2.75rem);
 }
 
-.csr-stats {
+.csr-figure {
   display: flex;
-  flex-wrap: wrap;
-  gap: clamp(2rem, 5vw, 4.5rem);
-  margin-top: clamp(2.25rem, 4vw, 3.25rem);
+  align-items: baseline;
+  gap: clamp(0.9rem, 2vw, 1.5rem);
+  padding: 0.8rem 0;
 }
 
-.csr-stat {
-  display: flex;
-  flex-direction: column;
-}
-
-.csr-stat-n {
+.csr-figure-n {
   font-family: var(--font-heading);
-  font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
   font-weight: 800;
   line-height: 1;
   letter-spacing: 0.01em;
   color: var(--accent);
+  min-width: 4.6ch;
 }
 
-.csr-stat-l {
+.csr-figure-l {
+  margin: 0;
   font-family: var(--font-main);
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--subtext);
-  margin-top: 0.55rem;
 }
 
 /* ---------- মিশন ও ভিশন ---------- */
-/* বাক্স নয় — ব্যান্ডের পটভূমিই যথেষ্ট, তাই শুধু লেখা ও একটি দাগ */
 .csr-principles {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: clamp(2rem, 5vw, 4.5rem);
+  padding-bottom: 56px;
 }
 
 .csr-principle {
   margin: 0;
+}
+
+/* দ্বিতীয়টি নিচে নামানো — transform, তাই ঘর নড়ে না */
+@media (min-width: 901px) {
+  .csr-principle:nth-child(2) {
+    transform: translateY(56px);
+  }
 }
 
 .csr-principle-title {
@@ -2907,15 +2925,7 @@ body.light-mode .floating-quote-btn:hover {
   letter-spacing: 0.02em;
   line-height: 1.25;
   text-transform: none;
-  margin: 0.7rem 0 0;
-}
-
-.csr-principle-rule {
-  display: block;
-  width: 38px;
-  height: 2px;
-  background: var(--accent);
-  margin: 1.1rem 0;
+  margin: 0.7rem 0 1.1rem;
 }
 
 .csr-principle-text {
@@ -2928,114 +2938,132 @@ body.light-mode .floating-quote-btn:hover {
 }
 
 /* ---------- উদ্যোগ ---------- */
-.csr-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(1rem, 1.8vw, 1.5rem);
+.csr-what {
+  margin: 0 0 clamp(1.5rem, 3vw, 2.5rem);
 }
 
-.csr-card {
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  padding: clamp(1.5rem, 2.4vw, 2rem);
-  background: var(--surface-solid);
-  border-radius: 3px;
-  transition: transform 0.35s ease, box-shadow 0.35s ease;
-}
-
-.csr-card-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 2px;
-  background: var(--glass);
-  color: var(--accent);
-  margin-bottom: 1.25rem;
-}
-
-.csr-card-title {
+.csr-what-title {
   font-family: var(--font-heading);
-  font-size: 1.08rem;
+  font-size: clamp(1.7rem, 3.4vw, 2.6rem);
   font-weight: 800;
   letter-spacing: 0.02em;
+  line-height: 1.22;
   text-transform: none;
-  margin: 0 0 0.6rem;
+  margin: 0.8rem 0 0;
 }
 
-.csr-card-text {
-  font-family: var(--font-main);
-  font-size: 0.88rem;
-  line-height: 1.75;
-  color: var(--subtext);
-  /* সবচেয়ে কম যতটা ফাঁক থাকবেই; বাকিটা নিচের auto সামলায় */
-  margin: 0 0 1.5rem;
+.csr-list {
+  display: flex;
+  flex-direction: column;
 }
 
-/* margin-top:auto — বিবরণ তিন লাইন হোক বা পাঁচ, দাগটা সব কার্ডে
-   একই উচ্চতায় বসে */
-.csr-card-rule {
+/* চিহ্ন | নাম | বিবরণ — নামটি বড়, বিবরণ ছোট। আকারের এই তফাতই
+   সারিগুলো আলাদা করে, রেখা লাগে না */
+.csr-item {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: clamp(1rem, 3vw, 3rem);
+  align-items: start;
+  margin: 0;
+  padding: clamp(1.6rem, 2.8vw, 2.5rem) 0;
+}
+
+.csr-item-mark {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.csr-item-n {
+  font-family: var(--font-heading);
+  font-size: clamp(1.3rem, 2.2vw, 1.75rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--accent);
+  opacity: 0.4;
+}
+
+.csr-item-icon {
   display: block;
-  width: 24px;
-  height: 2px;
-  background: var(--accent);
-  margin-top: auto;
-  transition: width 0.45s ease;
+  color: var(--accent);
 }
 
-@media (hover: hover) {
-  .csr-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--card-shadow);
-  }
+.csr-item-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.3rem, 2.6vw, 1.95rem);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 1.18;
+  text-transform: none;
+  margin: 0;
+}
 
-  .csr-card:hover .csr-card-rule {
-    width: 52px;
-  }
+.csr-item-text {
+  font-family: var(--font-main);
+  font-size: 0.97rem;
+  line-height: 1.85;
+  color: var(--subtext);
+  margin: 0;
+  padding-top: 0.3rem;
 }
 
 /* ---------- প্রতিশ্রুতি ---------- */
+/* মাঝখানে নয়, ডান দিকে সরানো ও সরু মাপে */
 .csr-commit {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: clamp(1.75rem, 4vw, 3.5rem);
-  align-items: start;
+  max-width: 60ch;
+  margin-left: auto;
 }
 
-.csr-commit p {
+.csr-commit-lead {
+  font-family: var(--font-heading);
+  font-size: clamp(1.15rem, 2.1vw, 1.6rem);
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  color: var(--text);
+  margin: 0.9rem 0 0;
+}
+
+.csr-commit-text {
   font-family: var(--font-main);
   font-size: 0.95rem;
   line-height: 1.85;
   color: var(--subtext);
-  margin: 0;
+  margin: 1.3rem 0 0;
 }
 
 @media (max-width: 900px) {
-  .csr-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .csr-open,
+  .csr-principles {
+    grid-template-columns: 1fr;
   }
 
-  .csr-principles,
+  .csr-principles {
+    padding-bottom: 0;
+  }
+
+  .csr-figures {
+    padding-top: 0.5rem;
+  }
+
+  /* সরু পর্দায় চিহ্নটি নামের পাশে চলে আসে, বিবরণ তার নিচে */
+  .csr-item {
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 0.9rem;
+  }
+
+  .csr-item-mark {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .csr-item-text {
+    grid-column: 2;
+    padding-top: 0.7rem;
+  }
+
   .csr-commit {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 620px) {
-  .csr-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .csr-stats {
-    gap: 1.75rem 2.5rem;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .csr-card,
-  .csr-card-rule {
-    transition: none;
+    margin-left: 0;
   }
 }

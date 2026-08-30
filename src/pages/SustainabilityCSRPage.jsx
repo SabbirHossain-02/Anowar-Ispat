@@ -16,7 +16,6 @@ const CONTAINER = {
     padding: '0 clamp(1.25rem, 5vw, 3rem)',
 };
 
-// ছয়টি — তিন কলামে ঠিক দুই সারি, কোথাও একলা কার্ড পড়ে না
 const INITIATIVES = [
     {
         icon: GraduationCap,
@@ -50,8 +49,8 @@ const INITIATIVES = [
     },
 ];
 
-// আগে একই সংখ্যাগুলো পাতার দুই জায়গায় দুই নামে ছিল — একবারেই রাখা
-const STATS = [
+// সংখ্যাগুলো সারিতে না বসিয়ে কলামে — লেবেলের পাশে, তথ্যপত্রের মতো
+const FIGURES = [
     { n: '10K+', l: 'Families supported' },
     { n: '500+', l: 'Scholarships awarded' },
     { n: '20+', l: 'Free medical camps' },
@@ -71,37 +70,24 @@ const PRINCIPLES = [
     },
 ];
 
-const COMMITMENT = [
-    'Anwar Group and Anwar Ispat stand close to communities. We fund schools, distribute scholarships, and run medical camps to ensure quality healthcare and education for low-income families.',
-    'At the heart of our activities is the deep-rooted conviction towards people and society at large, emanating from the values that have been in the family for many centuries.',
-];
-
 const SustainabilityCSRPage = () => {
     const rootRef = useRef(null);
 
     useGSAP(() => {
         gsap.utils.toArray('.csr-reveal').forEach((el) => {
             gsap.from(el, {
-                y: 32, opacity: 0, duration: 0.7, ease: 'power3.out',
-                scrollTrigger: { trigger: el, start: 'top 88%' },
-            });
-        });
-
-        gsap.utils.toArray('.csr-card').forEach((el, i) => {
-            gsap.from(el, {
-                y: 30, opacity: 0, duration: 0.65, ease: 'power3.out',
-                delay: (i % 3) * 0.08,
+                y: 30, opacity: 0, duration: 0.7, ease: 'power3.out',
                 scrollTrigger: { trigger: el, start: 'top 90%' },
             });
         });
-    }, { scope: rootRef });
 
-    const heading = (eyebrow, title) => (
-        <div className="csr-reveal csr-head">
-            <span className="csr-eyebrow">{eyebrow}</span>
-            <h2 className="csr-title">{title}</h2>
-        </div>
-    );
+        gsap.utils.toArray('.csr-item').forEach((el) => {
+            gsap.from(el, {
+                y: 26, opacity: 0, duration: 0.65, ease: 'power3.out',
+                scrollTrigger: { trigger: el, start: 'top 92%' },
+            });
+        });
+    }, { scope: rootRef });
 
     return (
         <div
@@ -121,29 +107,41 @@ const SustainabilityCSRPage = () => {
             />
 
             {/* ---------------------------------------------------------- */}
-            {/* INTRO */}
+            {/* OPENING — বাঁয়ে বিবৃতি, ডানে সংখ্যা, সমান দুই ভাগে নয় */}
             {/* ---------------------------------------------------------- */}
             <section style={{
                 minHeight: 'auto', display: 'block',
-                ...CONTAINER, paddingTop: '30px', paddingBottom: '30px',
+                ...CONTAINER,
+                paddingTop: '30px',
+                paddingBottom: `calc(${SECTION_PAD} * 1.2)`,
             }}>
-                <p className="csr-reveal csr-lede">
-                    Anwar Group and Anwar Ispat stand close to communities — funding schools,
-                    distributing scholarships, and running medical camps for low-income families.
-                </p>
+                <div className="csr-open">
+                    <div className="csr-reveal">
+                        <span className="csr-eyebrow">WHERE WE STAND</span>
+                        <p className="csr-statement">
+                            Anwar Group and Anwar Ispat stand close to the communities
+                            the mill is built in.
+                        </p>
+                        <p className="csr-statement-sub">
+                            Funding schools, distributing scholarships and running medical camps
+                            for low-income families — carried on for four decades, not announced
+                            for one.
+                        </p>
+                    </div>
 
-                <div className="csr-reveal csr-stats">
-                    {STATS.map((s) => (
-                        <div key={s.l} className="csr-stat">
-                            <span className="csr-stat-n">{s.n}</span>
-                            <span className="csr-stat-l">{s.l}</span>
-                        </div>
-                    ))}
+                    <dl className="csr-reveal csr-figures">
+                        {FIGURES.map((f) => (
+                            <div key={f.l} className="csr-figure">
+                                <dt className="csr-figure-n">{f.n}</dt>
+                                <dd className="csr-figure-l">{f.l}</dd>
+                            </div>
+                        ))}
+                    </dl>
                 </div>
             </section>
 
             {/* ---------------------------------------------------------- */}
-            {/* MISSION & VISION */}
+            {/* MISSION & VISION — দ্বিতীয়টি একটু নিচে নামানো */}
             {/* ---------------------------------------------------------- */}
             <section style={{
                 minHeight: 'auto', display: 'block',
@@ -157,7 +155,6 @@ const SustainabilityCSRPage = () => {
                             <article key={p.label} className="csr-reveal csr-principle">
                                 <span className="csr-eyebrow">{p.label}</span>
                                 <h2 className="csr-principle-title">{p.title}</h2>
-                                <span className="csr-principle-rule" aria-hidden="true" />
                                 <p className="csr-principle-text">{p.text}</p>
                             </article>
                         ))}
@@ -166,30 +163,35 @@ const SustainabilityCSRPage = () => {
             </section>
 
             {/* ---------------------------------------------------------- */}
-            {/* INITIATIVES */}
+            {/* INITIATIVES — বাক্স নয়, প্রতিটি একটি চওড়া সারি */}
             {/* ---------------------------------------------------------- */}
             <section style={{
                 minHeight: 'auto', display: 'block',
-                ...CONTAINER, paddingTop: SECTION_PAD, paddingBottom: SECTION_PAD,
+                ...CONTAINER,
+                paddingTop: `calc(${SECTION_PAD} * 1.2)`,
+                paddingBottom: SECTION_PAD,
             }}>
-                {heading('CSR INITIATIVES', 'What we do')}
+                <div className="csr-reveal csr-what">
+                    <span className="csr-eyebrow">CSR INITIATIVES</span>
+                    <h2 className="csr-what-title">What we do</h2>
+                </div>
 
-                <div className="csr-grid">
-                    {INITIATIVES.map(({ icon: Icon, title, text }) => (
-                        <article key={title} className="csr-card">
-                            <span className="csr-card-icon">
-                                <Icon size={20} strokeWidth={1.6} />
-                            </span>
-                            <h3 className="csr-card-title">{title}</h3>
-                            <p className="csr-card-text">{text}</p>
-                            <span className="csr-card-rule" aria-hidden="true" />
+                <div className="csr-list">
+                    {INITIATIVES.map(({ icon: Icon, title, text }, i) => (
+                        <article key={title} className="csr-item">
+                            <div className="csr-item-mark">
+                                <span className="csr-item-n">{String(i + 1).padStart(2, '0')}</span>
+                                <span className="csr-item-icon"><Icon size={19} strokeWidth={1.6} /></span>
+                            </div>
+                            <h3 className="csr-item-title">{title}</h3>
+                            <p className="csr-item-text">{text}</p>
                         </article>
                     ))}
                 </div>
             </section>
 
             {/* ---------------------------------------------------------- */}
-            {/* COMMITMENT */}
+            {/* COMMITMENT — সরু মাপে, ডান দিকে সরানো */}
             {/* ---------------------------------------------------------- */}
             <section style={{
                 minHeight: 'auto', display: 'block',
@@ -199,12 +201,18 @@ const SustainabilityCSRPage = () => {
                 background: 'var(--glass)',
             }}>
                 <div style={CONTAINER}>
-                    {heading('OUR COMMITMENT', 'Standing close to communities')}
-
-                    <div className="csr-commit">
-                        {COMMITMENT.map((t) => (
-                            <p key={t.slice(0, 24)} className="csr-reveal">{t}</p>
-                        ))}
+                    <div className="csr-commit csr-reveal">
+                        <span className="csr-eyebrow">OUR COMMITMENT</span>
+                        <p className="csr-commit-lead">
+                            At the heart of our activities is the deep-rooted conviction towards
+                            people and society at large, emanating from values that have been in
+                            the family for many centuries.
+                        </p>
+                        <p className="csr-commit-text">
+                            We fund schools, distribute scholarships and run medical camps so that
+                            quality healthcare and education reach families who would otherwise go
+                            without them.
+                        </p>
                     </div>
                 </div>
             </section>
