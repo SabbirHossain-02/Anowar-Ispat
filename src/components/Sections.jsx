@@ -1397,6 +1397,19 @@ export const Footer = ({ onOpenContact }) => (
     </div>
     <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "2rem", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
       <p style={{ color: "var(--subtext)", fontSize: "0.8rem" }}>&copy; {new Date().getFullYear()} Anwar Ispat. All Rights Reserved.</p>
+      {/* কপিরাইট ও সোশ্যাল লিংকের ঠিক মাঝে — space-between এ তিনটি
+          সন্তান থাকলে মাঝেরটি নিজে থেকেই কেন্দ্রে বসে */}
+      <p style={{ color: "var(--subtext)", fontSize: "0.8rem" }}>
+        Developed by{" "}
+        <a
+          href="https://pkgit.net"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: "var(--accent)", textDecoration: "none", fontWeight: 600 }}
+        >
+          pkgit.net
+        </a>
+      </p>
       <div style={{ display: "flex", gap: "1rem" }}>
         {["Facebook","LinkedIn","Twitter"].map(s=><a key={s} href="#" style={{ color: "var(--subtext)", textDecoration: "none", fontSize: "0.8rem" }}>{s}</a>)}
       </div>
