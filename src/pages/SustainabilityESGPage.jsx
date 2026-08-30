@@ -166,8 +166,6 @@ const SustainabilityESGPage = () => {
                 paddingTop: SECTION_PAD, paddingBottom: SECTION_PAD,
                 paddingLeft: 0, paddingRight: 0,
                 background: 'var(--glass)',
-                borderTop: '1px solid var(--glass-border)',
-                borderBottom: '1px solid var(--glass-border)',
             }}>
                 <div style={CONTAINER}>
                     <figure className="esg-reveal esg-quote">
@@ -220,8 +218,6 @@ const SustainabilityESGPage = () => {
                 paddingTop: SECTION_PAD, paddingBottom: SECTION_PAD,
                 paddingLeft: 0, paddingRight: 0,
                 background: 'var(--glass)',
-                borderTop: '1px solid var(--glass-border)',
-                borderBottom: '1px solid var(--glass-border)',
             }}>
                 <div style={CONTAINER}>
                     {heading('UNITED NATIONS', 'SDG commitments')}

@@ -2488,9 +2488,8 @@ body.light-mode .floating-quote-btn:hover {
   display: flex;
   flex-wrap: wrap;
   gap: clamp(2rem, 5vw, 4.5rem);
-  margin-top: clamp(1.75rem, 3vw, 2.5rem);
-  padding-top: clamp(1.5rem, 2.5vw, 2rem);
-  border-top: 1px solid var(--glass-border);
+  /* আগে উপরে একটা রেখা ছিল — ফাঁকই যথেষ্ট, রেখাটা বাড়তি ছিল */
+  margin-top: clamp(2.25rem, 4vw, 3.25rem);
 }
 
 .esg-stat {
@@ -2518,32 +2517,61 @@ body.light-mode .floating-quote-btn:hover {
 }
 
 /* ---------- চেয়ারম্যানের উক্তি ---------- */
+/* একটাই কার্ড — ছবি বাঁ কিনারায় লেপ্টে, লেখা ডানে। লাইট মোডে
+   ধূসর ব্যান্ডের উপর সাদা কার্ড, তাই আলাদা রেখার দরকার পড়ে না */
 .esg-quote {
   display: grid;
-  grid-template-columns: 210px 1fr;
-  gap: clamp(1.5rem, 3.5vw, 3rem);
-  align-items: center;
-  max-width: 960px;
+  grid-template-columns: 240px 1fr;
+  align-items: stretch;
+  max-width: 1000px;
   margin: 0 auto;
+  background: var(--surface-solid);
+  border-radius: 3px;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
 }
 
-/* ছবিটি কাটা-আউট PNG, তাই পেছনে একটি পৃষ্ঠতল লাগে */
+/* ছবিটি কাটা-আউট PNG — নিচে ঠেকিয়ে বসানো, যাতে দাঁড়িয়ে থাকা মনে হয় */
 .esg-portrait {
-  aspect-ratio: 1 / 1;
-  overflow: hidden;
-  border-radius: 3px;
-  background: var(--secondary);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: linear-gradient(180deg,
+      var(--secondary) 0%,
+      var(--glass) 100%);
 }
 
 .esg-portrait img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top center;
+  height: auto;
   display: block;
 }
 
+.esg-quote-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(1.9rem, 3.2vw, 3rem);
+}
+
+/* বড় উদ্ধৃতি চিহ্নটি লেখার পেছনে — ছাপার পাতার মতো */
+.esg-quote-body::before {
+  content: '\201C';
+  position: absolute;
+  top: clamp(0.1rem, 1vw, 0.7rem);
+  left: clamp(1.2rem, 2.4vw, 2.2rem);
+  font-family: var(--font-heading);
+  font-size: clamp(4.5rem, 8vw, 7rem);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--accent);
+  opacity: 0.13;
+  pointer-events: none;
+}
+
 .esg-quote-body blockquote {
+  position: relative;
   margin: 0;
   font-family: var(--font-heading);
   font-size: clamp(1.1rem, 2vw, 1.55rem);
@@ -2725,16 +2753,16 @@ body.light-mode .floating-quote-btn:hover {
   margin-bottom: 0;
 }
 
+/* রেখা দিয়ে ভাগ না করে ক্রমিক সংখ্যা দিয়েই আলাদা করা */
 .esg-practice {
   display: flex;
   gap: 1.1rem;
-  margin: 0;
-  padding: 1.15rem 0;
-  border-top: 1px solid var(--glass-border);
+  margin: 0 0 1.5rem;
+  padding: 0;
 }
 
 .esg-practice:last-child {
-  border-bottom: 1px solid var(--glass-border);
+  margin-bottom: 0;
 }
 
 .esg-practice-n {
@@ -2771,12 +2799,18 @@ body.light-mode .floating-quote-btn:hover {
     grid-template-columns: 1fr;
   }
 
+  /* সরু পর্দায় ছবিটা উপরে, পাশে নয় — নিচে ঠেকানো থাকে বলে
+     উচ্চতা বেঁধে দিলেই যথেষ্ট */
   .esg-quote {
     grid-template-columns: 1fr;
   }
 
   .esg-portrait {
-    max-width: 190px;
+    padding-top: 1.5rem;
+  }
+
+  .esg-portrait img {
+    max-width: 230px;
   }
 }
 
