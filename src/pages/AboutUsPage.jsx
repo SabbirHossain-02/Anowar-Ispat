@@ -93,42 +93,61 @@ const AboutUsPage = () => {
         return () => el.removeEventListener('wheel', onWheel);
     }, []);
 
-    // পাশে গড়ানোর সাথে সাথে ঘটনাগুলো ফুটে ওঠে। root null রাখা হয়েছে
-    // ইচ্ছে করেই — তাতে দুটো শর্তই একসাথে মেলে: সেকশনটি পর্দায় এসেছে
-    // কি না, আর টাইলটি overflow এর ভেতরে দেখা যাচ্ছে কি না। root এ
-    // কনটেইনার দিলে পাতা নিচে নামার আগেই সব খুলে যেত।
+    // ঘটনাগুলো ফোটে স্ক্রলের দূরত্ব ধরে, অবস্থান ধরে নয়। কারণ শুরুতে
+    // পর্দার সাতটা ঘটনাই "দৃশ্যমান অবস্থানে" থাকে — অবস্থান দেখলে
+    // সবগুলোই একসাথে খুলে যেত। প্রতি REVEAL_STEP পিক্সেল গড়ালে
+    // পরেরটি ফোটে, তাই একটা স্ক্রলে একটাই।
     useEffect(() => {
         const el = timelineRef.current;
         if (!el) return;
 
-        const items = el.querySelectorAll('.tl-item');
+        const items = Array.from(el.querySelectorAll('.tl-item'));
+        if (items.length === 0) return;
+
+        const REVEAL_STEP = 120; // মাউসের এক ধাপের কাছাকাছি
+        let started = false;
+        let frame = 0;
+
+        const apply = () => {
+            frame = 0;
+            const due = Math.min(
+                items.length,
+                Math.floor(el.scrollLeft / REVEAL_STEP) + 1,
+            );
+
+            let newly = 0;
+            for (let i = 0; i < due; i += 1) {
+                const item = items[i];
+                if (item.classList.contains('is-in')) continue;
+                // দ্রুত গড়ালে একসাথে কয়েকটি পাওনা হয়ে যায় — তখনও
+                // যেন একসাথে না ফুটে, একটু পরপর ফোটে
+                item.style.setProperty('--tl-delay', `${newly * 0.08}s`);
+                item.classList.add('is-in');
+                newly += 1;
+            }
+        };
+
+        const onScroll = () => {
+            if (!frame) frame = requestAnimationFrame(apply);
+        };
+
+        // পাতা নিচে নেমে টাইমলাইন চোখে আসার আগে কিছুই ফোটে না
         const io = new IntersectionObserver(
-            (entries) => {
-                const arriving = entries.filter((e) => e.isIntersecting);
-                if (arriving.length === 0) return;
-
-                // এক পর্দায় সাতটা ঘটনা ধরে, তাই সেকশনটি চোখে আসতেই
-                // সবগুলো একসাথে ফুটে উঠত — দেখে মনে হত আগে থেকেই ছিল।
-                // বাঁ থেকে ডানে সাজিয়ে একটু পরপর ছাড়লে একটার পর একটা
-                // খোলে। পাশে গড়ানোর সময় একটাই আসে, তাই দেরি হয় না।
-                arriving.sort(
-                    (a, b) => a.boundingClientRect.left - b.boundingClientRect.left,
-                );
-
-                arriving.forEach((entry, i) => {
-                    entry.target.style.setProperty('--tl-delay', `${i * 0.11}s`);
-                    entry.target.classList.add('is-in');
-                    io.unobserve(entry.target); // একবার ফুটলেই যথেষ্ট
-                });
+            ([entry]) => {
+                if (!entry.isIntersecting || started) return;
+                started = true;
+                apply();
+                el.addEventListener('scroll', onScroll, { passive: true });
             },
-            // ধারের ৪% বাদ — ঘটনাটি পুরোপুরি ভেতরে ঢুকলে তবেই ফোটে।
-            // এর বেশি বাদ দিলে শেষ ঘটনাটি প্রান্তে আটকে থেকে কখনো
-            // threshold ছুঁত না।
-            { threshold: 0.4, rootMargin: '0px -4% 0px -4%' },
+            { threshold: 0.2 },
         );
 
-        items.forEach((item) => io.observe(item));
-        return () => io.disconnect();
+        io.observe(el);
+        return () => {
+            io.disconnect();
+            el.removeEventListener('scroll', onScroll);
+            if (frame) cancelAnimationFrame(frame);
+        };
     }, []);
 
     useEffect(() => {
