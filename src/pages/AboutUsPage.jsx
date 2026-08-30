@@ -178,10 +178,12 @@ const AboutUsPage = () => {
             {/* ---------------------------------------------------------- */}
             {/* একটানা অনুভূমিক রেখা, দুপাশে পালা করে ঘটনা — ডালে পাতার
                 মতো। ২৯টি মাইলফলক পাশে গড়িয়ে দেখা যায়। */}
+            {/* নিচের সারির কার্ডগুলো পর্দার কিনারায় গিয়ে ঠেকছিল, তাই
+                নিচের ফাঁক বেশি */}
             <section style={{
                 minHeight: 'auto', display: 'block',
                 paddingTop: SECTION_PAD,
-                paddingBottom: SECTION_PAD,
+                paddingBottom: `calc(${SECTION_PAD} * 1.8)`,
                 paddingLeft: 0, paddingRight: 0,
             }}>
                 <div style={CONTAINER}>

@@ -3841,7 +3841,7 @@ body.light-mode .floating-quote-btn:hover {
   margin: 0;
   /* প্রথম ও শেষ ঘটনা যেন পর্দার কিনারায় লেপ্টে না থাকে */
   padding: 0 clamp(1.25rem, 5vw, 3rem);
-  height: 460px;
+  height: 520px;
   width: max-content;
 }
 
@@ -4011,7 +4011,7 @@ body.light-mode .floating-quote-btn:hover {
 
 @media (max-width: 700px) {
   .tl-track {
-    height: 420px;
+    height: 470px;
   }
 
   .tl-item {
