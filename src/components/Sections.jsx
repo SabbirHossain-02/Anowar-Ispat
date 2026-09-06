@@ -1298,7 +1298,7 @@ export const MediaEvents = () => {
   );
 };
 
-const InsightCarouselCard = ({ category, title, readTime, link, img, index, currentIndex, cta }) => {
+const InsightCarouselCard = ({ category, title, readTime, link, img, index, currentIndex, total, cta, onSelect }) => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -1309,8 +1309,8 @@ const InsightCarouselCard = ({ category, title, readTime, link, img, index, curr
   }, []);
 
   const isActive = index === currentIndex;
-  const isPrev = index === (currentIndex - 1 + 3) % 3;
-  const isNext = index === (currentIndex + 1) % 3;
+  const isPrev = index === (currentIndex - 1 + total) % total;
+  const isNext = index === (currentIndex + 1) % total;
 
   let transform = "translateX(0) translateZ(0) rotateY(0deg) scale(0.8)";
   let opacity = 0;
@@ -1331,7 +1331,8 @@ const InsightCarouselCard = ({ category, title, readTime, link, img, index, curr
   return (
     <div style={{ position: "absolute", top: "10%", left: 0, right: 0, margin: "0 auto", width: "clamp(280px, min(90vw, 90vh), 600px)", height: "clamp(220px, min(50vw, 50vh), 380px)", background: img
       ? `linear-gradient(var(--insight-overlay-1, rgba(11, 11, 11, 0.4)), var(--insight-overlay-2, rgba(11, 11, 11, 0.95))), url(${img}) center/cover`
-      : 'linear-gradient(var(--insight-overlay-1, rgba(11, 11, 11, 0.4)), var(--insight-overlay-2, rgba(11, 11, 11, 0.95)))', backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", border: isActive ? "1px solid rgba(227, 24, 45, 0.5)" : "1px solid rgba(255, 255, 255, 0.1)", borderRadius: "16px", padding: "clamp(1rem, min(4vw, 4vh), 3rem)", display: "flex", flexDirection: "column", justifyContent: "flex-end", transition: "all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)", transform, opacity, zIndex, filter, boxShadow: isActive ? "0 30px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(227, 24, 45, 0.2)" : "0 10px 30px rgba(0,0,0,0.5)", transformStyle: "preserve-3d", pointerEvents: isActive ? "all" : "none" }}>
+      : 'linear-gradient(var(--insight-overlay-1, rgba(11, 11, 11, 0.4)), var(--insight-overlay-2, rgba(11, 11, 11, 0.95)))', backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", border: isActive ? "1px solid rgba(227, 24, 45, 0.5)" : "1px solid rgba(255, 255, 255, 0.1)", borderRadius: "16px", padding: "clamp(1rem, min(4vw, 4vh), 3rem)", display: "flex", flexDirection: "column", justifyContent: "flex-end", transition: "all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)", transform, opacity, zIndex, filter, boxShadow: isActive ? "0 30px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(227, 24, 45, 0.2)" : "0 10px 30px rgba(0,0,0,0.5)", transformStyle: "preserve-3d", cursor: isActive ? "default" : "pointer", pointerEvents: isActive || isPrev || isNext ? "all" : "none" }}
+      onClick={isActive ? undefined : () => onSelect(index)}>
       <div style={{ transform: "translateZ(30px)", transition: "transform 0.8s ease" }}>
         <span style={{ display: "inline-block", fontFamily: "monospace", fontSize: "clamp(0.6rem, 2vmin, 0.8rem)", color: isActive ? "var(--accent)" : "rgba(255,255,255,0.5)", letterSpacing: "0.2em", marginBottom: "clamp(0.5rem, 2vh, 1rem)", textTransform: "uppercase", transition: "all 0.5s ease" }}>{category}</span>
         <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "clamp(1.1rem, 5vmin, 2.2rem)", marginBottom: "clamp(0.5rem, 2vh, 1.5rem)", color: "#fff", lineHeight: "1.2", textShadow: "0 4px 20px rgba(0,0,0,0.8)" }}>{title}</h3>
@@ -1364,7 +1365,7 @@ export const Blog = () => {
 
       <div style={{ position: "relative", height: "clamp(300px, min(60vw, 60vh), 480px)", width: "100%", perspective: "1500px", display: "flex", alignItems: "center", justifyContent: "center" }}>
         {insights.map((insight, idx) => (
-          <InsightCarouselCard key={idx} index={idx} currentIndex={currentIndex} cta={home.blog.cta} {...insight} />
+          <InsightCarouselCard key={idx} index={idx} currentIndex={currentIndex} total={insights.length} cta={home.blog.cta} onSelect={setCurrentIndex} {...insight} />
         ))}
         <div style={{ position: "absolute", bottom: "0", display: "flex", gap: "2rem", zIndex: 30 }}>
           <button onClick={handlePrev} style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.2)", color: "#fff", width: "50px", height: "50px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "all 0.3s ease" }} onMouseOver={(e) => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.color = "var(--accent)"; }} onMouseOut={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)"; e.currentTarget.style.color = "#fff"; }}>&larr;</button>
