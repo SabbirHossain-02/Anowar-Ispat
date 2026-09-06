@@ -68,6 +68,10 @@ const HOME_DEFAULTS = {
         ],
     },
     ps: {
+        title: 'PRODUCT & SERVICE',
+        intro: "Forged in extreme intensity. We provide exceptional structural solutions designed to act as the unyielding backbone of tomorrow's infrastructure.",
+        learnBtn: 'Learn More',
+        quoteBtn: 'REQUEST A QUOTE',
         specLabel: 'KEY SPECIFICATIONS',
         specs: [
             'Ultimate Tensile Strength: 500 MPa','Excellent Weldability and Bendability', 'Earthquake Resistant Properties', 'Advanced Rib Design for better bonding'],
@@ -81,7 +85,7 @@ const HOME_DEFAULTS = {
         tail: 'THE BEST?',
         items: ['SUPERIOR STRENGTH', 'EXCELLENT DUCTILITY', 'EASY WELDABILITY', 'IMPROVED RIB DESIGN', 'TMT TECHNOLOGY', 'PRECISE STANDARDS', 'CONTROLLED MICROSTRUCTURE'],
     },
-    projects: { title: 'MEGA', accent: 'PROJECTS', items: [
+    projects: { eyebrow: 'NATION BUILDERS', title: 'MEGA', accent: 'PROJECTS', items: [
         // ভিডিওগুলো Cloudinary তে ছিল, সেই অ্যাকাউন্ট বন্ধ হয়ে গেছে
         // ("cloud_name dswgpcl6a is disabled") — ফাইল ফেরানো যায়নি।
         // এখন প্যানেলের Home page থেকে ভিডিও ও স্থিরচিত্র আপলোড হয়,
@@ -97,12 +101,14 @@ const HOME_DEFAULTS = {
   ] },
     media: {
         title: 'NEWS DESK',
-        cta: 'INITIATE FEED',
+        heading: ['MEDIA &', 'EVENTS'],
+        intro: 'Constant motion. Constant innovation. Tap into our live broadcasting feed to stay updated with structural advancements across the nation.',
+        cta: 'ACCESS FULL TERMINAL',
         loading: 'Loading media posts...',
         empty: 'No media posts yet.',
     },
     blog: {
-        cta: 'INITIATE FEED',
+        cta: 'ACCESS FULL TERMINAL',
         eyebrow: '[ SYSTEM.ARCHIVES.OPEN ]',
         title: 'INSIGHTS & INNOVATIONS',
         items: [
@@ -218,7 +224,7 @@ export const ProductService = () => {
           className="accent-text"
           style={{ fontSize: "2.5rem", marginBottom: "1rem" }}
         >
-          PRODUCT & SERVICE
+          {home.ps.title}
         </h2>
         <p
           style={{
@@ -229,9 +235,7 @@ export const ProductService = () => {
             lineHeight: "1.6",
           }}
         >
-          Forged in extreme intensity. We provide exceptional structural
-          solutions designed to act as the unyielding backbone of tomorrow's
-          infrastructure.
+          {home.ps.intro}
         </p>
 
         {products.length === 0 ? (
@@ -318,7 +322,7 @@ export const ProductService = () => {
                           setSelectedProduct(product);
                         }}
                       >
-                        Learn More
+                        {home.ps.learnBtn}
                       </button>
                       <button
                         className="btn-get-quote"
@@ -389,7 +393,7 @@ export const ProductService = () => {
                   window.dispatchEvent(new CustomEvent('open-quote'));
                 }}
               >
-                REQUEST A QUOTE
+                {home.ps.quoteBtn}
               </button>
             </div>
           </div>
@@ -1098,7 +1102,7 @@ export const ProjectShowcase = () => {
     >
       <div style={{ textAlign: "center", marginBottom: "4rem" }}>
         <p style={{ fontFamily: "monospace", color: "var(--accent)", letterSpacing: "0.2em", marginBottom: "1rem", fontSize: "0.9rem" }}>
-          NATION BUILDERS
+          {home.projects.eyebrow}
         </p>
         <h2 style={{ fontSize: "clamp(2.5rem, 5vw, 4.5rem)", color: "var(--text)", lineHeight: 1.1, textTransform: "uppercase", fontFamily: "var(--font-heading)" }}>
           {home.projects.title} <span className="accent-text">{home.projects.accent}</span>
@@ -1213,14 +1217,15 @@ export const MediaEvents = () => {
             <p style={{ fontFamily: "monospace", color: "var(--accent)", letterSpacing: "0.2em", fontSize: "0.9rem", margin: 0 }}>{home.media.title}</p>
           </div>
           <h2 className="accent-text" style={{ fontSize: "clamp(3rem, 6vw, 5rem)", marginBottom: "1.5rem", lineHeight: "0.9" }}>
-            MEDIA &<br />EVENTS
+            {(home.media.heading || []).map((line, i) => (
+              <React.Fragment key={i}>{i > 0 && <br />}{line}</React.Fragment>
+            ))}
           </h2>
           <p style={{ color: "var(--subtext)", fontSize: "1.1rem", lineHeight: "1.6", marginBottom: "2rem" }}>
-            Constant motion. Constant innovation. Tap into our live broadcasting
-            feed to stay updated with structural advancements across the nation.
+            {home.media.intro}
           </p>
           <a href="#all-events" className="magnetic-btn" style={{ fontSize: "0.85rem", padding: "1rem 2rem", marginTop: 0, background: "transparent", border: "1px solid var(--accent)", color: "var(--accent)" }}>
-            ACCESS FULL TERMINAL
+            {home.media.cta}
           </a>
         </div>
 
