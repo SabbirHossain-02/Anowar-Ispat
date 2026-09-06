@@ -1252,10 +1252,10 @@ export const MediaEvents = () => {
 
         <div
           className="marquee-container"
-          style={{ flex: "1 1 500px", minWidth: "400px", height: canScroll ? "clamp(400px, 60vh, 80vh)" : "auto", position: "relative", perspective: "1000px", display: "flex", alignItems: "center" }}
+          style={{ flex: "1 1 500px", minWidth: "400px", height: canScroll ? "clamp(400px, 60vh, 80vh)" : "auto", position: "relative", perspective: "1000px", display: "flex", alignItems: "center", overflow: "hidden" }}
         >
-          <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "150px", zIndex: 5, pointerEvents: "none" }}></div>
-          <div style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: "150px", zIndex: 5, pointerEvents: "none" }}></div>
+          <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "150px", zIndex: 5, pointerEvents: "none", background: "var(--mask-top, linear-gradient(to bottom, var(--primary), transparent))" }}></div>
+          <div style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: "150px", zIndex: 5, pointerEvents: "none", background: "var(--mask-bottom, linear-gradient(to top, var(--primary), transparent))" }}></div>
 
           {broadcastData.length === 0 ? (
             <div style={{ color: "var(--subtext)", textAlign: "center", width: "100%", fontSize: "0.9rem" }}>
