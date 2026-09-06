@@ -114,9 +114,9 @@ const HOME_DEFAULTS = {
         eyebrow: '[ SYSTEM.ARCHIVES.OPEN ]',
         title: 'INSIGHTS & INNOVATIONS',
             items: [
-            { category: 'Engineering Analysis', title: 'The Physics of 500W: Tension, Yield, and Structural Absolute', readTime: '06:00 MIN', link: '' },
-            { category: 'Sustainable Future', title: 'Achieving Net-Zero: Algorithms Controlling Carbon Outputs', readTime: '08:30 MIN', link: '' },
-            { category: 'Project Architectural', title: 'Bridging the Divide: Logistics of Mega-Ton Deliveries', readTime: '04:45 MIN', link: '' },
+            { category: 'Engineering Analysis', title: 'The Physics of 500W: Tension, Yield, and Structural Absolute', readTime: '06:00 MIN', link: '', img: 'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&q=80&w=800' },
+            { category: 'Sustainable Future', title: 'Achieving Net-Zero: Algorithms Controlling Carbon Outputs', readTime: '08:30 MIN', link: '', img: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=800' },
+            { category: 'Project Architectural', title: 'Bridging the Divide: Logistics of Mega-Ton Deliveries', readTime: '04:45 MIN', link: '', img: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&q=80&w=800' },
         ],
     },
     footer: {
@@ -1298,7 +1298,7 @@ export const MediaEvents = () => {
   );
 };
 
-const InsightCarouselCard = ({ category, title, readTime, link, index, currentIndex, cta }) => {
+const InsightCarouselCard = ({ category, title, readTime, link, img, index, currentIndex, cta }) => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -1329,7 +1329,9 @@ const InsightCarouselCard = ({ category, title, readTime, link, index, currentIn
   }
 
   return (
-    <div style={{ position: "absolute", top: "10%", left: 0, right: 0, margin: "0 auto", width: "clamp(280px, min(90vw, 90vh), 600px)", height: "clamp(220px, min(50vw, 50vh), 380px)", background: `linear-gradient(var(--insight-overlay-1, rgba(11, 11, 11, 0.4)), var(--insight-overlay-2, rgba(11, 11, 11, 0.95))), url(${img}) center/cover`, backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", border: isActive ? "1px solid rgba(227, 24, 45, 0.5)" : "1px solid rgba(255, 255, 255, 0.1)", borderRadius: "16px", padding: "clamp(1rem, min(4vw, 4vh), 3rem)", display: "flex", flexDirection: "column", justifyContent: "flex-end", transition: "all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)", transform, opacity, zIndex, filter, boxShadow: isActive ? "0 30px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(227, 24, 45, 0.2)" : "0 10px 30px rgba(0,0,0,0.5)", transformStyle: "preserve-3d", pointerEvents: isActive ? "all" : "none" }}>
+    <div style={{ position: "absolute", top: "10%", left: 0, right: 0, margin: "0 auto", width: "clamp(280px, min(90vw, 90vh), 600px)", height: "clamp(220px, min(50vw, 50vh), 380px)", background: img
+      ? `linear-gradient(var(--insight-overlay-1, rgba(11, 11, 11, 0.4)), var(--insight-overlay-2, rgba(11, 11, 11, 0.95))), url(${img}) center/cover`
+      : 'linear-gradient(var(--insight-overlay-1, rgba(11, 11, 11, 0.4)), var(--insight-overlay-2, rgba(11, 11, 11, 0.95)))', backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", border: isActive ? "1px solid rgba(227, 24, 45, 0.5)" : "1px solid rgba(255, 255, 255, 0.1)", borderRadius: "16px", padding: "clamp(1rem, min(4vw, 4vh), 3rem)", display: "flex", flexDirection: "column", justifyContent: "flex-end", transition: "all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)", transform, opacity, zIndex, filter, boxShadow: isActive ? "0 30px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(227, 24, 45, 0.2)" : "0 10px 30px rgba(0,0,0,0.5)", transformStyle: "preserve-3d", pointerEvents: isActive ? "all" : "none" }}>
       <div style={{ transform: "translateZ(30px)", transition: "transform 0.8s ease" }}>
         <span style={{ display: "inline-block", fontFamily: "monospace", fontSize: "clamp(0.6rem, 2vmin, 0.8rem)", color: isActive ? "var(--accent)" : "rgba(255,255,255,0.5)", letterSpacing: "0.2em", marginBottom: "clamp(0.5rem, 2vh, 1rem)", textTransform: "uppercase", transition: "all 0.5s ease" }}>{category}</span>
         <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "clamp(1.1rem, 5vmin, 2.2rem)", marginBottom: "clamp(0.5rem, 2vh, 1.5rem)", color: "#fff", lineHeight: "1.2", textShadow: "0 4px 20px rgba(0,0,0,0.8)" }}>{title}</h3>
