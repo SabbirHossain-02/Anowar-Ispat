@@ -3,19 +3,28 @@ import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useContent } from '../lib/content';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const events = [
-  { id:0, slug:'strategic-expansion-ceremony-2026', cat:'Corporate', color:'#E3182D', catBg:'rgba(227,24,45,0.12)', title:'Strategic Expansion Announcement Ceremony', date:'June 16, 2026', photos:48, imgBg:'rgba(227,24,45,0.15)' },
-  { id:1, slug:'national-steel-excellence-award-ceremony', cat:'Awards', color:'#3b82f6', catBg:'rgba(59,130,246,0.12)', title:'National Steel Excellence Award Ceremony 2026', date:'June 8, 2026', photos:32, imgBg:'rgba(59,130,246,0.12)' },
-  { id:2, slug:'500w-tmt-bar-launch-event', cat:'Product Launch', color:'#22c55e', catBg:'rgba(34,197,94,0.12)', title:'500W TMT Bar Official Launch Event', date:'May 28, 2026', photos:24, imgBg:'rgba(34,197,94,0.12)' },
-  { id:3, slug:'narayanganj-rolling-mill-commissioning', cat:'Factory', color:'#eab308', catBg:'rgba(234,179,8,0.12)', title:'Narayanganj Rolling Mill Commissioning', date:'April 20, 2026', photos:40, imgBg:'rgba(234,179,8,0.12)' },
-  { id:4, slug:'scholarship-distribution-ceremony-2026', cat:'CSR', color:'#a855f7', catBg:'rgba(168,85,247,0.12)', title:'Scholarship Distribution Ceremony 2026', date:'May 2026', photos:18, imgBg:'rgba(168,85,247,0.12)' },
-  { id:5, slug:'48th-anniversary-gala-2026', cat:'Corporate', color:'#ec4899', catBg:'rgba(236,72,153,0.12)', title:'48th Anniversary Celebration Gala', date:'April 2026', photos:28, imgBg:'rgba(236,72,153,0.08)' },
-  { id:6, slug:'free-medical-camp-narayanganj', cat:'CSR', color:'#22c55e', catBg:'rgba(34,197,94,0.12)', title:'Free Medical Camp — Narayanganj District', date:'March 2026', photos:22, imgBg:'rgba(34,197,94,0.08)' },
-  { id:7, slug:'bgmea-partnership-signing-ceremony', cat:'Corporate', color:'#E3182D', catBg:'rgba(227,24,45,0.12)', title:'BGMEA Partnership Signing Ceremony', date:'March 18, 2026', photos:15, imgBg:'rgba(227,24,45,0.08)' },
-];
+// রঙগুলো সাজসজ্জা, JSON এ যায় না — কোডে থেকে ক্রম অনুযায়ী বসে
+const TONES = ['#E3182D', '#3b82f6', '#22c55e', '#eab308', '#a855f7', '#ec4899'];
+const tone = (i) => TONES[i % TONES.length];
+
+// অ্যাডমিন কিছু না বদলালে এগুলোই দেখা যায়
+const DEFAULTS = {
+    hero: { tag: 'Visual Stories', title: 'Event', accent: 'Gallery' },
+    events: [
+  { id:0, slug:'strategic-expansion-ceremony-2026', cat:'Corporate',title:'Strategic Expansion Announcement Ceremony', date:'June 16, 2026', photos:48, imgBg:'rgba(227,24,45,0.15)' },
+  { id:1, slug:'national-steel-excellence-award-ceremony', cat:'Awards',title:'National Steel Excellence Award Ceremony 2026', date:'June 8, 2026', photos:32, imgBg:'rgba(59,130,246,0.12)' },
+  { id:2, slug:'500w-tmt-bar-launch-event', cat:'Product Launch',title:'500W TMT Bar Official Launch Event', date:'May 28, 2026', photos:24, imgBg:'rgba(34,197,94,0.12)' },
+  { id:3, slug:'narayanganj-rolling-mill-commissioning', cat:'Factory',title:'Narayanganj Rolling Mill Commissioning', date:'April 20, 2026', photos:40, imgBg:'rgba(234,179,8,0.12)' },
+  { id:4, slug:'scholarship-distribution-ceremony-2026', cat:'CSR',title:'Scholarship Distribution Ceremony 2026', date:'May 2026', photos:18, imgBg:'rgba(168,85,247,0.12)' },
+  { id:5, slug:'48th-anniversary-gala-2026', cat:'Corporate',title:'48th Anniversary Celebration Gala', date:'April 2026', photos:28, imgBg:'rgba(236,72,153,0.08)' },
+  { id:6, slug:'free-medical-camp-narayanganj', cat:'CSR',title:'Free Medical Camp — Narayanganj District', date:'March 2026', photos:22, imgBg:'rgba(34,197,94,0.08)' },
+  { id:7, slug:'bgmea-partnership-signing-ceremony', cat:'Corporate',title:'BGMEA Partnership Signing Ceremony', date:'March 18, 2026', photos:15, imgBg:'rgba(227,24,45,0.08)' },
+],
+};
 
 const ImgSlot = ({ bg, iconSize = 36 }) => (
   <div style={{ position:'absolute', inset:0, background:bg, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'8px' }}>
@@ -40,6 +49,7 @@ const FeaturedGrid = ({ imgBg, photos }) => (
 
 const MediaEventsPage = () => {
   const containerRef = useRef(null);
+  const c = useContent('media-events', DEFAULTS);
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('All');
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -65,8 +75,8 @@ const MediaEventsPage = () => {
   }, { scope:containerRef });
 
   const categories = ['All','Corporate','Product Launch','CSR','Awards','Factory'];
-  const featured = events[0];
-  const filtered = events.slice(1).filter(e => activeCategory === 'All' || e.cat === activeCategory);
+  const featured = c.events[0];
+  const filtered = c.events.slice(1).filter(e => activeCategory === 'All' || e.cat === activeCategory);
 
   const secLabel = (text) => (
     <div className="me-fade" data-delay="0" style={{ fontSize:'10px', letterSpacing:'3px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'20px', display:'flex', alignItems:'center', gap:'12px', opacity:0, transform:'translateY(20px)' }}>
@@ -80,9 +90,9 @@ const MediaEventsPage = () => {
       <section style={{ padding:isMobile?'32px 24px 32px':'40px 40px 36px', borderBottom:'1px solid var(--glass-border)', position:'relative', overflow:'hidden', textAlign:'center' }}>
         <div style={{ position:'absolute', bottom:0, left:'50%', transform:'translateX(-50%)', width:'600px', height:'220px', background:'radial-gradient(ellipse, rgba(227,24,45,0.12) 0%, transparent 70%)', pointerEvents:'none' }}/>
         <div style={{ maxWidth:'860px', margin:'0 auto' }}>
-          <div className="me-hero-tag" style={{ fontSize:'10px', letterSpacing:'4px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'14px', opacity:0 }}>Visual Stories</div>
+          <div className="me-hero-tag" style={{ fontSize:'10px', letterSpacing:'4px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'14px', opacity:0 }}>{c.hero.tag}</div>
           <h1 className="me-hero-title" style={{ fontSize:'clamp(30px,5vw,52px)', fontWeight:900, lineHeight:1.05, textTransform:'uppercase', letterSpacing:'-1px', marginBottom:'16px', opacity:0, fontFamily:'var(--font-heading)' }}>
-            Event <span style={{ color:'var(--accent)' }}>Gallery</span>
+            {c.hero.title} <span style={{ color:'var(--accent)' }}>{c.hero.accent}</span>
           </h1>
           <p className="me-hero-sub" style={{ fontSize:isMobile?'13px':'15px', color:'var(--subtext)', maxWidth:'480px', margin:'0 auto 24px', lineHeight:1.8, opacity:0 }}>
             Behind the scenes of Anwar Ispat corporate events, product launches, CSR programs and factory milestones.
@@ -140,8 +150,8 @@ const MediaEventsPage = () => {
               onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(227,24,45,0.35)'; e.currentTarget.style.transform='translateY(-3px)'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor='var(--glass-border)'; e.currentTarget.style.transform='translateY(0)'; }}>
               <div style={{ position:'relative', aspectRatio:'4/3' }}>
-                <ImgSlot bg={ev.imgBg} iconSize={32} />
-                <span style={{ position:'absolute', top:'10px', left:'10px', background:ev.catBg, color:ev.color, border:'1px solid rgba(255,255,255,0.1)', fontSize:'9px', letterSpacing:'1.5px', textTransform:'uppercase', padding:'3px 8px', borderRadius:'3px', fontWeight:700 }}>{ev.cat}</span>
+                <ImgSlot bg={tone(i)+'26'} iconSize={32} />
+                <span style={{ position:'absolute', top:'10px', left:'10px', background:tone(i)+'1f', color:tone(i), border:'1px solid rgba(255,255,255,0.1)', fontSize:'9px', letterSpacing:'1.5px', textTransform:'uppercase', padding:'3px 8px', borderRadius:'3px', fontWeight:700 }}>{ev.cat}</span>
                 <div style={{ position:'absolute', bottom:'8px', right:'8px', background:'rgba(0,0,0,0.65)', color:'#fff', fontSize:'9px', padding:'3px 8px', borderRadius:'3px' }}>{ev.photos} Photos</div>
               </div>
               <div style={{ padding:'14px 16px 18px', flex:1, display:'flex', flexDirection:'column' }}>

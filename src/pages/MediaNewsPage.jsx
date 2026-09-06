@@ -6,6 +6,17 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import PageBanner from '../components/PageBanner';
 import { articleSlug, excerpt, readTime, fetchNews } from '../lib/news';
+import { useContent } from '../lib/content';
+
+// অ্যাডমিন কিছু না বদলালে এগুলোই দেখা যায়। খবরগুলো নিজে আসে
+// Media & Events সেকশন থেকে।
+const DEFAULTS = {
+    banner: { image: '/latest-news-banner.jpg', label: 'MEDIA CENTER', title: 'Latest', accent: 'News' },
+    lead: 'LEAD STORY',
+    more: 'MORE STORIES',
+    ticker: 'LATEST',
+    empty: 'No stories have been published in this section yet.',
+};
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -25,6 +36,7 @@ const MediaNewsPage = () => {
     const [loading, setLoading] = useState(true);
     const [failed, setFailed] = useState(false);
     const [active, setActive] = useState('All');
+    const c = useContent('media-news', DEFAULTS);
 
     useEffect(() => {
         let cancelled = false;
@@ -69,10 +81,10 @@ const MediaNewsPage = () => {
             style={{ background: 'var(--primary)', color: 'var(--text)', minHeight: '100vh', overflowX: 'hidden' }}
         >
             <PageBanner
-                image="/latest-news-banner.jpg"
-                label="MEDIA CENTER"
-                title="Latest"
-                accent="News"
+                image={c.banner.image}
+                label={c.banner.label}
+                title={c.banner.title}
+                accent={c.banner.accent}
                 crumbs={[
                     { label: 'Home', to: '/' },
                     { label: 'Media Center' },
@@ -84,7 +96,7 @@ const MediaNewsPage = () => {
                 ডেটাবেস থেকেই, বানানো নয় */}
             {posts.length > 0 && (
                 <div className="nw-ticker">
-                    <span className="nw-ticker-tag">LATEST</span>
+                    <span className="nw-ticker-tag">{c.ticker}</span>
                     <div className="nw-ticker-track">
                         <div ref={tickerRef} className="nw-ticker-run">
                             {[0, 1].map((copy) => (
@@ -110,14 +122,16 @@ const MediaNewsPage = () => {
                 {/* বিভাগ বাছাই কেবল তখনই, যখন একাধিক বিভাগ সত্যিই আছে */}
                 {categories.length > 0 && (
                     <div className="nw-filters">
-                        {categories.map((c) => (
+                        {/* cat, c নয় — c এই কম্পোনেন্টে পাতার লেখা ধরে
+                            রাখে, এখানে ঢেকে দিলে পরে ভুল হত */}
+                        {categories.map((cat) => (
                             <button
-                                key={c}
+                                key={cat}
                                 type="button"
-                                className={c === active ? 'nw-filter is-on' : 'nw-filter'}
-                                onClick={() => setActive(c)}
+                                className={cat === active ? 'nw-filter is-on' : 'nw-filter'}
+                                onClick={() => setActive(cat)}
                             >
-                                {c}
+                                {cat}
                             </button>
                         ))}
                     </div>
@@ -132,13 +146,13 @@ const MediaNewsPage = () => {
                 )}
 
                 {!loading && !failed && shown.length === 0 && (
-                    <p className="nw-note">No stories have been published in this section yet.</p>
+                    <p className="nw-note">{c.empty}</p>
                 )}
 
                 {lead && (
                     <>
                         <div className="nw-rule nw-reveal">
-                            <span>LEAD STORY</span>
+                            <span>{c.lead}</span>
                         </div>
 
                         <article className="nw-lead nw-reveal" onClick={() => open(lead)}>
@@ -167,7 +181,7 @@ const MediaNewsPage = () => {
                 {rest.length > 0 && (
                     <>
                         <div className="nw-rule nw-reveal">
-                            <span>MORE STORIES</span>
+                            <span>{c.more}</span>
                         </div>
 
                         <div className="nw-grid">

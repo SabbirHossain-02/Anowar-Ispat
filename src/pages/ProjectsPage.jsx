@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import PageBanner from '../components/PageBanner';
+import { useContent } from '../lib/content';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -16,7 +17,13 @@ const CONTAINER = {
 
 // স্লাইডের প্রজেক্টগুলো। ছবি থেকে স্লাইডের লেখা কেটে ফেলা হয়েছে,
 // তাই নামটা এখানে টাইপ হিসেবে বসে — ছবির ভেতরে আঁকা নয়।
-const PROJECTS = [
+// অ্যাডমিন কিছু না বদলালে এগুলোই দেখা যায়
+const DEFAULTS = {
+    banner: { image: '/gallery-banner.jpg', label: 'PROJECT GALLERY', title: 'Built with', accent: 'Anwar Ispat' },
+    eyebrow: 'PROJECT GALLERY',
+    title: 'Twelve structures the country depends on',
+    lead: 'Bridges, expressways, ports and power — each one carrying rebar rolled at our mill. Select any project to see it full size.',
+    items: [
     { img: '/padma-bridge.jpg', name: 'Padma Multipurpose Bridge', kind: 'Bridge' },
     { img: '/airport-terminal-3.jpg', name: 'Hazrat Shahjalal International Airport Terminal-3', kind: 'Building' },
     { img: '/rooppur-power-plant.jpg', name: 'Rooppur Nuclear Power Plant', kind: 'Energy' },
@@ -29,10 +36,13 @@ const PROJECTS = [
     { img: '/jatrabari-flyover.jpg', name: 'Jatrabari Flyover', kind: 'Flyover' },
     { img: '/city-centre.jpg', name: 'City Center', kind: 'Building' },
     { img: '/banani-bridge.jpg', name: 'Banani Bridge', kind: 'Bridge' },
-];
+],
+};
 
 const ProjectsPage = () => {
     const rootRef = useRef(null);
+    const c = useContent('projects', DEFAULTS);
+    const PROJECTS = c.items;
     const [open, setOpen] = useState(null);
 
     useGSAP(() => {
@@ -74,10 +84,10 @@ const ProjectsPage = () => {
             style={{ background: 'var(--primary)', color: 'var(--text)', minHeight: '100vh', overflowX: 'hidden' }}
         >
             <PageBanner
-                image="/gallery-banner.jpg"
-                label="PROJECT GALLERY"
-                title="Built with"
-                accent="Anwar Ispat"
+                image={c.banner.image}
+                label={c.banner.label}
+                title={c.banner.title}
+                accent={c.banner.accent}
                 crumbs={[
                     { label: 'Home', to: '/' },
                     { label: 'Landmarks' },
@@ -92,14 +102,9 @@ const ProjectsPage = () => {
                 paddingBottom: 'calc(' + SECTION_PAD + ' * 1.4)',
             }}>
                 <div className="gal-head">
-                    <span className="gal-eyebrow">PROJECT GALLERY</span>
-                    <h2 className="gal-title">
-                        Twelve structures the country depends on
-                    </h2>
-                    <p className="gal-lead">
-                        Bridges, expressways, ports and power — each one carrying rebar rolled at
-                        our mill. Select any project to see it full size.
-                    </p>
+                    <span className="gal-eyebrow">{c.eyebrow}</span>
+                    <h2 className="gal-title">{c.title}</h2>
+                    <p className="gal-lead">{c.lead}</p>
                 </div>
 
                 <div className="gal-grid">

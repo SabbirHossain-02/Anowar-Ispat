@@ -3,20 +3,30 @@ import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useContent } from '../lib/content';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const releases = [
-  { id:0, slug:'strategic-expansion-2026', pr:'PR-2026-001', cat:'Corporate', color:'#E3182D', catBg:'rgba(227,24,45,0.1)', icon:'speakerphone', title:'Anwar Ispat Announces Strategic Expansion and New Product Line Launch for 2026', date:'June 16, 2026', read:'3 min read', imgBg:'rgba(227,24,45,0.15)', featured:true },
-  { id:1, slug:'q1-financial-results-2026', pr:'PR-2026-002', cat:'Financial', color:'#3b82f6', catBg:'rgba(59,130,246,0.1)', icon:'chart-bar', title:'Q1 2026 Financial Results — Record Revenue Growth of 28%', date:'May 30, 2026', read:'4 min read', imgBg:'rgba(59,130,246,0.12)', featured:false },
-  { id:2, slug:'iso-certification-renewal-2026', pr:'PR-2026-003', cat:'Regulatory', color:'#22c55e', catBg:'rgba(34,197,94,0.1)', icon:'certificate', title:'ISO 9001:2015 & BDS Certification Renewal — Quality Assurance Confirmed', date:'May 10, 2026', read:'2 min read', imgBg:'rgba(34,197,94,0.12)', featured:false },
-  { id:3, slug:'narayanganj-rolling-mill-2026', pr:'PR-2026-004', cat:'Operational', color:'#eab308', catBg:'rgba(234,179,8,0.1)', icon:'building-factory', title:'New Rolling Mill Facility Commissioned in Narayanganj Industrial Zone', date:'April 20, 2026', read:'3 min read', imgBg:'rgba(234,179,8,0.12)', featured:false },
-  { id:4, slug:'esg-report-2025', pr:'PR-2026-005', cat:'ESG', color:'#22c55e', catBg:'rgba(34,197,94,0.1)', icon:'leaf', title:'Anwar Ispat ESG Report 2025 Released — Zero Waste Water Policy Achieved', date:'April 5, 2026', read:'5 min read', imgBg:'rgba(34,197,94,0.08)', featured:false },
-  { id:5, slug:'bgmea-partnership-ratified', pr:'PR-2026-006', cat:'Corporate', color:'#E3182D', catBg:'rgba(227,24,45,0.1)', icon:'file-description', title:'Board Resolution: Strategic Partnership with BGMEA Ratified', date:'March 18, 2026', read:'2 min read', imgBg:'rgba(227,24,45,0.08)', featured:false },
-];
+// রঙগুলো সাজসজ্জা, JSON এ যায় না — কোডে থেকে ক্রম অনুযায়ী বসে
+const TONES = ['#E3182D', '#3b82f6', '#22c55e', '#eab308', '#a855f7', '#ec4899'];
+const tone = (i) => TONES[i % TONES.length];
+
+// অ্যাডমিন কিছু না বদলালে এগুলোই দেখা যায়
+const DEFAULTS = {
+    hero: { tag: 'Official Statements', title: 'Press', accent: 'Releases' },
+    releases: [
+  { id:0, slug:'strategic-expansion-2026', pr:'PR-2026-001', cat:'Corporate',icon:'speakerphone', title:'Anwar Ispat Announces Strategic Expansion and New Product Line Launch for 2026', date:'June 16, 2026', read:'3 min read',featured:true },
+  { id:1, slug:'q1-financial-results-2026', pr:'PR-2026-002', cat:'Financial',icon:'chart-bar', title:'Q1 2026 Financial Results — Record Revenue Growth of 28%', date:'May 30, 2026', read:'4 min read',featured:false },
+  { id:2, slug:'iso-certification-renewal-2026', pr:'PR-2026-003', cat:'Regulatory',icon:'certificate', title:'ISO 9001:2015 & BDS Certification Renewal — Quality Assurance Confirmed', date:'May 10, 2026', read:'2 min read',featured:false },
+  { id:3, slug:'narayanganj-rolling-mill-2026', pr:'PR-2026-004', cat:'Operational',icon:'building-factory', title:'New Rolling Mill Facility Commissioned in Narayanganj Industrial Zone', date:'April 20, 2026', read:'3 min read',featured:false },
+  { id:4, slug:'esg-report-2025', pr:'PR-2026-005', cat:'ESG',icon:'leaf', title:'Anwar Ispat ESG Report 2025 Released — Zero Waste Water Policy Achieved', date:'April 5, 2026', read:'5 min read',featured:false },
+  { id:5, slug:'bgmea-partnership-ratified', pr:'PR-2026-006', cat:'Corporate',icon:'file-description', title:'Board Resolution: Strategic Partnership with BGMEA Ratified', date:'March 18, 2026', read:'2 min read',featured:false },
+],
+};
 
 const MediaPressPage = () => {
   const containerRef = useRef(null);
+  const c = useContent('media-press', DEFAULTS);
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('All');
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -44,8 +54,8 @@ const MediaPressPage = () => {
   }, { scope:containerRef });
 
   const categories = ['All','Corporate','Financial','Regulatory','Operational','ESG'];
-  const featured = releases[0];
-  const filtered = releases.slice(1).filter(r => activeCategory === 'All' || r.cat === activeCategory);
+  const featured = c.releases[0];
+  const filtered = c.releases.slice(1).filter(r => activeCategory === 'All' || r.cat === activeCategory);
 
   const secLabel = (text) => (
     <div className="mp-fade" data-delay="0" style={{ fontSize:'10px', letterSpacing:'3px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'20px', display:'flex', alignItems:'center', gap:'12px', opacity:0, transform:'translateY(20px)' }}>
@@ -60,9 +70,9 @@ const MediaPressPage = () => {
       <section style={{ padding:isMobile?'32px 24px 32px':'40px 40px 36px', borderBottom:'1px solid var(--glass-border)', position:'relative', overflow:'hidden', textAlign:'center' }}>
         <div style={{ position:'absolute', bottom:0, left:'50%', transform:'translateX(-50%)', width:'600px', height:'220px', background:'radial-gradient(ellipse, rgba(227,24,45,0.12) 0%, transparent 70%)', pointerEvents:'none' }}/>
         <div style={{ maxWidth:'860px', margin:'0 auto' }}>
-          <div className="mp-hero-tag" style={{ fontSize:'10px', letterSpacing:'4px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'14px', opacity:0 }}>Official Statements</div>
+          <div className="mp-hero-tag" style={{ fontSize:'10px', letterSpacing:'4px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'14px', opacity:0 }}>{c.hero.tag}</div>
           <h1 className="mp-hero-title" style={{ fontSize:'clamp(30px,5vw,52px)', fontWeight:900, lineHeight:1.05, textTransform:'uppercase', letterSpacing:'-1px', marginBottom:'16px', opacity:0, fontFamily:'var(--font-heading)' }}>
-            Press <span style={{ color:'var(--accent)' }}>Releases</span> &<br/>Announcements
+            {c.hero.title} <span style={{ color:'var(--accent)' }}>{c.hero.accent}</span> &<br/>Announcements
           </h1>
           <p className="mp-hero-sub" style={{ fontSize:isMobile?'13px':'15px', color:'var(--subtext)', maxWidth:'500px', margin:'0 auto 24px', lineHeight:1.8, opacity:0 }}>
             Official statements, corporate declarations and announcements from Anwar Ispat board of directors.
@@ -132,14 +142,14 @@ const MediaPressPage = () => {
               style={{ borderRadius:'10px', padding:'16px 20px', cursor:'pointer', display:'flex', alignItems:'center', gap:'16px', background:'var(--glass)', border:'1px solid var(--glass-border)', transition:'all 0.2s', opacity:0, transform:'translateX(-20px)' }}
               onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(227,24,45,0.35)'; e.currentTarget.style.background='rgba(227,24,45,0.03)'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor='var(--glass-border)'; e.currentTarget.style.background='var(--glass)'; }}>
-              <div style={{ width:'44px', height:'44px', borderRadius:'10px', background:r.catBg, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={r.color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <div style={{ width:'44px', height:'44px', borderRadius:'10px', background:tone(i)+'1a', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={tone(i)} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
                 </svg>
               </div>
               <div style={{ flex:1, minWidth:0 }}>
                 <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'6px', flexWrap:'wrap' }}>
-                  <span style={{ fontSize:'9px', letterSpacing:'1.5px', textTransform:'uppercase', color:r.color, fontWeight:700 }}>{r.cat}</span>
+                  <span style={{ fontSize:'9px', letterSpacing:'1.5px', textTransform:'uppercase', color:tone(i), fontWeight:700 }}>{r.cat}</span>
                   <span style={{ fontSize:'9px', color:'var(--subtext)', opacity:0.5 }}>{r.pr}</span>
                 </div>
                 <div style={{ fontSize:'12px', fontWeight:700, textTransform:'uppercase', letterSpacing:'-0.2px', lineHeight:1.35 }}>{r.title}</div>

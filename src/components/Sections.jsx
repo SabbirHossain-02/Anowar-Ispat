@@ -6,10 +6,62 @@ import { useGSAP } from "@gsap/react";
 import { Canvas } from "@react-three/fiber";
 import ForgeThread3D from "./three/ForgeThread3D";
 import CoreStrengths3D from "./three/CoreStrengths3D";
+import { useContent } from "../lib/content";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 // Static export kept empty — real data comes from API inside ProductService
+// হোমপেজের সব সেকশন একই পাতার অংশ, তাই একটিই DEFAULTS
+const HOME_DEFAULTS = {
+    about: {
+        aTitle: 'BUILDING A LEGACY OF',
+        aAccent: 'STEEL.',
+        aQuote: "Our foundation isn't just laid in concrete; it's forged in unwavering commitment and intense heat. We started with a vision to build the unbuildable.",
+        bTitle: 'ENGINEERING THE NEXT',
+        bAccent: 'CENTURY.',
+        bQuote: "We don't just supply materials; we engineer the resilience required to propel Bangladesh into the forefront of monumental construction.",
+    },
+    why: {
+        eyebrow: 'THE FORGED PATH',
+        title: 'WHY CHOOSE US?',
+        items: [
+    {
+      title: "190+ YEARS OF LEGACY",
+      desc: "Part of the prestigious Anwar Group, building trust in Bangladesh since 1834.",
+    },
+    {
+      title: "EUROPEAN TECHNOLOGY",
+      desc: "The only manufacturer in Bangladesh using patented TMT technology from Belgium for superior reinforcement.",
+    },
+    {
+      title: "PIONEER IN INNOVATION",
+      desc: "The trailblazer in the Bangladesh steel industry, being the first to introduce 60-Grade reinforcement bars to the country.",
+    },
+    {
+      title: "EARTHQUAKE RESISTANT",
+      desc: "Engineered with a high TS/YS ratio for maximum ductility, meeting strict BNBC and ACI safety codes.",
+    },
+    {
+      title: "PRECISION QUALITY",
+      desc: "Every batch is tested via Spectrometer (28-element analysis) to ensure 100% compliance with BSTI and ISO standards.",
+    },
+    {
+      title: "NATION BUILDER",
+      desc: "A proven partner for Bangladesh's iconic mega-projects and thousands of individual homes.",
+    },
+        ],
+    },
+    projects: { title: 'MEGA', accent: 'PROJECTS' },
+    media: { title: 'NEWS DESK' },
+    blog: { title: 'INSIGHTS & INNOVATIONS' },
+    footer: { tagline: "Unrelenting strength. Uncompromising quality. The structural backbone of tomorrow's infrastructure." },
+};
+
+// আইকন ও দিক JSON এ যায় না — কোডে থেকে ক্রম অনুযায়ী বসে
+const MS_ICONS = [History, Globe, Zap, Shield, Target, Building2];
+const msIcon = (i) => MS_ICONS[i % MS_ICONS.length];
+const msAlign = (i) => (i % 2 === 0 ? 'left' : 'right');
+
 export const products = [];
 
 export const ProductService = () => {
@@ -286,6 +338,7 @@ export const ProductService = () => {
 };
 
 export const AboutUs = () => {
+  const home = useContent('home', HOME_DEFAULTS);
   const sectionRef = useRef(null);
   const containerRef = useRef(null);
   const textRef1 = useRef(null);
@@ -426,9 +479,8 @@ export const AboutUs = () => {
                   textTransform: "uppercase",
                 }}
               >
-                BUILDING A <br />
-                LEGACY OF <br />
-                <span className="accent-text">STEEL.</span>
+                {home.about.aTitle}{" "}
+                <span className="accent-text">{home.about.aAccent}</span>
               </h2>
               <p
                 style={{
@@ -441,9 +493,7 @@ export const AboutUs = () => {
                   fontStyle: "italic",
                 }}
               >
-                "Our foundation isn't just laid in concrete; it's forged in
-                unwavering commitment and intense heat. We started with a vision
-                to build the unbuildable."
+                {home.about.aQuote}
               </p>
               <h4
                 style={{
@@ -485,9 +535,8 @@ export const AboutUs = () => {
                   textTransform: "uppercase",
                 }}
               >
-                ENGINEERING <br />
-                THE NEXT <br />
-                <span className="accent-text">CENTURY.</span>
+                {home.about.bTitle}{" "}
+                <span className="accent-text">{home.about.bAccent}</span>
               </h2>
               <p
                 style={{
@@ -500,9 +549,7 @@ export const AboutUs = () => {
                   fontStyle: "italic",
                 }}
               >
-                "We don't just supply materials; we engineer the resilience
-                required to propel Bangladesh into the forefront of monumental
-                infrastructure."
+                {home.about.bQuote}
               </p>
               <h4
                 style={{
@@ -745,48 +792,13 @@ const MilestoneCard = ({ index, title, desc, icon: Icon, align, isVisible }) => 
 };
 
 export const WhyChooseUs = () => {
+  const home = useContent('home', HOME_DEFAULTS);
   const sectionRef = useRef(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [visibleMilestones, setVisibleMilestones] = useState([]);
 
-  const milestones = [
-    {
-      title: "190+ YEARS OF LEGACY",
-      desc: "Part of the prestigious Anwar Group, building trust in Bangladesh since 1834.",
-      icon: History,
-      align: "left"
-    },
-    {
-      title: "EUROPEAN TECHNOLOGY",
-      desc: "The only manufacturer in Bangladesh using patented TMT technology from Belgium for superior reinforcement.",
-      icon: Globe,
-      align: "right"
-    },
-    {
-      title: "PIONEER IN INNOVATION",
-      desc: "The trailblazer in the Bangladesh steel industry, being the first to introduce 60-Grade reinforcement bars to the country.",
-      icon: Zap,
-      align: "left"
-    },
-    {
-      title: "EARTHQUAKE RESISTANT",
-      desc: "Engineered with a high TS/YS ratio for maximum ductility, meeting strict BNBC and ACI safety codes.",
-      icon: Shield,
-      align: "right"
-    },
-    {
-      title: "PRECISION QUALITY",
-      desc: "Every batch is tested via Spectrometer (28-element analysis) to ensure 100% compliance with BSTI and ISO standards.",
-      icon: Target,
-      align: "left"
-    },
-    {
-      title: "NATION BUILDER",
-      desc: "A proven partner for Bangladesh's iconic mega-projects and thousands of individual homes.",
-      icon: Building2,
-      align: "right"
-    }
-  ];
+  const milestones = home.why.items;
+;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -868,10 +880,10 @@ export const WhyChooseUs = () => {
 
       <div style={{ textAlign: 'center', marginBottom: '8rem', position: 'relative', zIndex: 10 }}>
         <p style={{ fontFamily: 'monospace', color: 'var(--accent)', letterSpacing: '0.15em', marginBottom: '1rem', fontSize: '0.9rem' }}>
-          THE FORGED PATH
+          {home.why.eyebrow}
         </p>
         <h2 style={{ fontSize: 'clamp(3rem, 6vw, 5rem)', marginBottom: '1.5rem', color: 'var(--text)', lineHeight: 1, textTransform: 'uppercase' }}>
-          WHY CHOOSE US?
+          {home.why.title}
         </h2>
       </div>
 
@@ -1048,6 +1060,7 @@ const BroadcastCard = ({ date, title, desc, img, isHovering, onHover }) => {
 };
 
 export const ProjectShowcase = () => {
+  const home = useContent('home', HOME_DEFAULTS);
   const [selectedProject, setSelectedProject] = React.useState(null);
   const projects = [
     { title: "Padma Bridge", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777390678/Padma_Bridge_fnueme.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777390678/Padma_Bridge_fnueme.jpg", desc: "The Padma Multipurpose Bridge is Bangladesh's largest infrastructure project, spanning 6.15 km over the Padma River. Anwar Ispat supplied high-grade TMT steel rods that form the structural backbone of this historic bridge, connecting 21 southern districts and transforming the lives of over 30 million people." },
@@ -1120,7 +1133,7 @@ export const ProjectShowcase = () => {
           NATION BUILDERS
         </p>
         <h2 style={{ fontSize: "clamp(2.5rem, 5vw, 4.5rem)", color: "var(--text)", lineHeight: 1.1, textTransform: "uppercase", fontFamily: "var(--font-heading)" }}>
-          MEGA <span className="accent-text">PROJECTS</span>
+          {home.projects.title} <span className="accent-text">{home.projects.accent}</span>
         </h2>
       </div>
 
@@ -1165,6 +1178,7 @@ export const ProjectShowcase = () => {
 };
 
 export const MediaEvents = () => {
+  const home = useContent('home', HOME_DEFAULTS);
   const [isHovered, setIsHovered] = useState(false);
 
   // ── API: load media posts from backend ───────────────────────────────────
@@ -1228,7 +1242,7 @@ export const MediaEvents = () => {
         <div className="media-text-content" style={{ flex: "1 1 400px", minWidth: "350px", zIndex: 2 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1.5rem" }}>
             <span style={{ display: "inline-block", width: "12px", height: "12px", background: "var(--accent)", borderRadius: "50%", animation: "blink 2s infinite" }}></span>
-            <p style={{ fontFamily: "monospace", color: "var(--accent)", letterSpacing: "0.2em", fontSize: "0.9rem", margin: 0 }}>NEWS DESK</p>
+            <p style={{ fontFamily: "monospace", color: "var(--accent)", letterSpacing: "0.2em", fontSize: "0.9rem", margin: 0 }}>{home.media.title}</p>
           </div>
           <h2 className="accent-text" style={{ fontSize: "clamp(3rem, 6vw, 5rem)", marginBottom: "1.5rem", lineHeight: "0.9" }}>
             MEDIA &<br />EVENTS
@@ -1338,6 +1352,7 @@ const InsightCarouselCard = ({ category, title, readTime, img, index, currentInd
 };
 
 export const Blog = () => {
+  const home = useContent('home', HOME_DEFAULTS);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const insights = [
@@ -1353,7 +1368,7 @@ export const Blog = () => {
     <section id="blog" style={{ minHeight: "auto", justifyContent: "center", alignItems: "center", background: "var(--bg-section, rgba(11, 11, 11, 0.7))", backdropFilter: "blur(30px)", WebkitBackdropFilter: "blur(30px)", position: "relative", zIndex: 10, padding: "30px 0", overflow: "hidden" }}>
       <div style={{ textAlign: "center", maxWidth: "800px", margin: "0 auto clamp(2rem, 5vh, 4rem) auto", position: "relative", zIndex: 20, padding: "0 5%" }}>
         <p style={{ fontFamily: "monospace", color: "var(--subtext)", letterSpacing: "0.2em", marginBottom: "1rem", fontSize: "0.9rem" }}>[ SYSTEM.ARCHIVES.OPEN ]</p>
-        <h2 style={{ fontSize: "clamp(2.5rem, 5vw, 4.5rem)", color: "#fff", lineHeight: "1.1", textTransform: "uppercase", marginBottom: "1.5rem" }}>INSIGHTS &<br />INNOVATIONS</h2>
+        <h2 style={{ fontSize: "clamp(2.5rem, 5vw, 4.5rem)", color: "#fff", lineHeight: "1.1", textTransform: "uppercase", marginBottom: "1.5rem" }}>{home.blog.title}</h2>
       </div>
 
       <div style={{ position: "relative", height: "clamp(300px, min(60vw, 60vh), 480px)", width: "100%", perspective: "1500px", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -1371,13 +1386,15 @@ export const Blog = () => {
   );
 };
 
-export const Footer = ({ onOpenContact }) => (
+export const Footer = ({ onOpenContact }) => {
+  const home = useContent('home', HOME_DEFAULTS);
+  return (
   <footer style={{ width: "100%", padding: "4rem 10% 2rem 10%", backgroundColor: "var(--primary)", borderTop: "1px solid rgba(255,255,255,0.05)", position: "relative", zIndex: 10 }}>
     <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", gap: "2rem", marginBottom: "4rem" }}>
       <div style={{ flex: "1 1 300px", display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
         <img src="/logo-badge.jpeg" alt="Anwar Ispat Logo" width="200" height="60" style={{ height: "clamp(50px, 8vw, 80px)", width: "auto", objectFit: "contain", objectPosition: "left", marginBottom: "1.5rem", borderRadius: "6px" }} />
         <p style={{ color: "var(--subtext)", fontSize: "0.9rem", lineHeight: "1.6", maxWidth: "300px" }}>
-          Unrelenting strength. Uncompromising quality. The structural backbone of tomorrow's infrastructure.
+          {home.footer.tagline}
         </p>
         <button onClick={onOpenContact} className="magnetic-btn" style={{ fontSize: "0.8rem", padding: "0.8rem 1.5rem" }}>CONTACT US</button>
       </div>
@@ -1415,7 +1432,8 @@ export const Footer = ({ onOpenContact }) => (
       </div>
     </div>
   </footer>
-);
+  );
+};
 
 export const CoreStrengths = () => {
   const sectionRef = useRef(null);
