@@ -2,11 +2,24 @@ import React, { useRef, useState, useEffect } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useContent } from '../lib/content';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// অ্যাডমিন কিছু না বদলালে এগুলোই দেখা যায়
+const DEFAULTS = {
+  hero: {
+    tag: 'Get In Touch',
+    title: 'Contact',
+    accent: 'Form',
+    promise: 'Within 24 Hours',
+    promiseNote: 'Response time',
+  },
+};
+
 const ContactFormPage = () => {
   const containerRef = useRef(null);
+  const c = useContent('contact-form', DEFAULTS);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [form, setForm] = useState({ name:'', company:'', email:'', phone:'', subject:'Product Inquiry', message:'' });
   const [sent, setSent] = useState(false);
@@ -31,14 +44,14 @@ const ContactFormPage = () => {
         {/* COMPACT HEADER */}
         <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', marginBottom:'32px', paddingBottom:'24px', borderBottom:'1px solid var(--glass-border)', flexWrap:'wrap', gap:'12px' }}>
           <div>
-            <div style={{ fontSize:'10px', letterSpacing:'4px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'6px' }}>Get In Touch</div>
+            <div style={{ fontSize:'10px', letterSpacing:'4px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'6px' }}>{c.hero.tag}</div>
             <h1 style={{ fontSize:'clamp(28px,4vw,48px)', fontWeight:900, textTransform:'uppercase', letterSpacing:'-1px', lineHeight:1, fontFamily:'var(--font-heading)' }}>
-              Contact <span style={{ color:'var(--accent)' }}>Form</span>
+              {c.hero.title} <span style={{ color:'var(--accent)' }}>{c.hero.accent}</span>
             </h1>
           </div>
           <div style={{ textAlign:'right' }}>
-            <div style={{ fontSize:'12px', color:'var(--accent)', fontWeight:700 }}>Within 24 Hours</div>
-            <div style={{ fontSize:'10px', color:'var(--subtext)', marginTop:'2px' }}>Response time</div>
+            <div style={{ fontSize:'12px', color:'var(--accent)', fontWeight:700 }}>{c.hero.promise}</div>
+            <div style={{ fontSize:'10px', color:'var(--subtext)', marginTop:'2px' }}>{c.hero.promiseNote}</div>
           </div>
         </div>
 

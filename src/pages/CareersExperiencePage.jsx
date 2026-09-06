@@ -2,33 +2,41 @@ import React, { useRef, useEffect } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useContent } from '../lib/content';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const values = [
-  { color:'#E3182D', bg:'rgba(227,24,45,0.08)', border:'rgba(227,24,45,0.2)', title:'Integrity', text:'Highest ethical standards in every interaction and decision we make.' },
-  { color:'#3b82f6', bg:'rgba(59,130,246,0.08)', border:'rgba(59,130,246,0.2)', title:'Teamwork', text:'Collaboration and mutual respect drive our collective success every day.' },
-  { color:'#22c55e', bg:'rgba(34,197,94,0.08)', border:'rgba(34,197,94,0.2)', title:'Excellence', text:'The highest quality in every product, process, and service we deliver.' },
-];
+// রঙগুলো সাজসজ্জা, JSON এ যায় না — কোডে থেকে ক্রম অনুযায়ী বসে
+const TONES = ['#E3182D', '#3b82f6', '#22c55e', '#eab308', '#a855f7', '#ec4899'];
+const tone = (i) => TONES[i % TONES.length];
 
-const perks = [
-  { color:'#E3182D', title:'Competitive Salary', text:'Market-leading pay with annual performance bonuses.' },
-  { color:'#3b82f6', title:'Healthcare Coverage', text:'Medical insurance for employees and their families.' },
-  { color:'#22c55e', title:'Career Growth', text:'Structured training and clear promotion pathways.' },
-  { color:'#eab308', title:'Transport Facility', text:'Company-provided transport for all staff.' },
-  { color:'#a855f7', title:'Provident Fund', text:'Employer-matched fund and gratuity benefits.' },
-  { color:'#ec4899', title:'Generous Leave', text:'Annual, medical, and festival leave entitlements.' },
-];
-
-const stories = [
-  { name:'Md. Rafiqul Islam', role:'Senior Engineer', years:'8 Years', color:'#3b82f6', avatarBg:'rgba(59,130,246,0.12)', img:'/images/employee-rafiqul.jpg', quote:'Anwar Ispat gave me the platform to grow from a junior engineer to leading a team of 20. The mentorship and culture here is truly unmatched.' },
-  { name:'Nusrat Jahan', role:'HR Manager', years:'5 Years', color:'#ec4899', avatarBg:'rgba(236,72,153,0.12)', img:'/images/employee-nusrat.jpg', quote:'The culture here genuinely values people. I have grown both professionally and personally since joining Anwar Ispat five years ago.' },
-  { name:'Karim Ahmed', role:'Production Supervisor', years:'12 Years', color:'#22c55e', avatarBg:'rgba(34,197,94,0.12)', img:'/images/employee-karim.jpg', quote:'12 years at Anwar Ispat and I still look forward to every day at work. This company truly invests in its people and their futures.' },
-  { name:'Fatema Begum', role:'Finance Manager', years:'6 Years', color:'#eab308', avatarBg:'rgba(234,179,8,0.12)', img:'/images/employee-fatema.jpg', quote:'The opportunities for growth here are exceptional. I started as a junior analyst and now lead the entire finance team for the group.' },
-];
+// অ্যাডমিন কিছু না বদলালে এগুলোই দেখা যায়
+const DEFAULTS = {
+    hero: { tag: 'Life at Anwar Ispat', title: 'Employee', accent: 'Experience' },
+    values: [
+  {title:'Integrity', text:'Highest ethical standards in every interaction and decision we make.' },
+  {title:'Teamwork', text:'Collaboration and mutual respect drive our collective success every day.' },
+  {title:'Excellence', text:'The highest quality in every product, process, and service we deliver.' },
+],
+    perks: [
+  {title:'Competitive Salary', text:'Market-leading pay with annual performance bonuses.' },
+  {title:'Healthcare Coverage', text:'Medical insurance for employees and their families.' },
+  {title:'Career Growth', text:'Structured training and clear promotion pathways.' },
+  {title:'Transport Facility', text:'Company-provided transport for all staff.' },
+  {title:'Provident Fund', text:'Employer-matched fund and gratuity benefits.' },
+  {title:'Generous Leave', text:'Annual, medical, and festival leave entitlements.' },
+],
+    stories: [
+  { name:'Md. Rafiqul Islam', role:'Senior Engineer', years:'8 Years',img:'/images/employee-rafiqul.jpg', quote:'Anwar Ispat gave me the platform to grow from a junior engineer to leading a team of 20. The mentorship and culture here is truly unmatched.' },
+  { name:'Nusrat Jahan', role:'HR Manager', years:'5 Years',img:'/images/employee-nusrat.jpg', quote:'The culture here genuinely values people. I have grown both professionally and personally since joining Anwar Ispat five years ago.' },
+  { name:'Karim Ahmed', role:'Production Supervisor', years:'12 Years',img:'/images/employee-karim.jpg', quote:'12 years at Anwar Ispat and I still look forward to every day at work. This company truly invests in its people and their futures.' },
+  { name:'Fatema Begum', role:'Finance Manager', years:'6 Years',img:'/images/employee-fatema.jpg', quote:'The opportunities for growth here are exceptional. I started as a junior analyst and now lead the entire finance team for the group.' },
+],
+};
 
 const CareersExperiencePage = () => {
   const containerRef = useRef(null);
+  const c = useContent('careers-experience', DEFAULTS);
   const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
 
   useEffect(() => {
@@ -69,9 +77,9 @@ const CareersExperiencePage = () => {
       <section style={{ padding:isMobile?'32px 24px 32px':'40px 40px 36px', borderBottom:'1px solid var(--glass-border)', position:'relative', overflow:'hidden', textAlign:'center' }}>
         <div style={{ position:'absolute', bottom:0, left:'50%', transform:'translateX(-50%)', width:'600px', height:'220px', background:'radial-gradient(ellipse, rgba(227,24,45,0.12) 0%, transparent 70%)', pointerEvents:'none' }}/>
         <div style={{ maxWidth:'860px', margin:'0 auto' }}>
-          <div className="ce-hero-tag" style={{ fontSize:'10px', letterSpacing:'4px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'14px', opacity:0 }}>Life at Anwar Ispat</div>
+          <div className="ce-hero-tag" style={{ fontSize:'10px', letterSpacing:'4px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'14px', opacity:0 }}>{c.hero.tag}</div>
           <h1 className="ce-hero-title" style={{ fontSize:'clamp(30px,5vw,52px)', fontWeight:900, lineHeight:1.05, textTransform:'uppercase', letterSpacing:'-1px', marginBottom:'16px', opacity:0, fontFamily:'var(--font-heading)' }}>
-            Employee <span style={{ color:'var(--accent)' }}>Experience</span>
+            {c.hero.title} <span style={{ color:'var(--accent)' }}>{c.hero.accent}</span>
           </h1>
           <p className="ce-hero-sub" style={{ fontSize:isMobile?'13px':'15px', color:'var(--subtext)', maxWidth:'500px', margin:'0 auto 24px', lineHeight:1.8, opacity:0 }}>
             A workplace built on trust, growth, and purpose. Discover what makes Anwar Ispat a great place to build your career.
@@ -92,14 +100,14 @@ const CareersExperiencePage = () => {
         {/* VALUES */}
         {secLabel('Our Values')}
         <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)', gap:'14px', marginBottom:'44px' }}>
-          {values.map((v, i) => (
+          {c.values.map((v, i) => (
             <div key={i} className="ce-val"
-              style={{ borderRadius:'12px', padding:'22px', border:'1px solid ' + v.border, background:v.bg, position:'relative', overflow:'hidden', opacity:0, transform:'translateY(30px)' }}>
-              <div style={{ position:'absolute', bottom:0, left:0, right:0, height:'2px', background:v.color }}/>
-              <div style={{ width:'44px', height:'44px', borderRadius:'12px', background:v.color + '20', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'14px' }}>
-                <div style={{ width:'12px', height:'12px', borderRadius:'50%', background:v.color }}/>
+              style={{ borderRadius:'12px', padding:'22px', border:'1px solid ' + tone(i)+'33', background:tone(i)+'14', position:'relative', overflow:'hidden', opacity:0, transform:'translateY(30px)' }}>
+              <div style={{ position:'absolute', bottom:0, left:0, right:0, height:'2px', background:tone(i) }}/>
+              <div style={{ width:'44px', height:'44px', borderRadius:'12px', background:tone(i) + '20', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'14px' }}>
+                <div style={{ width:'12px', height:'12px', borderRadius:'50%', background:tone(i) }}/>
               </div>
-              <div style={{ fontSize:'14px', fontWeight:800, textTransform:'uppercase', color:v.color, marginBottom:'8px', letterSpacing:'0.5px' }}>{v.title}</div>
+              <div style={{ fontSize:'14px', fontWeight:800, textTransform:'uppercase', color:tone(i), marginBottom:'8px', letterSpacing:'0.5px' }}>{v.title}</div>
               <p style={{ fontSize:'12px', color:'var(--subtext)', lineHeight:1.7 }}>{v.text}</p>
             </div>
           ))}
@@ -108,12 +116,12 @@ const CareersExperiencePage = () => {
         {/* PERKS */}
         {secLabel('Benefits & Perks')}
         <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:'10px', marginBottom:'44px' }}>
-          {perks.map((p, i) => (
+          {c.perks.map((p, i) => (
             <div key={i} className="ce-perk"
-              style={{ display:'flex', alignItems:'flex-start', gap:'14px', padding:'16px 18px', background:'var(--glass)', border:'1px solid var(--glass-border)', borderLeft:'3px solid ' + p.color, borderRadius:'0 10px 10px 0', opacity:0, transform:'translateX(-20px)' }}>
-              <div style={{ width:'8px', height:'8px', borderRadius:'50%', background:p.color, flexShrink:0, marginTop:'4px' }}/>
+              style={{ display:'flex', alignItems:'flex-start', gap:'14px', padding:'16px 18px', background:'var(--glass)', border:'1px solid var(--glass-border)', borderLeft:'3px solid ' + tone(i), borderRadius:'0 10px 10px 0', opacity:0, transform:'translateX(-20px)' }}>
+              <div style={{ width:'8px', height:'8px', borderRadius:'50%', background:tone(i), flexShrink:0, marginTop:'4px' }}/>
               <div>
-                <div style={{ fontSize:'12px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px', color:p.color, marginBottom:'5px' }}>{p.title}</div>
+                <div style={{ fontSize:'12px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px', color:tone(i), marginBottom:'5px' }}>{p.title}</div>
                 <p style={{ fontSize:'12px', color:'var(--subtext)', lineHeight:1.6 }}>{p.text}</p>
               </div>
             </div>
@@ -123,7 +131,7 @@ const CareersExperiencePage = () => {
         {/* EMPLOYEE STORIES */}
         {secLabel('Employee Stories')}
         <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:'16px' }}>
-          {stories.map((s, i) => (
+          {c.stories.map((s, i) => (
             <div key={i} className="ce-story"
               style={{ borderRadius:'14px', overflow:'hidden', border:'1px solid var(--glass-border)', background:'var(--glass)', opacity:0, transform:'translateY(30px)' }}>
               {/* IMAGE SLOT */}

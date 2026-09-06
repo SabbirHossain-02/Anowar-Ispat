@@ -2,18 +2,28 @@ import React, { useRef, useState, useEffect } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useContent } from '../lib/content';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const locations = [
-  { color:'#E3182D', title:'Head Office', address:'Chawk Bazar, Dhaka-1211', badge:'HQ', mapUrl:'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3652.3!2d90.4!3d23.7!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755b8b087026b81%3A0x8fa563bbdd5904c2!2sChawk+Bazar%2C+Dhaka!5e0!3m2!1sen!2sbd!4v1' },
-  { color:'#3b82f6', title:'Narayanganj Factory', address:'Industrial Zone, Narayanganj', badge:'FACTORY', mapUrl:'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3654!2d90.5!3d23.6!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755b5c1b3deeed5%3A0xbef9f89f1f789232!2sNarayanganj!5e0!3m2!1sen!2sbd!4v1' },
-  { color:'#22c55e', title:'Chittagong Sales Office', address:'Agrabad, Chittagong-4100', badge:'SALES', mapUrl:'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3689!2d91.8!3d22.3!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30acd8a64e3d5b63%3A0xd7c64b4d536c28e5!2sAgrabad%2C+Chittagong!5e0!3m2!1sen!2sbd!4v1' },
-  { color:'#eab308', title:'Sylhet Branch Office', address:'Zindabazar, Sylhet-3100', badge:'BRANCH', mapUrl:'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3617!2d91.8!3d24.9!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x375054d3d270329d%3A0x4e36e7e83e8a1f8!2sZindabazar%2C+Sylhet!5e0!3m2!1sen!2sbd!4v1' },
-];
+// রঙগুলো সাজসজ্জা, JSON এ যায় না — কোডে থেকে ক্রম অনুযায়ী বসে
+const TONES = ['#E3182D', '#3b82f6', '#22c55e', '#eab308', '#a855f7', '#ec4899'];
+const tone = (i) => TONES[i % TONES.length];
+
+// অ্যাডমিন কিছু না বদলালে এগুলোই দেখা যায়
+const DEFAULTS = {
+    hero: { tag: 'Find Our Way', title: 'Google', accent: 'Map', sub: '' },
+    locations: [
+  {title:'Head Office', address:'Chawk Bazar, Dhaka-1211', badge:'HQ', mapUrl:'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3652.3!2d90.4!3d23.7!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755b8b087026b81%3A0x8fa563bbdd5904c2!2sChawk+Bazar%2C+Dhaka!5e0!3m2!1sen!2sbd!4v1' },
+  {title:'Narayanganj Factory', address:'Industrial Zone, Narayanganj', badge:'FACTORY', mapUrl:'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3654!2d90.5!3d23.6!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755b5c1b3deeed5%3A0xbef9f89f1f789232!2sNarayanganj!5e0!3m2!1sen!2sbd!4v1' },
+  {title:'Chittagong Sales Office', address:'Agrabad, Chittagong-4100', badge:'SALES', mapUrl:'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3689!2d91.8!3d22.3!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30acd8a64e3d5b63%3A0xd7c64b4d536c28e5!2sAgrabad%2C+Chittagong!5e0!3m2!1sen!2sbd!4v1' },
+  {title:'Sylhet Branch Office', address:'Zindabazar, Sylhet-3100', badge:'BRANCH', mapUrl:'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3617!2d91.8!3d24.9!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x375054d3d270329d%3A0x4e36e7e83e8a1f8!2sZindabazar%2C+Sylhet!5e0!3m2!1sen!2sbd!4v1' },
+],
+};
 
 const ContactMapPage = () => {
   const containerRef = useRef(null);
+  const c = useContent('contact-map', DEFAULTS);
   const [activeMap, setActiveMap] = useState(0);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
@@ -46,9 +56,9 @@ const ContactMapPage = () => {
       <section style={{ padding:isMobile?'16px 24px 16px':'20px 40px 16px', borderBottom:'1px solid var(--glass-border)', position:'relative', overflow:'hidden', textAlign:'center' }}>
         <div style={{ position:'absolute', bottom:0, left:'50%', transform:'translateX(-50%)', width:'600px', height:'220px', background:'radial-gradient(ellipse, rgba(227,24,45,0.12) 0%, transparent 70%)', pointerEvents:'none' }}/>
         <div style={{ maxWidth:'860px', margin:'0 auto' }}>
-          <div className="cm-hero-tag" style={{ fontSize:'10px', letterSpacing:'4px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'14px' }}>Find Our Way</div>
+          <div className="cm-hero-tag" style={{ fontSize:'10px', letterSpacing:'4px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'14px' }}>{c.hero.tag}</div>
           <h1 className="cm-hero-title" style={{ fontSize:'clamp(30px,5vw,52px)', fontWeight:900, lineHeight:1.05, textTransform:'uppercase', letterSpacing:'-1px', marginBottom:'16px', opacity:0, fontFamily:'var(--font-heading)' }}>
-            Google <span style={{ color:'var(--accent)' }}>Map</span>
+            {c.hero.title} <span style={{ color:'var(--accent)' }}>{c.hero.accent}</span>
           </h1>
           <p className="cm-hero-sub" style={{ fontSize:isMobile?'13px':'15px', color:'var(--subtext)', maxWidth:'480px', margin:'0 auto', lineHeight:1.8 }}>
             Locate our head office and all facilities across Bangladesh.
@@ -61,12 +71,12 @@ const ContactMapPage = () => {
         {/* LOCATION TABS */}
         {secLabel('Select Location')}
         <div className="cm-fade" data-delay="0.1" style={{ display:'grid', gridTemplateColumns:isMobile?'1fr 1fr':'repeat(4,1fr)', gap:'10px', marginBottom:'24px', opacity:0, transform:'translateY(20px)' }}>
-          {locations.map((loc, i) => (
+          {c.locations.map((loc, i) => (
             <button key={i} onClick={() => setActiveMap(i)}
-              style={{ padding:'14px 16px', border:'1px solid ' + (activeMap===i ? loc.color + '60' : 'var(--glass-border)'), borderRadius:'10px', background: activeMap===i ? loc.color + '10' : 'var(--glass)', cursor:'pointer', transition:'all 0.2s', textAlign:'left' }}>
+              style={{ padding:'14px 16px', border:'1px solid ' + (activeMap===i ? tone(i) + '60' : 'var(--glass-border)'), borderRadius:'10px', background: activeMap===i ? tone(i) + '10' : 'var(--glass)', cursor:'pointer', transition:'all 0.2s', textAlign:'left' }}>
               <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'6px' }}>
-                <div style={{ width:'8px', height:'8px', borderRadius:'50%', background: activeMap===i ? loc.color : 'var(--subtext)', opacity: activeMap===i ? 1 : 0.4 }}/>
-                <span style={{ fontSize:'9px', letterSpacing:'1.5px', textTransform:'uppercase', color: activeMap===i ? loc.color : 'var(--subtext)', fontWeight:700 }}>{loc.badge}</span>
+                <div style={{ width:'8px', height:'8px', borderRadius:'50%', background: activeMap===i ? tone(i) : 'var(--subtext)', opacity: activeMap===i ? 1 : 0.4 }}/>
+                <span style={{ fontSize:'9px', letterSpacing:'1.5px', textTransform:'uppercase', color: activeMap===i ? tone(i) : 'var(--subtext)', fontWeight:700 }}>{loc.badge}</span>
               </div>
               <div style={{ fontSize:'12px', fontWeight:700, color: activeMap===i ? 'var(--text)' : 'var(--subtext)', textTransform:'uppercase', letterSpacing:'-0.2px', lineHeight:1.3 }}>{loc.title}</div>
             </button>
@@ -111,17 +121,17 @@ const ContactMapPage = () => {
         {/* ALL PINS */}
         {secLabel('All Locations')}
         <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:'10px' }}>
-          {locations.map((loc, i) => (
+          {c.locations.map((loc, i) => (
             <div key={i} onClick={() => setActiveMap(i)}
-              style={{ display:'flex', gap:'12px', padding:'14px 16px', background:'var(--glass)', border:'1px solid ' + (activeMap===i ? loc.color + '40' : 'var(--glass-border)'), borderRadius:'10px', cursor:'pointer', transition:'all 0.2s', alignItems:'flex-start' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor=loc.color + '40'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor= activeMap===i ? loc.color + '40' : 'var(--glass-border)'; }}>
-              <div style={{ width:'10px', height:'10px', borderRadius:'50%', background:loc.color, flexShrink:0, marginTop:'3px' }}/>
+              style={{ display:'flex', gap:'12px', padding:'14px 16px', background:'var(--glass)', border:'1px solid ' + (activeMap===i ? tone(i) + '40' : 'var(--glass-border)'), borderRadius:'10px', cursor:'pointer', transition:'all 0.2s', alignItems:'flex-start' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor=tone(i) + '40'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor= activeMap===i ? tone(i) + '40' : 'var(--glass-border)'; }}>
+              <div style={{ width:'10px', height:'10px', borderRadius:'50%', background:tone(i), flexShrink:0, marginTop:'3px' }}/>
               <div>
                 <div style={{ fontSize:'12px', fontWeight:700, textTransform:'uppercase', letterSpacing:'-0.2px', marginBottom:'3px' }}>{loc.title}</div>
                 <div style={{ fontSize:'11px', color:'var(--subtext)', opacity:0.6 }}>{loc.address}</div>
               </div>
-              {activeMap === i && <div style={{ marginLeft:'auto', fontSize:'10px', color:loc.color, fontWeight:700, flexShrink:0 }}>Active ✓</div>}
+              {activeMap === i && <div style={{ marginLeft:'auto', fontSize:'10px', color:tone(i), fontWeight:700, flexShrink:0 }}>Active ✓</div>}
             </div>
           ))}
         </div>

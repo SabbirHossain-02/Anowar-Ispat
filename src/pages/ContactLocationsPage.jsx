@@ -2,18 +2,28 @@ import React, { useRef, useState, useEffect } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useContent } from '../lib/content';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const locations = [
-  { color:'#E3182D', bg:'rgba(227,24,45,0.1)', badge:'HQ', title:'Head Office', address:'Anwar Ispat Complex, Chawk Bazar, Dhaka-1211, Bangladesh', phone:'+880 2-XXXX-XXXX', hours:'Sun–Thu: 9:00 AM – 6:00 PM', email:'info@anwarispat.com' },
-  { color:'#3b82f6', bg:'rgba(59,130,246,0.1)', badge:'FACTORY', title:'Narayanganj Factory', address:'Anwar Ispat Rolling Mill, Narayanganj Industrial Zone, Bangladesh', phone:'+880 1XXX-XXXXXX', hours:'24/7 Operations', email:'factory@anwarispat.com' },
-  { color:'#22c55e', bg:'rgba(34,197,94,0.1)', badge:'SALES', title:'Chittagong Sales Office', address:'Agrabad Commercial Area, Chittagong-4100, Bangladesh', phone:'+880 31-XXX-XXXX', hours:'Sun–Thu: 9:00 AM – 5:00 PM', email:'ctg@anwarispat.com' },
-  { color:'#eab308', bg:'rgba(234,179,8,0.1)', badge:'BRANCH', title:'Sylhet Branch Office', address:'Zindabazar Commercial Area, Sylhet-3100, Bangladesh', phone:'+880 821-XXX-XXX', hours:'Sun–Thu: 9:00 AM – 5:00 PM', email:'sylhet@anwarispat.com' },
-];
+// রঙগুলো সাজসজ্জা, JSON এ যায় না — কোডে থেকে ক্রম অনুযায়ী বসে
+const TONES = ['#E3182D', '#3b82f6', '#22c55e', '#eab308', '#a855f7', '#ec4899'];
+const tone = (i) => TONES[i % TONES.length];
+
+// অ্যাডমিন কিছু না বদলালে এগুলোই দেখা যায়
+const DEFAULTS = {
+    hero: { tag: 'Find Us', title: 'Office', accent: 'Locations', sub: '' },
+    locations: [
+  {badge:'HQ', title:'Head Office', address:'Anwar Ispat Complex, Chawk Bazar, Dhaka-1211, Bangladesh', phone:'+880 2-XXXX-XXXX', hours:'Sun–Thu: 9:00 AM – 6:00 PM', email:'info@anwarispat.com' },
+  {badge:'FACTORY', title:'Narayanganj Factory', address:'Anwar Ispat Rolling Mill, Narayanganj Industrial Zone, Bangladesh', phone:'+880 1XXX-XXXXXX', hours:'24/7 Operations', email:'factory@anwarispat.com' },
+  {badge:'SALES', title:'Chittagong Sales Office', address:'Agrabad Commercial Area, Chittagong-4100, Bangladesh', phone:'+880 31-XXX-XXXX', hours:'Sun–Thu: 9:00 AM – 5:00 PM', email:'ctg@anwarispat.com' },
+  {badge:'BRANCH', title:'Sylhet Branch Office', address:'Zindabazar Commercial Area, Sylhet-3100, Bangladesh', phone:'+880 821-XXX-XXX', hours:'Sun–Thu: 9:00 AM – 5:00 PM', email:'sylhet@anwarispat.com' },
+],
+};
 
 const ContactLocationsPage = () => {
   const containerRef = useRef(null);
+  const c = useContent('contact-locations', DEFAULTS);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [active, setActive] = useState(0);
 
@@ -47,9 +57,9 @@ const ContactLocationsPage = () => {
       <section style={{ padding:isMobile?'16px 24px 16px':'20px 40px 16px', borderBottom:'1px solid var(--glass-border)', position:'relative', overflow:'hidden', textAlign:'center' }}>
         <div style={{ position:'absolute', bottom:0, left:'50%', transform:'translateX(-50%)', width:'600px', height:'220px', background:'radial-gradient(ellipse, rgba(227,24,45,0.12) 0%, transparent 70%)', pointerEvents:'none' }}/>
         <div style={{ maxWidth:'860px', margin:'0 auto' }}>
-          <div className="cl-hero-tag" style={{ fontSize:'10px', letterSpacing:'4px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'14px' }}>Find Us</div>
+          <div className="cl-hero-tag" style={{ fontSize:'10px', letterSpacing:'4px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'14px' }}>{c.hero.tag}</div>
           <h1 className="cl-hero-title" style={{ fontSize:'clamp(30px,5vw,52px)', fontWeight:900, lineHeight:1.05, textTransform:'uppercase', letterSpacing:'-1px', marginBottom:'16px', opacity:0, fontFamily:'var(--font-heading)' }}>
-            Office <span style={{ color:'var(--accent)' }}>Locations</span>
+            {c.hero.title} <span style={{ color:'var(--accent)' }}>{c.hero.accent}</span>
           </h1>
           <p className="cl-hero-sub" style={{ fontSize:isMobile?'13px':'15px', color:'var(--subtext)', maxWidth:'480px', margin:'0 auto 24px', lineHeight:1.8 }}>
             Visit us at our offices and facilities across Bangladesh.
@@ -68,24 +78,24 @@ const ContactLocationsPage = () => {
       <div style={{ maxWidth:'960px', margin:'0 auto', padding:isMobile?'36px 24px 60px':'44px 40px 64px' }}>
         {secLabel('Our Offices')}
         <div style={{ display:'flex', flexDirection:'column', gap:'12px' }}>
-          {locations.map((loc, i) => (
+          {c.locations.map((loc, i) => (
             <div key={i} className="cl-card"
               onClick={() => setActive(i)}
-              style={{ borderRadius:'14px', overflow:'hidden', border:'1px solid ' + (active===i ? loc.color + '50' : 'var(--glass-border)'), background: active===i ? loc.color + '06' : 'var(--glass)', cursor:'pointer', transition:'all 0.25s', opacity:0, transform:'translateY(30px)' }}>
+              style={{ borderRadius:'14px', overflow:'hidden', border:'1px solid ' + (active===i ? tone(i) + '50' : 'var(--glass-border)'), background: active===i ? tone(i) + '06' : 'var(--glass)', cursor:'pointer', transition:'all 0.25s', opacity:0, transform:'translateY(30px)' }}>
               <div style={{ padding:'20px 24px', display:'flex', alignItems:'flex-start', gap:'18px' }}>
-                <div style={{ width:'52px', height:'52px', borderRadius:'14px', background:loc.bg, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={loc.color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <div style={{ width:'52px', height:'52px', borderRadius:'14px', background:tone(i)+'1a', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={tone(i)} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
                   </svg>
                 </div>
                 <div style={{ flex:1 }}>
                   <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'8px', flexWrap:'wrap' }}>
                     <div style={{ fontSize:'15px', fontWeight:800, textTransform:'uppercase', letterSpacing:'-0.3px', fontFamily:'var(--font-heading)' }}>{loc.title}</div>
-                    <span style={{ background:loc.bg, color:loc.color, border:'1px solid ' + loc.color + '40', fontSize:'8px', letterSpacing:'2px', textTransform:'uppercase', padding:'3px 8px', borderRadius:'3px', fontWeight:700 }}>{loc.badge}</span>
+                    <span style={{ background:tone(i)+'1a', color:tone(i), border:'1px solid ' + tone(i) + '40', fontSize:'8px', letterSpacing:'2px', textTransform:'uppercase', padding:'3px 8px', borderRadius:'3px', fontWeight:700 }}>{loc.badge}</span>
                   </div>
                   <p style={{ fontSize:'12px', color:'var(--subtext)', lineHeight:1.7, marginBottom:'12px' }}>{loc.address}</p>
                   <div style={{ display:'flex', gap:'18px', flexWrap:'wrap' }}>
-                    <a href={'tel:' + loc.phone} style={{ fontSize:'12px', color:loc.color, fontWeight:600, textDecoration:'none', display:'flex', alignItems:'center', gap:'5px' }}>
+                    <a href={'tel:' + loc.phone} style={{ fontSize:'12px', color:tone(i), fontWeight:600, textDecoration:'none', display:'flex', alignItems:'center', gap:'5px' }}>
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.6 1.25h3a2 2 0 0 1 2 1.72c.127.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.86a16 16 0 0 0 6 6l1.27-.97a2 2 0 0 1 2.11-.45c.91.34 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                       {loc.phone}
                     </a>
@@ -95,13 +105,13 @@ const ContactLocationsPage = () => {
                     </span>
                   </div>
                 </div>
-                <div style={{ fontSize:'18px', color: active===i ? loc.color : 'var(--subtext)', opacity: active===i ? 1 : 0.3, transition:'all 0.2s', flexShrink:0 }}>{active===i ? '▼' : '▶'}</div>
+                <div style={{ fontSize:'18px', color: active===i ? tone(i) : 'var(--subtext)', opacity: active===i ? 1 : 0.3, transition:'all 0.2s', flexShrink:0 }}>{active===i ? '▼' : '▶'}</div>
               </div>
               {active === i && (
                 <div style={{ padding:'16px 24px 20px', borderTop:'1px solid var(--glass-border)', display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr 1fr', gap:'14px' }}>
                   <div>
                     <div style={{ fontSize:'9px', letterSpacing:'2px', color:'var(--subtext)', textTransform:'uppercase', marginBottom:'5px' }}>Email</div>
-                    <a href={'mailto:' + loc.email} style={{ fontSize:'12px', color:loc.color, textDecoration:'none', fontWeight:600 }}>{loc.email}</a>
+                    <a href={'mailto:' + loc.email} style={{ fontSize:'12px', color:tone(i), textDecoration:'none', fontWeight:600 }}>{loc.email}</a>
                   </div>
                   <div>
                     <div style={{ fontSize:'9px', letterSpacing:'2px', color:'var(--subtext)', textTransform:'uppercase', marginBottom:'5px' }}>Hours</div>
