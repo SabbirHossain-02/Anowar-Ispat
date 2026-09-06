@@ -1211,7 +1211,9 @@ export const MediaEvents = () => {
     <section
       id="media-events"
       style={{
-        minHeight: "auto",
+        // নিউজ সেকশনটি পুরো পর্দা নেবে, উপরে-নিচের সেকশন উঁকি দেবে না।
+        // .home section এর ১০০vh নিয়মটি এই ইনলাইন "auto" বাতিল করে দিত।
+        minHeight: "100vh",
         justifyContent: "center",
         alignItems: "center",
         background: "var(--bg-section, rgba(11, 11, 11, 0.7))",
