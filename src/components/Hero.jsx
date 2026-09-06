@@ -25,7 +25,7 @@ const Hero = () => {
                     <br />
                     {hero.line2} <span className="accent-text">{hero.accent2}</span>.
                 </h1>
-                <p style={{ marginTop: '2rem', maxWidth: '400px', color: 'var(--subtext)', fontSize: '1rem', marginInline: 'auto' }}>
+                <p className="hero-sub" style={{ marginTop: '2rem', maxWidth: '400px', color: 'var(--subtext)', fontSize: '1rem' }}>
                     {hero.sub}
                 </p>
                 <a href="#discover" className="magnetic-btn">{hero.cta}</a>

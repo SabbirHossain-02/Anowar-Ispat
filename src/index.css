@@ -2081,6 +2081,13 @@ body.light-mode .btn-learn-more:hover {
     text-align: center;
   }
 
+  /* সরু পর্দায় লেখা মাঝে বসে, তাই অনুচ্ছেদের ব্লকটিও মাঝে।
+     চওড়া পর্দায় ওটি বাঁ দিকেই থাকে — শিরোনাম আর বোতামের সাথে
+     এক লাইনে, নইলে ৪০০px ব্লকটি কলামের মাঝে গিয়ে ভেতরে ঢুকে যেত। */
+  .hero-sub {
+    margin-inline: auto;
+  }
+
   .hero-title {
     max-width: 100%;
     font-size: clamp(2rem, 8vw, 4rem);
