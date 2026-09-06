@@ -108,7 +108,7 @@ const Planet = ({ data, index, total, inView }) => {
     );
 };
 
-export default function CoreStrengths3D({ inView }) {
+export default function CoreStrengths3D({ inView, text }) {
     const centerRef = useRef();
     const ringRef = useRef();
 
@@ -171,8 +171,8 @@ export default function CoreStrengths3D({ inView }) {
             </mesh>
 
             {/* Planets */}
-            {strengths.map((s, i) => (
-                <Planet key={i} index={i} total={strengths.length} data={s} inView={inView} />
+            {(text?.items || strengths.map((x) => x.title)).map((title, i) => (
+                <Planet key={i} index={i} total={(text?.items || strengths).length} data={{ title, icon: strengths[i % strengths.length].icon }} inView={inView} />
             ))}
 
             {/* Center Label */}
@@ -187,11 +187,11 @@ export default function CoreStrengths3D({ inView }) {
                         width: 'max-content'
                     }}
                 >
-                    <h3 style={{ color: 'var(--subtext)', fontSize: '0.78rem', letterSpacing: '0.2em', marginBottom: '0.4rem', fontFamily: 'monospace' }}>WHY CHOOSE</h3>
+                    <h3 style={{ color: 'var(--subtext)', fontSize: '0.78rem', letterSpacing: '0.2em', marginBottom: '0.4rem', fontFamily: 'monospace' }}>{text?.heading ?? 'WHY CHOOSE'}</h3>
                     <h1 style={{ color: 'var(--text)', fontSize: '2rem', fontWeight: '900', letterSpacing: '0.05em', lineHeight: 1, fontFamily: 'var(--font-heading)' }}>
-                        ANWAR <span style={{ color: 'var(--accent)' }}>ISPAT</span>
+                        {text?.brand ?? 'ANWAR'} <span style={{ color: 'var(--accent)' }}>{text?.brandAccent ?? 'ISPAT'}</span>
                     </h1>
-                    <p style={{ color: 'var(--text)', fontSize: '0.88rem', marginTop: '0.4rem', fontWeight: 600 }}>THE BEST?</p>
+                    <p style={{ color: 'var(--text)', fontSize: '0.88rem', marginTop: '0.4rem', fontWeight: 600 }}>{text?.tail ?? 'THE BEST?'}</p>
                 </div>
             </Html>
         </group>

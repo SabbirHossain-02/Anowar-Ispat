@@ -51,10 +51,52 @@ const HOME_DEFAULTS = {
     },
         ],
     },
-    projects: { title: 'MEGA', accent: 'PROJECTS' },
-    media: { title: 'NEWS DESK' },
-    blog: { title: 'INSIGHTS & INNOVATIONS' },
-    footer: { tagline: "Unrelenting strength. Uncompromising quality. The structural backbone of tomorrow's infrastructure." },
+    ps: {
+        specLabel: 'KEY SPECIFICATIONS',
+        specs: ['Excellent Weldability and Bendability', 'Earthquake Resistant Properties', 'Advanced Rib Design for better bonding'],
+        loading: 'Loading products...',
+        empty: 'No products published yet.',
+    },
+    strengths: {
+        heading: 'WHY CHOOSE',
+        brand: 'ANWAR',
+        brandAccent: 'ISPAT',
+        tail: 'THE BEST?',
+        items: ['SUPERIOR STRENGTH', 'EXCELLENT DUCTILITY', 'EASY WELDABILITY', 'IMPROVED RIB DESIGN', 'TMT TECHNOLOGY', 'PRECISE STANDARDS', 'CONTROLLED MICROSTRUCTURE'],
+    },
+    projects: { title: 'MEGA', accent: 'PROJECTS', items: [
+    { title: "Padma Bridge", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777390678/Padma_Bridge_fnueme.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777390678/Padma_Bridge_fnueme.jpg", desc: "The Padma Multipurpose Bridge is Bangladesh's largest infrastructure project, spanning 6.15 km over the Padma River. Anwar Ispat supplied high-grade TMT steel rods that form the structural backbone of this historic bridge, connecting 21 southern districts and transforming the lives of over 30 million people." },
+    { title: "Rooppur Power Plant", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777390681/Rooppur_en98hz.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777390681/Rooppur_en98hz.jpg", desc: "The Rooppur Nuclear Power Plant is Bangladesh's first-ever nuclear facility, built with a capacity of 2,400 MW. Anwar Ispat contributed precision-engineered steel materials to support the construction of this landmark project, which marks a new era of energy independence for the nation." },
+    { title: "Mayor Hanif Flyover", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777394650/mayor_hanif_msgq9d.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777394650/mayor_hanif_msgq9d.jpg", desc: "The Mayor Hanif Flyover is one of Dhaka's most critical elevated expressways, stretching over 11.8 km to ease severe traffic congestion. Anwar Ispat's reinforcement steel played a vital role in the construction of this flyover, improving daily commutes for millions of residents." },
+    { title: "Purbachal Express Highway", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777394690/Purbachal_Express_Highway_compressed_gxuze8.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777394690/Purbachal_Express_Highway_compressed_gxuze8.jpg", desc: "The Purbachal Express Highway is a modern 6-lane expressway connecting Dhaka to the Purbachal New Town development. Built with Anwar Ispat's high-strength steel, this highway is designed to support Bangladesh's expanding urban footprint and accelerate economic activity in the eastern corridor." },
+    { title: "Airport 3rd Terminal", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777395501/Airport_3rd_Terminal_brxz6w.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777395501/Airport_3rd_Terminal_brxz6w.jpg", desc: "The Hazrat Shahjalal International Airport's 3rd Terminal is a landmark aviation project designed to handle 12 million passengers annually. Anwar Ispat supplied structural steel that supports the terminal's expansive framework, helping Bangladesh step into a new era of international aviation." },
+    { title: "Shahjalal Fertilizer Factory", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777395915/Shahjalal_Fertiliser_Factory_gefg5s.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777395915/Shahjalal_Fertiliser_Factory_gefg5s.jpg", desc: "The Shahjalal Fertilizer Factory is one of Bangladesh's largest industrial projects, producing urea fertilizer to support the agricultural sector. Anwar Ispat provided heavy-duty steel for the factory's structural framework, contributing to the nation's food security and industrial growth." },
+    { title: "Hotel Intercontinental", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777396432/Hotel_Intercontinental_k6assz.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777396432/Hotel_Intercontinental_k6assz.jpg", desc: "Iconic luxury and heritage built on unwavering structural strength." },
+    { title: "City Center Dhaka", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777396567/City_Center_Dhaka_jzcyar.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777396567/City_Center_Dhaka_jzcyar.jpg", desc: "The tallest skyscraper defining the modern skyline of the capital." }
+  ] },
+    media: {
+        title: 'NEWS DESK',
+        cta: 'INITIATE FEED',
+        loading: 'Loading media posts...',
+        empty: 'No media posts yet.',
+    },
+    blog: {
+        eyebrow: '[ SYSTEM.ARCHIVES.OPEN ]',
+        title: 'INSIGHTS & INNOVATIONS',
+        items: [
+    { category: "Engineering Analysis", title: "The Physics of 500W: Tension, Yield, and Structural Absolute", readTime: "06:00 MIN", img: "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&q=80&w=800" },
+    { category: "Sustainable Future", title: "Achieving Net-Zero: Algorithms Controlling Carbon Outputs", readTime: "08:30 MIN", img: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=800" },
+    { category: "Project Architectural", title: "Bridging the Divide: Logistics of Mega-Ton Deliveries", readTime: "04:45 MIN", img: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&q=80&w=800" },
+  ],
+    },
+    footer: {
+        tagline: "Unrelenting strength. Uncompromising quality. The structural backbone of tomorrow's infrastructure.",
+        quickTitle: 'QUICK LINKS',
+        legalTitle: 'LEGAL',
+        contactBtn: 'CONTACT US',
+        quick: ['Product & Service | #product-service', 'Better Tomorrow | #better-tomorrow', 'Career | #career', 'Media & Events | #media-events'],
+        legal: ['Privacy Policy | #', 'Terms of Service | #'],
+    },
 };
 
 // আইকন ও দিক JSON এ যায় না — কোডে থেকে ক্রম অনুযায়ী বসে
@@ -171,7 +213,7 @@ export const ProductService = () => {
 
         {products.length === 0 ? (
           <div style={{ color: "var(--subtext)", marginTop: "4rem", fontSize: "1rem" }}>
-            {loadingProducts ? "Loading products..." : "No products published yet."}
+            {loadingProducts ? home.ps.loading : home.ps.empty}
           </div>
         ) : (
           <div className="carousel-container">
@@ -310,12 +352,10 @@ export const ProductService = () => {
             <p className="product-modal-desc">{selectedProduct?.desc}</p>
 
             <div style={{ marginBottom: "1.5rem" }}>
-              <h4 style={{ color: "var(--accent)", marginBottom: "0.8rem", letterSpacing: "0.1em", fontSize: "0.9rem", fontFamily: "var(--font-heading)" }}>KEY SPECIFICATIONS</h4>
+              <h4 style={{ color: "var(--accent)", marginBottom: "0.8rem", letterSpacing: "0.1em", fontSize: "0.9rem", fontFamily: "var(--font-heading)" }}>{home.ps.specLabel}</h4>
               <ul className="product-spec-list">
                 <li>Ultimate Tensile Strength: 500 MPa</li>
-                <li>Excellent Weldability and Bendability</li>
-                <li>Earthquake Resistant Properties</li>
-                <li>Advanced Rib Design for better bonding</li>
+                {home.ps.specs.map((t) => <li key={t}>{t}</li>)}
               </ul>
             </div>
 
@@ -1062,16 +1102,8 @@ const BroadcastCard = ({ date, title, desc, img, isHovering, onHover }) => {
 export const ProjectShowcase = () => {
   const home = useContent('home', HOME_DEFAULTS);
   const [selectedProject, setSelectedProject] = React.useState(null);
-  const projects = [
-    { title: "Padma Bridge", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777390678/Padma_Bridge_fnueme.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777390678/Padma_Bridge_fnueme.jpg", desc: "The Padma Multipurpose Bridge is Bangladesh's largest infrastructure project, spanning 6.15 km over the Padma River. Anwar Ispat supplied high-grade TMT steel rods that form the structural backbone of this historic bridge, connecting 21 southern districts and transforming the lives of over 30 million people." },
-    { title: "Rooppur Power Plant", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777390681/Rooppur_en98hz.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777390681/Rooppur_en98hz.jpg", desc: "The Rooppur Nuclear Power Plant is Bangladesh's first-ever nuclear facility, built with a capacity of 2,400 MW. Anwar Ispat contributed precision-engineered steel materials to support the construction of this landmark project, which marks a new era of energy independence for the nation." },
-    { title: "Mayor Hanif Flyover", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777394650/mayor_hanif_msgq9d.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777394650/mayor_hanif_msgq9d.jpg", desc: "The Mayor Hanif Flyover is one of Dhaka's most critical elevated expressways, stretching over 11.8 km to ease severe traffic congestion. Anwar Ispat's reinforcement steel played a vital role in the construction of this flyover, improving daily commutes for millions of residents." },
-    { title: "Purbachal Express Highway", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777394690/Purbachal_Express_Highway_compressed_gxuze8.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777394690/Purbachal_Express_Highway_compressed_gxuze8.jpg", desc: "The Purbachal Express Highway is a modern 6-lane expressway connecting Dhaka to the Purbachal New Town development. Built with Anwar Ispat's high-strength steel, this highway is designed to support Bangladesh's expanding urban footprint and accelerate economic activity in the eastern corridor." },
-    { title: "Airport 3rd Terminal", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777395501/Airport_3rd_Terminal_brxz6w.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777395501/Airport_3rd_Terminal_brxz6w.jpg", desc: "The Hazrat Shahjalal International Airport's 3rd Terminal is a landmark aviation project designed to handle 12 million passengers annually. Anwar Ispat supplied structural steel that supports the terminal's expansive framework, helping Bangladesh step into a new era of international aviation." },
-    { title: "Shahjalal Fertilizer Factory", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777395915/Shahjalal_Fertiliser_Factory_gefg5s.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777395915/Shahjalal_Fertiliser_Factory_gefg5s.jpg", desc: "The Shahjalal Fertilizer Factory is one of Bangladesh's largest industrial projects, producing urea fertilizer to support the agricultural sector. Anwar Ispat provided heavy-duty steel for the factory's structural framework, contributing to the nation's food security and industrial growth." },
-    { title: "Hotel Intercontinental", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777396432/Hotel_Intercontinental_k6assz.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777396432/Hotel_Intercontinental_k6assz.jpg", desc: "Iconic luxury and heritage built on unwavering structural strength." },
-    { title: "City Center Dhaka", video: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777396567/City_Center_Dhaka_jzcyar.mp4", poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1777396567/City_Center_Dhaka_jzcyar.jpg", desc: "The tallest skyscraper defining the modern skyline of the capital." }
-  ];
+  const projects = home.projects.items;
+
 
   const ProjectCard = ({ proj, idx }) => {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -1265,7 +1297,7 @@ export const MediaEvents = () => {
 
           {broadcastData.length === 0 ? (
             <div style={{ color: "var(--subtext)", textAlign: "center", width: "100%", fontSize: "0.9rem" }}>
-              {loadingMedia ? "Loading media posts..." : "No media posts yet."}
+              {loadingMedia ? home.media.loading : home.media.empty}
             </div>
           ) : (
             <div
@@ -1343,7 +1375,7 @@ const InsightCarouselCard = ({ category, title, readTime, img, index, currentInd
         <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "clamp(1.1rem, 5vmin, 2.2rem)", marginBottom: "clamp(0.5rem, 2vh, 1.5rem)", color: "#fff", lineHeight: "1.2", textShadow: "0 4px 20px rgba(0,0,0,0.8)" }}>{title}</h3>
         <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", opacity: isActive ? 1 : 0, transform: isActive ? "translateY(0)" : "translateY(20px)", transition: "all 0.5s ease 0.2s", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "clamp(0.8rem, 2vh, 1.5rem)" }}>
           <span style={{ fontFamily: "monospace", color: "var(--subtext)", fontSize: "clamp(0.7rem, 2vmin, 0.85rem)" }}>TIME: {readTime}</span>
-          <a href="#read" className="magnetic-btn" style={{ margin: 0, padding: "clamp(0.5rem, 1.5vh, 0.8rem) clamp(1rem, 3vmin, 1.5rem)", fontSize: "clamp(0.6rem, 2vmin, 0.8rem)", borderRadius: "4px", background: "transparent", border: "1px solid var(--accent)", color: "var(--accent)" }}>INITIATE FEED</a>
+          <a href="#read" className="magnetic-btn" style={{ margin: 0, padding: "clamp(0.5rem, 1.5vh, 0.8rem) clamp(1rem, 3vmin, 1.5rem)", fontSize: "clamp(0.6rem, 2vmin, 0.8rem)", borderRadius: "4px", background: "transparent", border: "1px solid var(--accent)", color: "var(--accent)" }}>{home.media.cta}</a>
         </div>
       </div>
       {isActive && <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at top right, rgba(227, 24, 45, 0.1), transparent 60%)", pointerEvents: "none", borderRadius: "16px" }}></div>}
@@ -1355,11 +1387,8 @@ export const Blog = () => {
   const home = useContent('home', HOME_DEFAULTS);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const insights = [
-    { category: "Engineering Analysis", title: "The Physics of 500W: Tension, Yield, and Structural Absolute", readTime: "06:00 MIN", img: "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&q=80&w=800" },
-    { category: "Sustainable Future", title: "Achieving Net-Zero: Algorithms Controlling Carbon Outputs", readTime: "08:30 MIN", img: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=800" },
-    { category: "Project Architectural", title: "Bridging the Divide: Logistics of Mega-Ton Deliveries", readTime: "04:45 MIN", img: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&q=80&w=800" },
-  ];
+  const insights = home.blog.items;
+
 
   const handleNext = () => setCurrentIndex((prev) => (prev + 1) % insights.length);
   const handlePrev = () => setCurrentIndex((prev) => (prev - 1 + insights.length) % insights.length);
@@ -1367,7 +1396,7 @@ export const Blog = () => {
   return (
     <section id="blog" style={{ minHeight: "auto", justifyContent: "center", alignItems: "center", background: "var(--bg-section, rgba(11, 11, 11, 0.7))", backdropFilter: "blur(30px)", WebkitBackdropFilter: "blur(30px)", position: "relative", zIndex: 10, padding: "30px 0", overflow: "hidden" }}>
       <div style={{ textAlign: "center", maxWidth: "800px", margin: "0 auto clamp(2rem, 5vh, 4rem) auto", position: "relative", zIndex: 20, padding: "0 5%" }}>
-        <p style={{ fontFamily: "monospace", color: "var(--subtext)", letterSpacing: "0.2em", marginBottom: "1rem", fontSize: "0.9rem" }}>[ SYSTEM.ARCHIVES.OPEN ]</p>
+        <p style={{ fontFamily: "monospace", color: "var(--subtext)", letterSpacing: "0.2em", marginBottom: "1rem", fontSize: "0.9rem" }}>{home.blog.eyebrow}</p>
         <h2 style={{ fontSize: "clamp(2.5rem, 5vw, 4.5rem)", color: "#fff", lineHeight: "1.1", textTransform: "uppercase", marginBottom: "1.5rem" }}>{home.blog.title}</h2>
       </div>
 
@@ -1396,19 +1425,20 @@ export const Footer = ({ onOpenContact }) => {
         <p style={{ color: "var(--subtext)", fontSize: "0.9rem", lineHeight: "1.6", maxWidth: "300px" }}>
           {home.footer.tagline}
         </p>
-        <button onClick={onOpenContact} className="magnetic-btn" style={{ fontSize: "0.8rem", padding: "0.8rem 1.5rem" }}>CONTACT US</button>
+        <button onClick={onOpenContact} className="magnetic-btn" style={{ fontSize: "0.8rem", padding: "0.8rem 1.5rem" }}>{home.footer.contactBtn}</button>
       </div>
       <div style={{ display: "flex", gap: "4rem", flexWrap: "wrap" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <h4 style={{ fontFamily: "var(--font-heading)", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>QUICK LINKS</h4>
-          {[["#product-service","Product & Service"],["#better-tomorrow","Better Tomorrow"],["#career","Career"],["#media-events","Media & Events"]].map(([href,label])=>(
+          <h4 style={{ fontFamily: "var(--font-heading)", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>{home.footer.quickTitle}</h4>
+          {home.footer.quick.map((line) => { const at = line.indexOf('|'); const label = at < 0 ? line.trim() : line.slice(0, at).trim(); const href = at < 0 ? '#' : line.slice(at + 1).trim(); return (
             <a key={href} href={href} style={{ color: "var(--subtext)", textDecoration: "none", fontSize: "0.9rem", transition: "color 0.3s" }}>{label}</a>
-          ))}
+          ); })}
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <h4 style={{ fontFamily: "var(--font-heading)", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>LEGAL</h4>
-          <a href="#" style={{ color: "var(--subtext)", textDecoration: "none", fontSize: "0.9rem" }}>Privacy Policy</a>
-          <a href="#" style={{ color: "var(--subtext)", textDecoration: "none", fontSize: "0.9rem" }}>Terms of Service</a>
+          <h4 style={{ fontFamily: "var(--font-heading)", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>{home.footer.legalTitle}</h4>
+          {home.footer.legal.map((line) => { const at = line.indexOf("|"); const label = at < 0 ? line.trim() : line.slice(0, at).trim(); const href = at < 0 ? "#" : line.slice(at + 1).trim(); return (
+            <a key={label} href={href} style={{ color: "var(--subtext)", textDecoration: "none", fontSize: "0.9rem" }}>{label}</a>
+          ); })}
         </div>
       </div>
     </div>
@@ -1436,6 +1466,7 @@ export const Footer = ({ onOpenContact }) => {
 };
 
 export const CoreStrengths = () => {
+  const home = useContent('home', HOME_DEFAULTS);
   const sectionRef = useRef(null);
   const [inView, setInView] = useState(false);
 
@@ -1452,7 +1483,7 @@ export const CoreStrengths = () => {
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '150px', background: 'linear-gradient(to top, var(--primary) 0%, transparent 100%)', pointerEvents: 'none', zIndex: 2 }} />
       <div style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 3 }}>
         <Canvas camera={{ position: [0, 4, 16], fov: 45 }} dpr={[1, 1.5]} gl={{ powerPreference: "low-power" }}>
-          <CoreStrengths3D inView={inView} />
+          <CoreStrengths3D inView={inView} text={home.strengths} />
         </Canvas>
       </div>
     </section>
