@@ -3,10 +3,31 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import PageBanner from '../components/PageBanner';
-// ঘটনাক্রম src/lib/heritage.js এ — About পেজেও একই তালিকা লাগে
-import { ERAS } from '../lib/heritage';
+import { MILESTONES } from '../lib/heritage';
+import { useContent } from '../lib/content';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
+
+// অ্যাডমিন কিছু না বদলালে এগুলোই দেখা যায়
+const DEFAULTS = {
+    banner: {
+        image: '/heritage-banner.jpeg',
+        label: 'HERITAGE',
+        title: 'Nearly two centuries of',
+        accent: 'Building',
+    },
+    lede: 'A legacy to value and enjoy in the present, and to preserve and pass on to future generations.',
+    eras: [
+        { span: '1834 — 1946', title: 'The founding trades', note: 'Four generations before steel, the family traded cloth, hide and household goods.', from: '1834', to: '1946' },
+        { span: '1965 — 1983', title: 'Into manufacturing', note: 'The move from trading to making things, and the first steel mill.', from: '1965', to: '1983' },
+        { span: '1995 — 2001', title: 'Diversification', note: 'Galvanising, jute, textiles, cement, real estate and agriculture within seven years.', from: '1995', to: '2001' },
+        { span: '2004 — 2022', title: 'The modern group', note: 'Anwar Ispat is founded, and the group extends into polymers, automotive and technology.', from: '2004', to: '2022' },
+    ],
+};
+
+// মাইলফলকের তালিকা About Us পাতার সাথে ভাগ করা — দুই জায়গায় দুটি
+// কপি রাখলে একটিতে সাল বদলে অন্যটি পুরোনো থেকে যেত
+const ABOUT_FALLBACK = { timeline: { items: MILESTONES } };
 
 const SECTION_PAD = 'clamp(2.25rem, 4vw, 3.5rem)';
 const CONTAINER = {
@@ -20,6 +41,19 @@ const CONTAINER = {
 
 const HeritagePage = () => {
     const rootRef = useRef(null);
+    const c = useContent('about-heritage', DEFAULTS);
+    // একই অনুরোধ থেকেই আসে, তাই দ্বিতীয়বার নেটওয়ার্কে যায় না
+    const about = useContent('about', ABOUT_FALLBACK);
+
+    // যুগের সীমা ধরে মাইলফলকগুলো ভাগ করা
+    const milestones = about.timeline?.items || [];
+    const eras = (c.eras || []).map((era) => ({
+        ...era,
+        events: milestones.filter((m) => {
+            const y = parseInt(m.year, 10);
+            return y >= parseInt(era.from, 10) && y <= parseInt(era.to, 10);
+        }),
+    }));
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
@@ -44,10 +78,10 @@ const HeritagePage = () => {
             style={{ background: 'var(--primary)', color: 'var(--text)', minHeight: '100vh', overflowX: 'hidden' }}
         >
             <PageBanner
-                image="/heritage-banner.jpeg"
-                label="HERITAGE"
-                title="Nearly two centuries of"
-                accent="Building"
+                image={c.banner.image}
+                label={c.banner.label}
+                title={c.banner.title}
+                accent={c.banner.accent}
                 crumbs={[
                     { label: 'Home', to: '/' },
                     { label: 'About us', to: '/about' },
@@ -69,8 +103,7 @@ const HeritagePage = () => {
                     color: 'var(--text)', margin: 0, maxWidth: '30ch',
                     textTransform: 'none',
                 }}>
-                    A legacy to value and enjoy in the present, and to preserve and pass on to
-                    future generations.
+                    {c.lede}
                 </p>
             </section>
 
@@ -84,7 +117,7 @@ const HeritagePage = () => {
                 paddingLeft: 0, paddingRight: 0,
             }}>
                 <div style={CONTAINER}>
-                    {ERAS.map((era) => (
+                    {eras.map((era) => (
                         <div key={era.span} style={{ paddingTop: SECTION_PAD }}>
                             {/* যুগের শিরোনাম — ডেস্কটপে স্ক্রলের সাথে আটকে থাকে,
                                 তাই লম্বা তালিকা পড়ার সময়ও কোন যুগ চলছে বোঝা যায় */}
