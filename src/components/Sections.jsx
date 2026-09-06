@@ -13,19 +13,29 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 // Static export kept empty — real data comes from API inside ProductService
 // হোমপেজের সব সেকশন একই পাতার অংশ, তাই একটিই DEFAULTS
 const HOME_DEFAULTS = {
+    // আগে ঠিক দুটি ব্লক ছিল (a আর b), তাই তৃতীয় কিছু যোগ করা যেত না।
+    // এখন তালিকা — প্যানেল থেকে যত খুশি যোগ বা মুছে ফেলা যায়, স্ক্রলের
+    // ক্রসফেড সংখ্যা অনুযায়ী নিজেই লম্বা হয়।
     about: {
-        aTitle: 'BUILDING A LEGACY OF',
-        aAccent: 'STEEL.',
-        aName: 'LATE ANWAR HOSSAIN',
-        aRole: 'FOUNDER, ANWAR GROUP',
-        aImg: '/founder.webp',
-        aQuote: "Our foundation isn't just laid in concrete; it's forged in unwavering commitment and intense heat. We started with a vision to build the unbuildable.",
-        bTitle: 'ENGINEERING THE NEXT',
-        bAccent: 'CENTURY.',
-        bName: 'MANWAR HOSSAIN',
-        bRole: 'GROUP MANAGING DIRECTOR',
-        bImg: '/md.webp',
-        bQuote: "We don't just supply materials; we engineer the resilience required to propel Bangladesh into the forefront of monumental construction.",
+        eyebrow: 'VISION & LEADERSHIP',
+        blocks: [
+            {
+                title: 'BUILDING A LEGACY OF',
+                accent: 'STEEL.',
+                name: 'LATE ANWAR HOSSAIN',
+                role: 'FOUNDER, ANWAR GROUP',
+                img: '/founder.webp',
+                quote: "Our foundation isn't just laid in concrete; it's forged in unwavering commitment and intense heat. We started with a vision to build the unbuildable.",
+            },
+            {
+                title: 'ENGINEERING THE NEXT',
+                accent: 'CENTURY.',
+                name: 'MANWAR HOSSAIN',
+                role: 'GROUP MANAGING DIRECTOR',
+                img: '/md.webp',
+                quote: "We don't just supply materials; we engineer the resilience required to propel Bangladesh into the forefront of monumental construction.",
+            },
+        ],
     },
     why: {
         eyebrow: 'THE FORGED PATH',
@@ -391,77 +401,53 @@ export const ProductService = () => {
 
 export const AboutUs = () => {
   const home = useContent('home', HOME_DEFAULTS);
+  const blocks = Array.isArray(home.about.blocks) ? home.about.blocks : [];
   const sectionRef = useRef(null);
   const containerRef = useRef(null);
-  const textRef1 = useRef(null);
-  const textRef2 = useRef(null);
-  const founderImgRef = useRef(null);
-  const mdImgRef = useRef(null);
+  const textRefs = useRef([]);
+  const imgRefs = useRef([]);
 
   useGSAP(
     () => {
+      const n = blocks.length;
+      if (n < 2) return;
+
+      // প্রতিটি বদলের জন্য দুই পর্দা স্ক্রল — দুটি ব্লকে আগের মতোই ২০০%
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: "+=200%",
+          end: "+=" + (n - 1) * 200 + "%",
           pin: true,
           scrub: 1,
         },
       });
 
-      tl.to(
-        founderImgRef.current,
-        {
-          yPercent: -20,
-          opacity: 0,
-          scale: 0.9,
-          duration: 1,
-        },
-        0,
-      );
+      for (let i = 0; i < n - 1; i += 1) {
+        const outImg = imgRefs.current[i];
+        const outText = textRefs.current[i];
+        const inImg = imgRefs.current[i + 1];
+        const inText = textRefs.current[i + 1];
+        if (!outImg || !outText || !inImg || !inText) continue;
 
-      tl.to(
-        textRef1.current,
-        {
-          opacity: 0,
-          y: -50,
-          duration: 1,
-        },
-        0,
-      );
-
-      tl.fromTo(
-        mdImgRef.current,
-        {
-          yPercent: 50,
-          opacity: 0,
-          scale: 1.1,
-        },
-        {
-          yPercent: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 1,
-        },
-        0.5,
-      );
-
-      tl.fromTo(
-        textRef2.current,
-        {
-          opacity: 0,
-          y: 50,
-        },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-        },
-        0.5,
-      );
+        tl.to(outImg, { yPercent: -20, opacity: 0, scale: 0.9, duration: 1 }, i);
+        tl.to(outText, { opacity: 0, y: -50, duration: 1 }, i);
+        tl.fromTo(
+          inImg,
+          { yPercent: 50, opacity: 0, scale: 1.1 },
+          { yPercent: 0, opacity: 1, scale: 1, duration: 1 },
+          i + 0.5,
+        );
+        tl.fromTo(
+          inText,
+          { opacity: 0, y: 50 },
+          { opacity: 1, y: 0, duration: 1 },
+          i + 0.5,
+        );
+      }
     },
-    { scope: sectionRef },
+    // অ্যাডমিন ব্লক যোগ বা বাদ দিলে টাইমলাইন নতুন করে বাঁধতে হয়
+    { scope: sectionRef, dependencies: [blocks.length], revertOnUpdate: true },
   );
 
   return (
@@ -502,6 +488,7 @@ export const AboutUs = () => {
             zIndex: 10,
           }}
         >
+          {/* মোবাইলের CSS এই <p> টিকে বাঁ কলামের প্রথম সন্তান ধরে */}
           <p
             style={{
               fontFamily: "monospace",
@@ -514,115 +501,68 @@ export const AboutUs = () => {
               top: "15%",
             }}
           >
-            VISION & LEADERSHIP
+            {home.about.eyebrow}
           </p>
 
           <div style={{ position: "relative", width: "100%", height: "300px" }}>
-            <div
-              ref={textRef1}
-              style={{ position: "absolute", top: 0, left: 0, width: "100%" }}
-            >
-              <h2
+            {blocks.map((b, i) => (
+              <div
+                key={i}
+                ref={(el) => { textRefs.current[i] = el; }}
                 style={{
-                  fontSize: "clamp(2.5rem, 4vw, 4rem)",
-                  color: "var(--text)",
-                  lineHeight: 1.1,
-                  marginBottom: "1.5rem",
-                  textTransform: "uppercase",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  opacity: i === 0 ? 1 : 0,
                 }}
               >
-                {home.about.aTitle}{" "}
-                <span className="accent-text">{home.about.aAccent}</span>
-              </h2>
-              <p
-                style={{
-                  color: "var(--subtext)",
-                  fontSize: "1.2rem",
-                  lineHeight: 1.6,
-                  maxWidth: "500px",
-                  borderLeft: "2px solid var(--accent)",
-                  paddingLeft: "1.5rem",
-                  fontStyle: "italic",
-                }}
-              >
-                {home.about.aQuote}
-              </p>
-              <h4
-                style={{
-                  marginTop: "2rem",
-                  fontFamily: "var(--font-heading)",
-                  letterSpacing: "0.1em",
-                  color: "var(--text)",
-                }}
-              >
-                {home.about.aName}
-              </h4>
-              <p
-                style={{
-                  fontFamily: "monospace",
-                  color: "var(--subtext)",
-                  fontSize: "0.8rem",
-                }}
-              >
-                {home.about.aRole}
-              </p>
-            </div>
-
-            <div
-              ref={textRef2}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                opacity: 0,
-              }}
-            >
-              <h2
-                style={{
-                  fontSize: "clamp(2.5rem, 4vw, 4rem)",
-                  color: "var(--text)",
-                  lineHeight: 1.1,
-                  marginBottom: "1.5rem",
-                  textTransform: "uppercase",
-                }}
-              >
-                {home.about.bTitle}{" "}
-                <span className="accent-text">{home.about.bAccent}</span>
-              </h2>
-              <p
-                style={{
-                  color: "var(--subtext)",
-                  fontSize: "1.2rem",
-                  lineHeight: 1.6,
-                  maxWidth: "500px",
-                  borderLeft: "2px solid var(--accent)",
-                  paddingLeft: "1.5rem",
-                  fontStyle: "italic",
-                }}
-              >
-                {home.about.bQuote}
-              </p>
-              <h4
-                style={{
-                  marginTop: "2rem",
-                  fontFamily: "var(--font-heading)",
-                  letterSpacing: "0.1em",
-                  color: "var(--text)",
-                }}
-              >
-                {home.about.bName}
-              </h4>
-              <p
-                style={{
-                  fontFamily: "monospace",
-                  color: "var(--subtext)",
-                  fontSize: "0.8rem",
-                }}
-              >
-                {home.about.bRole}
-              </p>
-            </div>
+                <h2
+                  style={{
+                    fontSize: "clamp(2.5rem, 4vw, 4rem)",
+                    color: "var(--text)",
+                    lineHeight: 1.1,
+                    marginBottom: "1.5rem",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {b.title}{" "}
+                  <span className="accent-text">{b.accent}</span>
+                </h2>
+                <p
+                  style={{
+                    color: "var(--subtext)",
+                    fontSize: "1.2rem",
+                    lineHeight: 1.6,
+                    maxWidth: "500px",
+                    borderLeft: "2px solid var(--accent)",
+                    paddingLeft: "1.5rem",
+                    fontStyle: "italic",
+                  }}
+                >
+                  {b.quote}
+                </p>
+                <h4
+                  style={{
+                    marginTop: "2rem",
+                    fontFamily: "var(--font-heading)",
+                    letterSpacing: "0.1em",
+                    color: "var(--text)",
+                  }}
+                >
+                  {b.name}
+                </h4>
+                <p
+                  style={{
+                    fontFamily: "monospace",
+                    color: "var(--subtext)",
+                    fontSize: "0.8rem",
+                  }}
+                >
+                  {b.role}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -644,44 +584,28 @@ export const AboutUs = () => {
             }}
           ></div>
 
-          <img
-            ref={founderImgRef}
-            className="founder-img"
-            src={home.about.aImg}
-            alt={home.about.aName}
-            width="800"
-            height="600"
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              objectPosition: "center 20%",
-              filter: "grayscale(100%) contrast(1.2)",
-            }}
-          />
-
-          <img
-            ref={mdImgRef}
-            className="md-img"
-            src={home.about.bImg}
-            alt={home.about.bName}
-            width="800"
-            height="600"
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              objectPosition: "center 20%",
-              filter: "grayscale(100%) contrast(1.2)",
-              opacity: 0,
-            }}
-          />
+          {blocks.map((b, i) => (
+            <img
+              key={i}
+              ref={(el) => { imgRefs.current[i] = el; }}
+              className={i === 0 ? "founder-img" : "md-img"}
+              src={b.img || undefined}
+              alt={b.name || ""}
+              width="800"
+              height="600"
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                objectPosition: "center 20%",
+                filter: "grayscale(100%) contrast(1.2)",
+                opacity: i === 0 ? 1 : 0,
+              }}
+            />
+          ))}
 
           <div
             style={{
