@@ -24,7 +24,10 @@ const DEFAULTS = {
         accent: 'Eternity',
     },
     intro: "As a proud concern of the century-old Anwar Group, Anwar Ispat has led the mild steel industry since 1978. We were the first to introduce 60-grade steel to Bangladesh and have consistently upgraded our facilities to bring the world's most advanced technology to the local market. From the tallest skyscrapers to complex nuclear power plants, our commitment to quality ensures that every structure built with Anwar Ispat is resilient, durable, and safe.",
-    timeline: { title: 'A legacy to value in the present, and to pass on to future generations' },
+    timeline: {
+        title: 'A legacy to value in the present, and to pass on to future generations',
+        items: MILESTONES,
+    },
     why: {
         eyebrow: 'WHY ANWAR ISPAT',
         title: 'Six reasons builders choose us',
@@ -216,8 +219,8 @@ const AboutUsPage = () => {
                             {c.timeline.title}
                         </h2>
                         <p className="tl-note">
-                            {MILESTONES.length} milestones from {MILESTONES[0].year} to{' '}
-                            {MILESTONES[MILESTONES.length - 1].year}. Scroll to follow the line.
+                            {c.timeline.items.length} milestones from {c.timeline.items[0]?.year} to{' '}
+                            {c.timeline.items[c.timeline.items.length - 1]?.year}. Scroll to follow the line.
                         </p>
                     </div>
                 </div>
@@ -227,7 +230,7 @@ const AboutUsPage = () => {
                     <ol className="tl-track">
                         <span className="tl-line" aria-hidden="true" />
 
-                        {MILESTONES.map((m, i) => (
+                        {c.timeline.items.map((m, i) => (
                             <li
                                 key={`${m.year}-${m.name}`}
                                 className={[
