@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import PageBanner from '../components/PageBanner';
+import { useContent } from '../lib/content';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -14,36 +15,42 @@ const CONTAINER = {
     padding: '0 clamp(1.25rem, 5vw, 3rem)',
 };
 
-const VALUES = [
-    {
-        image: '/value-1.jpg',
-        title: 'Continuous Innovation',
-        text: 'Aspire to continuously introduce new products and services to support the economic growth of Bangladesh.',
+// অ্যাডমিন কিছু না বদলালে এগুলোই দেখা যায়
+const DEFAULTS = {
+    banner: {
+        image: '/vision-mission.jpeg',
+        label: 'VISION, MISSION & VALUES',
+        title: 'Since 1834,',
+        accent: 'Forged in Purpose',
     },
-    {
-        image: '/value-2.jpg',
-        title: 'Business Diversity',
-        text: 'Strive to maintain our position as the most diversified group in Bangladesh, to respond efficiently to evolving customer needs and market trends.',
+    vision: {
+        tag: 'Vision',
+        title: 'Continuing the heritage',
+        body: 'Continuing the heritage of being pioneers in industries and leaders in development.',
     },
-    {
-        image: '/value-3.jpg',
-        title: 'Environmental Consciousness',
-        text: 'Embrace environmental responsibility and social accountability by adhering to sustainable and ethical business practices.',
+    mission: {
+        tag: 'Mission',
+        title: 'Transformative growth',
+        body: 'At Anwar Group, our vision and mission converge in a steadfast pursuit of transformative growth and societal progress. Rooted in our heritage, we strive to lead across industries, embracing sustainability and ethics. Through innovation and global expansion, we contribute to economic development. Empowered by excellence and a limitless mindset, we shape a meaningful future.',
     },
-    {
-        image: '/value-4.jpg',
-        title: 'Quality Leadership',
-        text: 'Uphold a reputation for quality leadership in every industry we operate in by upholding the highest standards of quality in all our products and services.',
+    values: {
+        eyebrow: 'OUR VALUES',
+        items: [
+            { title: 'Continuous Innovation', text: 'Aspire to continuously introduce new products and services to support the economic growth of Bangladesh.' },
+            { title: 'Business Diversity', text: 'Strive to maintain our position as the most diversified group in Bangladesh, to respond efficiently to evolving customer needs and market trends.' },
+            { title: 'Environmental Consciousness', text: 'Embrace environmental responsibility and social accountability by adhering to sustainable and ethical business practices.' },
+            { title: 'Quality Leadership', text: 'Uphold a reputation for quality leadership in every industry we operate in by upholding the highest standards of quality in all our products and services.' },
+            { title: 'Employee Friendliness', text: 'Facilitate professional growth of our people through investment in training and development programs.' },
+        ],
     },
-    {
-        image: '/value-5.jpg',
-        title: 'Employee Friendliness',
-        text: 'Facilitate professional growth of our people through investment in training and development programs.',
-    },
-];
+};
+
+// ছবি JSON এ যায় না, তাই কোডেই থাকে ও ক্রম অনুযায়ী বসে
+const VALUE_IMAGES = ['/value-1.jpg', '/value-2.jpg', '/value-3.jpg', '/value-4.jpg', '/value-5.jpg'];
 
 const VisionMissionPage = () => {
     const rootRef = useRef(null);
+    const c = useContent('about-vision', DEFAULTS);
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
@@ -68,10 +75,10 @@ const VisionMissionPage = () => {
             style={{ background: 'var(--primary)', color: 'var(--text)', minHeight: '100vh', overflowX: 'hidden' }}
         >
             <PageBanner
-                image="/vision-mission.jpeg"
-                label="VISION, MISSION & VALUES"
-                title="Since 1834,"
-                accent="Forged in Purpose"
+                image={c.banner.image}
+                label={c.banner.label}
+                title={c.banner.title}
+                accent={c.banner.accent}
                 crumbs={[
                     { label: 'Home', to: '/' },
                     { label: 'About us', to: '/about' },
@@ -116,19 +123,8 @@ const VisionMissionPage = () => {
                     alignItems: 'stretch',
                 }}>
                     {[
-                        {
-                            icon: Eye,
-                            tag: 'Vision',
-                            title: 'Continuing the heritage',
-                            body: 'Continuing the heritage of being pioneers in industries and leaders in development.',
-                            accent: true,
-                        },
-                        {
-                            icon: Target,
-                            tag: 'Mission',
-                            title: 'Transformative growth',
-                            body: 'At Anwar Group, our vision and mission converge in a steadfast pursuit of transformative growth and societal progress. Rooted in our heritage, we strive to lead across industries, embracing sustainability and ethics. Through innovation and global expansion, we contribute to economic development. Empowered by excellence and a limitless mindset, we shape a meaningful future.',
-                        },
+                        { icon: Eye, accent: true, ...c.vision },
+                        { icon: Target, ...c.mission },
                     ].map(({ icon: Icon, tag, title, body, accent }) => (
                         <article key={tag} className="vm-reveal" style={{
                             background: accent
@@ -193,7 +189,7 @@ const VisionMissionPage = () => {
                             fontFamily: 'var(--font-main)', fontSize: '0.72rem', fontWeight: 700,
                             letterSpacing: '0.28em', color: 'var(--accent)',
                         }}>
-                            OUR VALUES
+                            {c.values.eyebrow}
                         </span>
                         <h2 style={{
                             fontFamily: 'var(--font-heading)', fontSize: 'clamp(1.9rem, 4vw, 3rem)',
@@ -213,7 +209,9 @@ const VisionMissionPage = () => {
                             : 'repeat(3, 1fr)',
                         gap: 'clamp(1rem, 1.6vw, 1.4rem)',
                     }}>
-                        {VALUES.map(({ image, title, text }, i) => (
+                        {c.values.items.map(({ title, text }, i) => {
+                            const image = VALUE_IMAGES[i % VALUE_IMAGES.length];
+                            return (
                             <article key={title} className="vm-reveal vmv-card">
                                 <div className="vmv-media">
                                     <img src={image} alt={title} loading="lazy" />
@@ -234,7 +232,8 @@ const VisionMissionPage = () => {
                                     <p className="vmv-text"><span>{text}</span></p>
                                 </div>
                             </article>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             </section>

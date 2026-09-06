@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import PageBanner from '../components/PageBanner';
+import { useContent } from '../lib/content';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -14,7 +15,21 @@ const CONTAINER = {
     padding: '0 clamp(1.25rem, 5vw, 3rem)',
 };
 
-const LEADERS = [
+const FACTS = [
+    [{ icon: GraduationCap, label: 'Education', value: 'MBA, University of New Hampshire' }, { icon: Briefcase, label: 'Joined the group', value: '1993' }, { icon: Building2, label: 'Chairman since', value: 'September 2021' },],
+    [{ icon: GraduationCap, label: 'Education', value: 'BSc Computer Science, Colorado State University' }, { icon: Briefcase, label: 'Also serves as', value: 'Founding Deputy MD, Anwar Technologies' }, { icon: Building2, label: 'Oversees', value: 'Anwar Ispat, Anwar Cement, Anwar Cement Sheet, A1 Polymer' },],
+    [{ icon: GraduationCap, label: 'Education', value: 'MBA, Georgetown University McDonough School of Business' }, { icon: Briefcase, label: 'Joined the group', value: '2022' }, { icon: Building2, label: 'Leads', value: 'Building Material Division' },],
+];
+
+// অ্যাডমিন কিছু না বদলালে এগুলোই দেখা যায়
+const DEFAULTS = {
+    banner: {
+        image: '/Leadership-banner.jpeg',
+        label: 'LEADERSHIP',
+        title: 'Steering the',
+        accent: 'Legacy',
+    },
+    people: [
     {
         name: 'Manwar Hossain',
         role: 'Chairman',
@@ -23,11 +38,6 @@ const LEADERS = [
         bio: [
             `Manwar Hossain succeeded his father, the founder of the conglomerate, Late Anwar Hossain, as Chairman of Anwar Group of Industries in September 2021. He is the eldest son of Late Anwar Hossain and Bibi Amena.`,
             `He was sent to St Paul's School, Darjeeling, under the tutorship of Harry Dang, and later completed his MBA at the University of New Hampshire in 1992. He joined the family business in 1993, and under his leadership the group continues to expand its industrial footprint across Bangladesh.`,
-        ],
-        facts: [
-            { icon: GraduationCap, label: 'Education', value: 'MBA, University of New Hampshire' },
-            { icon: Briefcase, label: 'Joined the group', value: '1993' },
-            { icon: Building2, label: 'Chairman since', value: 'September 2021' },
         ],
     },
     {
@@ -39,11 +49,6 @@ const LEADERS = [
             `Furkaan N Hossain joined Anwar Group as Deputy Managing Director and oversees Anwar Ispat, Anwar Cement, Anwar Cement Sheet and A1 Polymer. He is also the founding Deputy Managing Director of Anwar Technologies, established in 2021 to lead the group's transformation in the technology sector.`,
             `He is responsible for the Building Material Division, driving strategic initiatives across the group's industrial operations. He envisions Anwar Technologies as a global technology business, and fosters a culture of innovation, collaboration and excellence. Beyond his professional work, he advocates for technology in the service of social good, supporting initiatives that bridge the digital divide.`,
         ],
-        facts: [
-            { icon: GraduationCap, label: 'Education', value: 'BSc Computer Science, Colorado State University' },
-            { icon: Briefcase, label: 'Also serves as', value: 'Founding Deputy MD, Anwar Technologies' },
-            { icon: Building2, label: 'Oversees', value: 'Anwar Ispat, Anwar Cement, Anwar Cement Sheet, A1 Polymer' },
-        ],
     },
     {
         name: 'Waeez R Hossain',
@@ -54,16 +59,13 @@ const LEADERS = [
             `Waeez R Hossain joined Anwar Group of Industries in 2022 as Deputy Managing Director and oversees Anwar Ispat, Anwar Cement, Anwar Cement Sheet and A1 Polymer. He is also a founding Deputy Managing Director of Anwar Technologies.`,
             `He leads the Building Material Division, where his strategic thinking and hands-on approach have guided the division toward growth, efficiency and innovation. He fosters a collaborative working environment, and supports community initiatives focused on sustainable development and social welfare.`,
         ],
-        facts: [
-            { icon: GraduationCap, label: 'Education', value: 'MBA, Georgetown University McDonough School of Business' },
-            { icon: Briefcase, label: 'Joined the group', value: '2022' },
-            { icon: Building2, label: 'Leads', value: 'Building Material Division' },
-        ],
     },
-];
+    ],
+};
 
 const LeadershipPage = () => {
     const rootRef = useRef(null);
+    const c = useContent('about-leadership', DEFAULTS);
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
@@ -88,10 +90,10 @@ const LeadershipPage = () => {
             style={{ background: 'var(--primary)', color: 'var(--text)', minHeight: '100vh', overflowX: 'hidden' }}
         >
             <PageBanner
-                image="/Leadership-banner.jpeg"
-                label="LEADERSHIP"
-                title="Steering the"
-                accent="Legacy"
+                image={c.banner.image}
+                label={c.banner.label}
+                title={c.banner.title}
+                accent={c.banner.accent}
                 crumbs={[
                     { label: 'Home', to: '/' },
                     { label: 'About us', to: '/about' },
@@ -127,7 +129,7 @@ const LeadershipPage = () => {
                 paddingLeft: 0, paddingRight: 0,
             }}>
                 <div style={CONTAINER}>
-                    {LEADERS.map((person, i) => (
+                    {c.people.map((person, i) => (
                         <article
                             key={person.name}
                             className="ld-reveal"
@@ -215,7 +217,7 @@ const LeadershipPage = () => {
                                     gap: '0',
                                     borderTop: '1px solid var(--glass-border)',
                                 }}>
-                                    {person.facts.map(({ icon: Icon, label, value }) => (
+                                    {(FACTS[i] || []).map(({ icon: Icon, label, value }) => (
                                         <div key={label} style={{
                                             display: 'grid',
                                             gridTemplateColumns: isMobile ? 'auto 1fr' : '18px 150px 1fr',
