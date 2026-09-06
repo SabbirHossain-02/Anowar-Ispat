@@ -1,7 +1,18 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
+import { useContent } from '../lib/content';
+
+// অ্যাডমিন কিছু না বদলালে এগুলোই দেখা যায়
+const DEFAULTS = {
+    eyebrow: 'OUR CATALOG',
+    title: 'ENGINEERED FOR',
+    accent: 'ENDURANCE',
+    intro: "Forged in extreme intensity. We provide exceptional structural solutions designed to act as the unyielding backbone of tomorrow's infrastructure. Explore our full range of premium grade TMT rebars and steel products.",
+    empty: 'No products available yet.',
+};
 
 const ProductsPage = () => {
+    const c = useContent('products', DEFAULTS);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [products, setProducts] = useState([]);
 
@@ -43,20 +54,20 @@ const ProductsPage = () => {
     >
       <div style={{ textAlign: "center", maxWidth: "800px", margin: "0 auto 4rem auto" }}>
         <p style={{ fontFamily: "monospace", color: "var(--accent)", letterSpacing: "0.2em", marginBottom: "1rem", fontSize: "0.9rem" }}>
-          OUR CATALOG
+          {c.eyebrow}
         </p>
         <h1 style={{ fontSize: "clamp(2.5rem, 5vw, 4.5rem)", color: "var(--text)", lineHeight: 1.1, textTransform: "uppercase", fontFamily: "var(--font-heading)", marginBottom: "1.5rem" }}>
-          ENGINEERED FOR <span className="accent-text">ENDURANCE</span>
+          {c.title} <span className="accent-text">{c.accent}</span>
         </h1>
         <p style={{ color: "var(--subtext)", fontSize: "1.1rem", lineHeight: "1.6" }}>
-          Forged in extreme intensity. We provide exceptional structural solutions designed to act as the unyielding backbone of tomorrow's infrastructure. Explore our full range of premium grade TMT rebars and steel products.
+          {c.intro}
         </p>
       </div>
 
       <div className="products-grid" style={{ display: "grid", gap: "2rem", width: "100%", maxWidth: "1400px", margin: "0 auto" }}>
         {products.length === 0 ? (
           <div style={{ gridColumn: '1/-1', textAlign: 'center', color: 'var(--subtext)', padding: '4rem' }}>
-            No products available yet.
+            {c.empty}
           </div>
         ) : products.map((product, idx) => (
           <div
