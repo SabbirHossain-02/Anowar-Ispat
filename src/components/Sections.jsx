@@ -108,7 +108,7 @@ const HOME_DEFAULTS = {
         empty: 'No media posts yet.',
     },
     blog: {
-        cta: 'ACCESS FULL TERMINAL',
+        cta: 'INITIATE FEED',
         eyebrow: '[ SYSTEM.ARCHIVES.OPEN ]',
         title: 'INSIGHTS & INNOVATIONS',
         items: [
@@ -130,7 +130,9 @@ const HOME_DEFAULTS = {
 // আইকন ও দিক JSON এ যায় না — কোডে থেকে ক্রম অনুযায়ী বসে
 const MS_ICONS = [History, Globe, Zap, Shield, Target, Building2];
 const msIcon = (i) => MS_ICONS[i % MS_ICONS.length];
-const msAlign = (i) => (i % 2 === 0 ? 'left' : 'right');
+// align বলে দেয় লেখাটি কোন পাশে বসবে, বাক্স যায় উল্টো পাশে।
+// প্রথম সারিতে বাক্স বাঁয়ে — তাই লেখা ডানে, তারপর পালা করে।
+const msAlign = (i) => (i % 2 === 0 ? 'right' : 'left');
 
 export const products = [];
 
@@ -871,8 +873,10 @@ export const WhyChooseUs = () => {
         {milestones.map((milestone, idx) => (
           <MilestoneCard
             key={idx}
-            index={idx}
             {...milestone}
+            index={idx}
+            icon={msIcon(idx)}
+            align={msAlign(idx)}
             isVisible={visibleMilestones.includes(idx)}
           />
         ))}
