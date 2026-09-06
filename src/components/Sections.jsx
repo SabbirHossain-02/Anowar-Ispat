@@ -1050,16 +1050,24 @@ export const ProjectShowcase = () => {
 
 
   const ProjectCard = ({ proj, idx }) => {
-    const [isLoaded, setIsLoaded] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const videoRef = useRef(null);
 
+    // আগে src বসত কেবল hover এর পর, অথচ load() ডাকা হত তার আগেই —
+    // ফলে ব্রাউজার কিছুই আনত না, আর play() কোথাও ছিল না। এখন src
+    // শুরু থেকেই থাকে; মাউস এলে চলে, সরে গেলে থেমে গোড়ায় ফেরে।
     useEffect(() => {
-      if (isHovered && videoRef.current && !isLoaded) {
-        videoRef.current.load();
-        setIsLoaded(true);
+      const v = videoRef.current;
+      if (!v || !proj.video) return;
+      if (isHovered) {
+        const played = v.play();
+        // ব্রাউজার আটকে দিলে চুপচাপ — প্রথম ফ্রেমটুকু তো দেখা যাচ্ছেই
+        if (played && played.catch) played.catch(() => {});
+      } else {
+        v.pause();
+        v.currentTime = 0;
       }
-    }, [isHovered]);
+    }, [isHovered, proj.video]);
 
     return (
       <div 
@@ -1070,15 +1078,17 @@ export const ProjectShowcase = () => {
 
         onClick={() => setSelectedProject(proj)}
       >
+        {/* স্থিরচিত্র না দিলে ভিডিওর প্রথম ফ্রেমই সেই কাজ করে, তাই
+            ততটুকু আগেই আনা হয়। স্থিরচিত্র থাকলে কিছু আনার দরকার নেই। */}
         <video
           ref={videoRef}
-          preload="none"
+          preload={proj.video && !proj.poster ? 'metadata' : 'none'}
           loop
           muted
           playsInline
           className="project-video"
           poster={proj.poster || undefined}
-          src={isLoaded && proj.video ? proj.video : undefined}
+          src={proj.video || undefined}
           style={{ width: '100%', height: '100%', objectFit: 'cover', filter: isHovered ? 'grayscale(0%) brightness(1)' : 'grayscale(80%) brightness(0.6)', transition: 'all 0.5s ease' }}
         />
         <div className="project-overlay" style={{ position: 'absolute', inset: 0, background: isHovered ? 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(227,24,45,0.2) 100%)' : 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 60%)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '1.5rem', transition: 'all 0.3s ease' }}>
