@@ -92,6 +92,7 @@ const HOME_DEFAULTS = {
         empty: 'No media posts yet.',
     },
     blog: {
+        cta: 'INITIATE FEED',
         eyebrow: '[ SYSTEM.ARCHIVES.OPEN ]',
         title: 'INSIGHTS & INNOVATIONS',
         items: [
@@ -118,6 +119,7 @@ const msAlign = (i) => (i % 2 === 0 ? 'left' : 'right');
 export const products = [];
 
 export const ProductService = () => {
+  const home = useContent('home', HOME_DEFAULTS);
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -1348,7 +1350,7 @@ export const MediaEvents = () => {
   );
 };
 
-const InsightCarouselCard = ({ category, title, readTime, img, index, currentIndex }) => {
+const InsightCarouselCard = ({ category, title, readTime, img, index, currentIndex, cta }) => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -1385,7 +1387,7 @@ const InsightCarouselCard = ({ category, title, readTime, img, index, currentInd
         <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "clamp(1.1rem, 5vmin, 2.2rem)", marginBottom: "clamp(0.5rem, 2vh, 1.5rem)", color: "#fff", lineHeight: "1.2", textShadow: "0 4px 20px rgba(0,0,0,0.8)" }}>{title}</h3>
         <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", opacity: isActive ? 1 : 0, transform: isActive ? "translateY(0)" : "translateY(20px)", transition: "all 0.5s ease 0.2s", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "clamp(0.8rem, 2vh, 1.5rem)" }}>
           <span style={{ fontFamily: "monospace", color: "var(--subtext)", fontSize: "clamp(0.7rem, 2vmin, 0.85rem)" }}>TIME: {readTime}</span>
-          <a href="#read" className="magnetic-btn" style={{ margin: 0, padding: "clamp(0.5rem, 1.5vh, 0.8rem) clamp(1rem, 3vmin, 1.5rem)", fontSize: "clamp(0.6rem, 2vmin, 0.8rem)", borderRadius: "4px", background: "transparent", border: "1px solid var(--accent)", color: "var(--accent)" }}>{home.media.cta}</a>
+          <a href="#read" className="magnetic-btn" style={{ margin: 0, padding: "clamp(0.5rem, 1.5vh, 0.8rem) clamp(1rem, 3vmin, 1.5rem)", fontSize: "clamp(0.6rem, 2vmin, 0.8rem)", borderRadius: "4px", background: "transparent", border: "1px solid var(--accent)", color: "var(--accent)" }}>{cta}</a>
         </div>
       </div>
       {isActive && <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at top right, rgba(227, 24, 45, 0.1), transparent 60%)", pointerEvents: "none", borderRadius: "16px" }}></div>}
@@ -1412,7 +1414,7 @@ export const Blog = () => {
 
       <div style={{ position: "relative", height: "clamp(300px, min(60vw, 60vh), 480px)", width: "100%", perspective: "1500px", display: "flex", alignItems: "center", justifyContent: "center" }}>
         {insights.map((insight, idx) => (
-          <InsightCarouselCard key={idx} index={idx} currentIndex={currentIndex} {...insight} />
+          <InsightCarouselCard key={idx} index={idx} currentIndex={currentIndex} cta={home.blog.cta} {...insight} />
         ))}
         <div style={{ position: "absolute", bottom: "0", display: "flex", gap: "2rem", zIndex: 30 }}>
           <button onClick={handlePrev} style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.2)", color: "#fff", width: "50px", height: "50px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "all 0.3s ease" }} onMouseOver={(e) => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.color = "var(--accent)"; }} onMouseOut={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)"; e.currentTarget.style.color = "#fff"; }}>&larr;</button>
