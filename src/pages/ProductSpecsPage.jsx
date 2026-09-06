@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import PageBanner from '../components/PageBanner';
+import { useContent } from '../lib/content';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -14,7 +15,19 @@ const CONTAINER = {
     padding: '0 clamp(1.25rem, 5vw, 3rem)',
 };
 
-const APPLICATIONS = [
+// অ্যাডমিন কিছু না বদলালে এগুলোই দেখা যায়
+const DEFAULTS = {
+    banner: {
+        image: '/Product-Specifications.jpeg',
+        label: 'PRODUCT SPECIFICATIONS',
+        title: 'Built for',
+        accent: 'Strength',
+    },
+    intro: 'Every batch is tested on a spectrometer across 28 elements before it leaves the mill, to hold the tolerances that piling, slabs and columns are designed against.',
+    apps: {
+        eyebrow: 'APPLICATIONS',
+        title: 'Where the bar goes',
+        items: [
     {
         image: '/app-piling.jpg',
         name: 'Piling foundation',
@@ -30,7 +43,14 @@ const APPLICATIONS = [
         name: 'Constructing pillars',
         text: 'Columns carrying the load of the building, where yield strength and ductility matter most.',
     },
-];
+],
+    },
+    chart: {
+        eyebrow: 'SIZE CHART',
+        title: 'Available diameters',
+        note: '420DWR is not produced in 8 mm. For any diameter or quantity, send us the requirement and we will confirm availability.',
+    },
+};
 
 const GRADES = ['500CWR', '500DWR', '420DWR'];
 
@@ -46,6 +66,7 @@ const SIZE_ROWS = [
 
 const ProductSpecsPage = () => {
     const rootRef = useRef(null);
+    const c = useContent('products-specifications', DEFAULTS);
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
@@ -95,10 +116,10 @@ const ProductSpecsPage = () => {
             style={{ background: 'var(--primary)', color: 'var(--text)', minHeight: '100vh', overflowX: 'hidden' }}
         >
             <PageBanner
-                image="/Product-Specifications.jpeg"
-                label="PRODUCT SPECIFICATIONS"
-                title="Built for"
-                accent="Strength"
+                image={c.banner.image}
+                label={c.banner.label}
+                title={c.banner.title}
+                accent={c.banner.accent}
                 crumbs={[
                     { label: 'Home', to: '/' },
                     { label: 'Products', to: '/products' },
@@ -118,8 +139,7 @@ const ProductSpecsPage = () => {
                     fontSize: 'clamp(1rem, 1.5vw, 1.22rem)',
                     lineHeight: 1.8, color: 'var(--text)', margin: 0, maxWidth: '62ch',
                 }}>
-                    Every batch is tested on a spectrometer across 28 elements before it leaves the mill,
-                    to hold the tolerances that piling, slabs and columns are designed against.
+                    {c.intro}
                 </p>
             </section>
 
@@ -135,14 +155,14 @@ const ProductSpecsPage = () => {
                 borderBottom: '1px solid var(--glass-border)',
             }}>
                 <div style={CONTAINER}>
-                    {heading('APPLICATIONS', 'Where the bar goes')}
+                    {heading(c.apps.eyebrow, c.apps.title)}
 
                     <div style={{
                         display: 'grid',
                         gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
                         gap: 'clamp(1.25rem, 2.5vw, 2.25rem)',
                     }}>
-                        {APPLICATIONS.map(({ image, name, text }, i) => (
+                        {c.apps.items.map(({ image, name, text }, i) => (
                             <article key={name} className="ps-reveal vmv-card">
                                 <div className="vmv-media">
                                     <img src={image} alt={name} loading="lazy" />
@@ -177,7 +197,7 @@ const ProductSpecsPage = () => {
                 paddingLeft: 0, paddingRight: 0,
             }}>
                 <div style={CONTAINER}>
-                    {heading('SIZE CHART', 'Available diameters')}
+                    {heading(c.chart.eyebrow, c.chart.title)}
 
                     {/* চওড়া টেবিল যেন পুরো পেজ পাশে ঠেলে না দেয়, তাই নিজের
                         ভেতরেই স্ক্রল করে */}
@@ -221,8 +241,7 @@ const ProductSpecsPage = () => {
                         fontFamily: 'var(--font-main)', fontSize: '0.85rem',
                         color: 'var(--subtext)', margin: '1.4rem 0 0', maxWidth: '62ch',
                     }}>
-                        420DWR is not produced in 8 mm. For any diameter or quantity, send us the
-                        requirement and we will confirm availability.
+                        {c.chart.note}
                     </p>
 
                     <button

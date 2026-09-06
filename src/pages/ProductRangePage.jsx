@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import PageBanner from '../components/PageBanner';
+import { useContent } from '../lib/content';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -14,7 +15,19 @@ const CONTAINER = {
     padding: '0 clamp(1.25rem, 5vw, 3rem)',
 };
 
-const GRADES = [
+// অ্যাডমিন কিছু না বদলালে এগুলোই দেখা যায়
+const DEFAULTS = {
+    banner: {
+        image: '/product-range-banner.jpeg',
+        label: 'PRODUCTS',
+        title: 'Reinforcement built for',
+        accent: 'Strength',
+    },
+    intro: 'Anwar Ispat produces deformed reinforcement bars using patented TMT technology from Belgium, tested batch by batch and certified to BSTI and ISO standards.',
+    grades: {
+        eyebrow: 'OUR GRADES',
+        title: 'Two grades, two jobs',
+        items: [
     {
         name: 'ANWARS 500DWR',
         tag: '500 grade · dual wire rib',
@@ -39,11 +52,15 @@ const GRADES = [
             'Excellent durability',
         ],
     },
-];
+],
+    },
+    catalogue: { eyebrow: 'CATALOGUE', title: 'From our product line' },
+};
 
 
 const ProductRangePage = () => {
     const rootRef = useRef(null);
+    const c = useContent('products-range', DEFAULTS);
     const [isMobile, setIsMobile] = useState(false);
 
     // ── API: অ্যাডমিন থেকে যোগ করা প্রোডাক্ট ─────────────────────────
@@ -103,10 +120,10 @@ const ProductRangePage = () => {
             style={{ background: 'var(--primary)', color: 'var(--text)', minHeight: '100vh', overflowX: 'hidden' }}
         >
             <PageBanner
-                image="/product-range-banner.jpeg"
-                label="PRODUCTS"
-                title="Reinforcement built for"
-                accent="Strength"
+                image={c.banner.image}
+                label={c.banner.label}
+                title={c.banner.title}
+                accent={c.banner.accent}
                 crumbs={[
                     { label: 'Home', to: '/' },
                     { label: 'Products', to: '/products' },
@@ -126,8 +143,7 @@ const ProductRangePage = () => {
                     fontSize: 'clamp(1rem, 1.5vw, 1.22rem)',
                     lineHeight: 1.8, color: 'var(--text)', margin: 0, maxWidth: '62ch',
                 }}>
-                    Anwar Ispat produces deformed reinforcement bars using patented TMT technology from
-                    Belgium, tested batch by batch and certified to BSTI and ISO standards.
+                    {c.intro}
                 </p>
             </section>
 
@@ -143,7 +159,7 @@ const ProductRangePage = () => {
                 borderBottom: '1px solid var(--glass-border)',
             }}>
                 <div style={CONTAINER}>
-                    {heading('OUR GRADES', 'Two grades, two jobs')}
+                    {heading(c.grades.eyebrow, c.grades.title)}
 
                     <div style={{
                         display: 'grid',
@@ -151,7 +167,7 @@ const ProductRangePage = () => {
                         gap: 'clamp(1rem, 2vw, 1.75rem)',
                         alignItems: 'start',
                     }}>
-                        {GRADES.map((g) => (
+                        {c.grades.items.map((g) => (
                             <article key={g.name} className="pr-reveal" style={{
                                 background: 'var(--surface)',
                                 border: '1px solid var(--glass-border)',
@@ -224,7 +240,7 @@ const ProductRangePage = () => {
                     paddingLeft: 0, paddingRight: 0,
                 }}>
                     <div style={CONTAINER}>
-                        {heading('CATALOGUE', 'From our product line')}
+                        {heading(c.catalogue.eyebrow, c.catalogue.title)}
 
                         {loadingProducts ? (
                             <p style={{ color: 'var(--subtext)', fontSize: '0.95rem', margin: 0 }}>

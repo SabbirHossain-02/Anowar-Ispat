@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import PageBanner from '../components/PageBanner';
+import { useContent } from '../lib/content';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -16,7 +17,18 @@ const CONTAINER = {
 // স্লাইডের ক্রম রাখা হয়েছে। scope টা কার্ডের নিচে ছোট লেবেল হিসেবে
 // বসে — আগের মতো তিনটি আলাদা শিরোনামে ভাগ করা হয়নি, কারণ সেই
 // শিরোনামগুলো নথিতে ছিল না।
-const CERTIFICATES = [
+// অ্যাডমিন কিছু না বদলালে এগুলোই দেখা যায়
+const DEFAULTS = {
+    banner: {
+        image: '/Certifications-page-banner.jpg',
+        label: 'CERTIFICATIONS',
+        title: 'Tested, audited and',
+        accent: 'Certified',
+    },
+    eyebrow: 'CERTIFICATIONS',
+    title: 'Every claim below is issued by a body outside Anwar Ispat',
+    lead: 'The rebar is certified against Bangladeshi, British, Indian and American standards. The mill itself is audited to ISO quality and environmental management systems, and tested independently by BUET.',
+    items: [
     {
         logo: '/cert-buet.png',
         code: 'BUET',
@@ -65,10 +77,12 @@ const CERTIFICATES = [
         issuer: 'ASTM International — certified for seismic safety',
         scope: 'Product standard',
     },
-];
+],
+};
 
 const CertificationsPage = () => {
     const rootRef = useRef(null);
+    const c = useContent('products-certifications', DEFAULTS);
 
     useGSAP(() => {
         gsap.utils.toArray('.cert-card').forEach((el, i) => {
@@ -87,10 +101,10 @@ const CertificationsPage = () => {
             style={{ background: 'var(--primary)', color: 'var(--text)', minHeight: '100vh', overflowX: 'hidden' }}
         >
             <PageBanner
-                image="/Certifications-page-banner.jpg"
-                label="CERTIFICATIONS"
-                title="Tested, audited and"
-                accent="Certified"
+                image={c.banner.image}
+                label={c.banner.label}
+                title={c.banner.title}
+                accent={c.banner.accent}
                 crumbs={[
                     { label: 'Home', to: '/' },
                     { label: 'Products', to: '/products' },
@@ -105,19 +119,13 @@ const CertificationsPage = () => {
                 paddingBottom: `calc(${SECTION_PAD} * 1.4)`,
             }}>
                 <div className="cert-head">
-                    <span className="cert-eyebrow">CERTIFICATIONS</span>
-                    <h2 className="cert-title">
-                        Every claim below is issued by a body outside Anwar Ispat
-                    </h2>
-                    <p className="cert-lead">
-                        The rebar is certified against Bangladeshi, British, Indian and American
-                        standards. The mill itself is audited to ISO quality and environmental
-                        management systems, and tested independently by BUET.
-                    </p>
+                    <span className="cert-eyebrow">{c.eyebrow}</span>
+                    <h2 className="cert-title">{c.title}</h2>
+                    <p className="cert-lead">{c.lead}</p>
                 </div>
 
                 <div className="cert-grid">
-                    {CERTIFICATES.map((c) => (
+                    {c.items.map((c) => (
                         <article key={c.code} className="cert-card">
                             {/* প্লেট দুই থিমেই সাদা — কয়েকটি লোগো কালো কালিতে
                                 আঁকা, গাঢ় পটভূমিতে মিলিয়ে যেত */}
