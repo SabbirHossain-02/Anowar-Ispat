@@ -16,6 +16,8 @@ const DEFAULTS = {
     more: 'MORE STORIES',
     ticker: 'LATEST',
     empty: 'No stories have been published in this section yet.',
+    loading: 'Loading the newsroom…',
+    failed: 'The newsroom could not be reached just now. Please try again shortly.',
 };
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -137,12 +139,10 @@ const MediaNewsPage = () => {
                     </div>
                 )}
 
-                {loading && <p className="nw-note">Loading the newsroom…</p>}
+                {loading && <p className="nw-note">{c.loading}</p>}
 
                 {!loading && failed && (
-                    <p className="nw-note">
-                        The newsroom could not be reached just now. Please try again shortly.
-                    </p>
+                    <p className="nw-note">{c.failed}</p>
                 )}
 
                 {!loading && !failed && shown.length === 0 && (

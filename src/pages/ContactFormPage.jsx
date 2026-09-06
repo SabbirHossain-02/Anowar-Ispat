@@ -15,6 +15,15 @@ const DEFAULTS = {
     promise: 'Within 24 Hours',
     promiseNote: 'Response time',
   },
+  sentTitle: 'Message Sent!',
+  sentText: 'Thank you. We will get back to you within 24 hours.',
+  sentAgain: 'Send Another',
+  sideCards: [
+    { label: 'Response Time', value: 'Within 24 Hours', sub: 'Business days only' },
+    { label: 'Head Office', value: 'Chawk Bazar, Dhaka-1211', sub: 'Bangladesh' },
+    { label: 'Working Hours', value: 'Sun – Thu', sub: '9:00 AM – 6:00 PM' },
+    { label: 'General Email', value: 'info@anwarispat.com', sub: 'For all inquiries' },
+  ],
 };
 
 const ContactFormPage = () => {
@@ -23,6 +32,40 @@ const ContactFormPage = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [form, setForm] = useState({ name:'', company:'', email:'', phone:'', subject:'Product Inquiry', message:'' });
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState('');
+
+  // আগে বোতামটি শুধু setSent(true) করত — "Message Sent!" দেখাত,
+  // অথচ কিছুই পাঠানো হত না। এখন বার্তা প্যানেলের Messages এ জমে।
+  const send = async () => {
+    if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
+      setError('Please fill in your name, email and message.');
+      return;
+    }
+    setSending(true);
+    setError('');
+    try {
+      const res = await fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          subject: [form.subject, form.company && ('Company: ' + form.company)].filter(Boolean).join(' — '),
+          body: form.message,
+          source: 'form',
+        }),
+      });
+      if (!res.ok) throw new Error('failed');
+      setSent(true);
+      setForm({ name:'', company:'', email:'', phone:'', subject:'Product Inquiry', message:'' });
+    } catch {
+      setError('The message could not be sent. Please try again, or call us on the hotline.');
+    } finally {
+      setSending(false);
+    }
+  };
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -61,9 +104,9 @@ const ContactFormPage = () => {
             {sent ? (
               <div style={{ padding:'32px', background:'rgba(34,197,94,0.06)', border:'1px solid rgba(34,197,94,0.2)', borderRadius:'12px', textAlign:'center' }}>
                 <div style={{ fontSize:'32px', marginBottom:'12px' }}>✓</div>
-                <div style={{ fontSize:'16px', fontWeight:700, color:'#22c55e', marginBottom:'8px' }}>Message Sent!</div>
-                <p style={{ fontSize:'13px', color:'var(--subtext)', lineHeight:1.7 }}>Thank you. We will get back to you within 24 hours.</p>
-                <button onClick={() => setSent(false)} style={{ marginTop:'16px', background:'transparent', border:'1px solid rgba(34,197,94,0.3)', color:'#22c55e', padding:'8px 20px', borderRadius:'6px', fontSize:'11px', letterSpacing:'1px', textTransform:'uppercase', cursor:'pointer' }}>Send Another</button>
+                <div style={{ fontSize:'16px', fontWeight:700, color:'#22c55e', marginBottom:'8px' }}>{c.sentTitle}</div>
+                <p style={{ fontSize:'13px', color:'var(--subtext)', lineHeight:1.7 }}>{c.sentText}</p>
+                <button onClick={() => setSent(false)} style={{ marginTop:'16px', background:'transparent', border:'1px solid rgba(34,197,94,0.3)', color:'#22c55e', padding:'8px 20px', borderRadius:'6px', fontSize:'11px', letterSpacing:'1px', textTransform:'uppercase', cursor:'pointer' }}>{c.sentAgain}</button>
               </div>
             ) : (
               <div>
@@ -85,23 +128,24 @@ const ContactFormPage = () => {
                   <label style={lbl}>Message *</label>
                   <textarea style={{ ...inp, resize:'vertical', minHeight:'140px' }} value={form.message} onChange={e => setForm({...form, message:e.target.value})} placeholder="Tell us about your requirement..." onFocus={e=>{e.target.style.borderColor='var(--accent)'}} onBlur={e=>{e.target.style.borderColor='var(--glass-border)'}}/>
                 </div>
-                <button onClick={() => setSent(true)} style={{ width:'100%', background:'var(--accent)', color:'#fff', border:'none', padding:'13px', borderRadius:'8px', fontSize:'11px', letterSpacing:'2px', textTransform:'uppercase', fontWeight:700, cursor:'pointer' }}>
-                  Send Message →
+                {error && (
+                  <p style={{ fontSize:'12px', color:'var(--accent)', lineHeight:1.6, marginBottom:'10px' }}>{error}</p>
+                )}
+                <button onClick={send} disabled={sending} style={{ width:'100%', background:'var(--accent)', color:'#fff', border:'none', padding:'13px', borderRadius:'8px', fontSize:'11px', letterSpacing:'2px', textTransform:'uppercase', fontWeight:700, cursor:sending?'not-allowed':'pointer', opacity:sending?0.6:1 }}>
+                  {sending ? 'Sending…' : 'Send Message →'}
                 </button>
               </div>
             )}
           </div>
 
           <div style={{ display:'flex', flexDirection:'column', gap:'10px', position:isMobile?'relative':'sticky', top:'100px' }}>
-            <div style={{ padding:'16px', background:'rgba(227,24,45,0.05)', border:'1px solid rgba(227,24,45,0.15)', borderRadius:'10px' }}>
-              <div style={{ fontSize:'9px', letterSpacing:'2px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'6px' }}>Response Time</div>
-              <div style={{ fontSize:'14px', fontWeight:700 }}>Within 24 Hours</div>
-              <div style={{ fontSize:'11px', color:'var(--subtext)', marginTop:'2px' }}>Business days only</div>
-            </div>
-            {[{label:'Head Office',value:'Chawk Bazar, Dhaka-1211',sub:'Bangladesh'},{label:'Working Hours',value:'Sun – Thu',sub:'9:00 AM – 6:00 PM'},{label:'General Email',value:'info@anwarispat.com',sub:'For all inquiries'}].map((item,i) => (
-              <div key={i} style={{ padding:'16px', background:'var(--glass)', border:'1px solid var(--glass-border)', borderRadius:'10px' }}>
-                <div style={{ fontSize:'9px', letterSpacing:'2px', color:'var(--subtext)', textTransform:'uppercase', marginBottom:'6px' }}>{item.label}</div>
-                <div style={{ fontSize:'13px', fontWeight:600 }}>{item.value}</div>
+            {/* প্রথম কার্ডটি লাল, বাকিগুলো সাদামাটা — ক্রম দেখেই ঠিক হয় */}
+            {c.sideCards.map((item,i) => (
+              <div key={i} style={i === 0
+                ? { padding:'16px', background:'rgba(227,24,45,0.05)', border:'1px solid rgba(227,24,45,0.15)', borderRadius:'10px' }
+                : { padding:'16px', background:'var(--glass)', border:'1px solid var(--glass-border)', borderRadius:'10px' }}>
+                <div style={{ fontSize:'9px', letterSpacing:'2px', color:i === 0 ? 'var(--accent)' : 'var(--subtext)', textTransform:'uppercase', marginBottom:'6px' }}>{item.label}</div>
+                <div style={{ fontSize:i === 0 ? '14px' : '13px', fontWeight:i === 0 ? 700 : 600 }}>{item.value}</div>
                 <div style={{ fontSize:'11px', color:'var(--subtext)', marginTop:'2px' }}>{item.sub}</div>
               </div>
             ))}

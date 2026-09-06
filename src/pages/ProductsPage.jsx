@@ -9,6 +9,14 @@ const DEFAULTS = {
     accent: 'ENDURANCE',
     intro: "Forged in extreme intensity. We provide exceptional structural solutions designed to act as the unyielding backbone of tomorrow's infrastructure. Explore our full range of premium grade TMT rebars and steel products.",
     empty: 'No products available yet.',
+    specLabel: 'KEY SPECIFICATIONS',
+    specs: [
+        'Ultimate Tensile Strength: 500 MPa',
+        'Excellent Weldability and Bendability',
+        'Earthquake Resistant Properties',
+        'Advanced Rib Design for better bonding',
+    ],
+    quoteBtn: 'REQUEST A QUOTE',
 };
 
 const ProductsPage = () => {
@@ -115,17 +123,14 @@ const ProductsPage = () => {
             <h3 className="product-modal-title">{selectedProduct?.title}</h3>
             <p className="product-modal-desc">{selectedProduct?.desc}</p>
             <div style={{ marginBottom: "1.5rem" }}>
-              <h4 style={{ color: "var(--accent)", marginBottom: "0.8rem", letterSpacing: "0.1em", fontSize: "0.9rem", fontFamily: "var(--font-heading)" }}>KEY SPECIFICATIONS</h4>
+              <h4 style={{ color: "var(--accent)", marginBottom: "0.8rem", letterSpacing: "0.1em", fontSize: "0.9rem", fontFamily: "var(--font-heading)" }}>{c.specLabel}</h4>
               <ul className="product-spec-list">
-                <li>Ultimate Tensile Strength: 500 MPa</li>
-                <li>Excellent Weldability and Bendability</li>
-                <li>Earthquake Resistant Properties</li>
-                <li>Advanced Rib Design for better bonding</li>
+                {c.specs.map((t) => <li key={t}>{t}</li>)}
               </ul>
             </div>
             <div className="product-modal-actions">
               <button className="btn-get-quote" style={{ width: "100%", padding: "1rem", fontSize: "1rem", fontWeight: "700" }} onClick={() => { window.dispatchEvent(new CustomEvent('open-quote')); }}>
-                REQUEST A QUOTE
+                {c.quoteBtn}
               </button>
             </div>
           </div>

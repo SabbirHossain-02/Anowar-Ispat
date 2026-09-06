@@ -7,6 +7,17 @@ import { useGSAP } from '@gsap/react';
 import {
     articleSlug, idFromSlug, paragraphs, excerpt, readTime, fetchNews,
 } from '../lib/news';
+import { useContent } from '../lib/content';
+
+// খবরের তালিকার পাতা যে লেখা দেখায়, ভেতরের পাতাও সেখান থেকেই পড়ে
+const DEFAULTS = {
+    artLoading: 'Loading the story…',
+    artGoneTag: 'NOT FOUND',
+    artGone: 'This story is no longer available',
+    artGoneText: 'It may have been removed from the newsroom, or the link may be incomplete.',
+    artBack: 'All news',
+    artMore: 'MORE FROM THE NEWSROOM',
+};
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -24,6 +35,7 @@ const NewsArticlePage = () => {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [copied, setCopied] = useState(false);
+    const c = useContent('media-news', DEFAULTS);
 
     useEffect(() => { window.scrollTo(0, 0); }, [slug]);
 
@@ -79,18 +91,16 @@ const NewsArticlePage = () => {
         </div>
     );
 
-    if (loading) return shell(<p className="nw-note">Loading the story…</p>);
+    if (loading) return shell(<p className="nw-note">{c.artLoading}</p>);
 
     if (!article) {
         return shell(
             <div className="na-missing">
-                <span className="nw-kicker">NOT FOUND</span>
-                <h1 className="na-title">This story is no longer available</h1>
-                <p className="na-lead">
-                    It may have been removed from the newsroom, or the link may be incomplete.
-                </p>
+                <span className="nw-kicker">{c.artGoneTag}</span>
+                <h1 className="na-title">{c.artGone}</h1>
+                <p className="na-lead">{c.artGoneText}</p>
                 <button type="button" className="na-back" onClick={() => navigate('/media/news')}>
-                    <ArrowLeft size={15} strokeWidth={2.2} /> All news
+                    <ArrowLeft size={15} strokeWidth={2.2} /> {c.artBack}
                 </button>
             </div>,
         );
@@ -133,7 +143,7 @@ const NewsArticlePage = () => {
 
             {related.length > 0 && (
                 <section className="na-related">
-                    <div className="nw-rule na-reveal"><span>MORE FROM THE NEWSROOM</span></div>
+                    <div className="nw-rule na-reveal"><span>{c.artMore}</span></div>
 
                     <div className="nw-grid">
                         {related.map((p) => (

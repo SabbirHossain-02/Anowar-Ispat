@@ -1,5 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Menu, X, Sun, Moon, ChevronDown } from 'lucide-react';
+import { useContent } from '../lib/content';
+
+// মেনুর নামগুলো অ্যাডমিন প্যানেল থেকে বদলানো যায়। প্রতিটি ঘরের প্রথম
+// লাইন উপরের নাম, তার নিচের লাইনগুলো ড্রপ-ডাউন — ক্রম অনুযায়ী বসে।
+// ঠিকানাগুলো কোডেই থাকে, নইলে একটা বানান ভুলে পাতা হারিয়ে যেত।
+const NAV_DEFAULTS = {
+    menu: {
+        about: ['About Us', 'Vision, Mission & Values', 'Leadership Team', 'Heritage'],
+        products: ['Products', 'Our Product Range', 'Product Specifications', 'Certifications', 'Download Catalog / Request Quote'],
+        sustainability: ['Sustainability', 'Environmental, Social, Governance', 'CSR Activities'],
+        landmarks: ['Landmarks', 'Project Gallery'],
+        media: ['Media Center', 'News & Articles', 'Press Releases', 'Event Gallery'],
+        careers: ['Careers', 'Open Positions', 'Employee Experience'],
+        contact: ['Contact Us', 'Contact Form', 'Office Locations', 'Hotline / Email', 'Google Map'],
+    },
+    quoteBtn: 'GET QUOTE',
+};
 
 const Navbar = ({ onOpenContact, onNavigate }) => {
     const [scrolled, setScrolled] = useState(false);
@@ -7,6 +24,14 @@ const Navbar = ({ onOpenContact, onNavigate }) => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [isLightMode, setIsLightMode] = useState(true);
     const [activeMobileDropdown, setActiveMobileDropdown] = useState(null);
+
+    const c = useContent('navbar', NAV_DEFAULTS);
+    // লাইনটা মুছে ফেললে বা কম লাইন থাকলে কোডের নামটাই ফিরে আসে
+    const L = (k, i) => {
+        const list = c.menu && c.menu[k];
+        const fallback = NAV_DEFAULTS.menu[k][i];
+        return (Array.isArray(list) && list[i]) || fallback;
+    };
 
     useEffect(() => {
         const savedTheme = localStorage.getItem('themeMode');
@@ -40,74 +65,73 @@ const Navbar = ({ onOpenContact, onNavigate }) => {
     }, []);
 
     const navLinks = [
-        
         {
-            name: 'About Us',
+            name: L('about', 0),
             page: 'about',
             hash: '',
             dropdown: [
-                { name: 'Vision, Mission & Values', page: 'about/vision', hash: '' },
-                { name: 'Leadership Team', page: 'about/leadership', hash: '' },
-                { name: 'Heritage', page: 'about/heritage', hash: '' }
+                { name: L('about', 1), page: 'about/vision', hash: '' },
+                { name: L('about', 2), page: 'about/leadership', hash: '' },
+                { name: L('about', 3), page: 'about/heritage', hash: '' }
             ]
         },
         {
-            name: 'Products',
+            name: L('products', 0),
             page: 'products',
             hash: '',
             dropdown: [
-                { name: 'Our Product Range', page: 'products/range', hash: '' },
-                { name: 'Product Specifications', page: 'products/specifications', hash: '' },
-                { name: 'Certifications', page: 'products/certifications', hash: '' },
-                { name: 'Download Catalog / Request Quote', type: 'quote' }
+                { name: L('products', 1), page: 'products/range', hash: '' },
+                { name: L('products', 2), page: 'products/specifications', hash: '' },
+                { name: L('products', 3), page: 'products/certifications', hash: '' },
+                { name: L('products', 4), type: 'quote' }
             ]
         },
         {
-            name: 'Sustainability',
+            name: L('sustainability', 0),
             page: 'sustainability/esg',
             hash: '',
             dropdown: [
-                { name: 'Environmental, Social, Governance', page: 'sustainability/esg', hash: '' },
-                { name: 'CSR Activities', page: 'sustainability/csr', hash: '' }
+                { name: L('sustainability', 1), page: 'sustainability/esg', hash: '' },
+                { name: L('sustainability', 2), page: 'sustainability/csr', hash: '' }
             ]
         },
         {
-            name: 'Landmarks',
+            name: L('landmarks', 0),
             page: 'projects',
             hash: '',
             dropdown: [
-                { name: 'Project Gallery', page: 'projects', hash: '' }
+                { name: L('landmarks', 1), page: 'projects', hash: '' }
             ]
         },
         {
-            name: 'Media Center',
+            name: L('media', 0),
             page: 'media/news',
             hash: '',
             dropdown: [
-                { name: 'News & Articles', page: 'media/news', hash: '' },
-                { name: 'Press Releases', page: 'media/press', hash: '' },
-                { name: 'Event Gallery', page: 'media/events', hash: '' }
+                { name: L('media', 1), page: 'media/news', hash: '' },
+                { name: L('media', 2), page: 'media/press', hash: '' },
+                { name: L('media', 3), page: 'media/events', hash: '' }
             ]
         },
         {
-            name: 'Careers',
+            name: L('careers', 0),
             page: 'careers/positions',
             hash: '',
             dropdown: [
-                { name: 'Open Positions', page: 'careers/positions', hash: '' },
-                { name: 'Employee Experience', page: 'careers/experience', hash: '' }
+                { name: L('careers', 1), page: 'careers/positions', hash: '' },
+                { name: L('careers', 2), page: 'careers/experience', hash: '' }
             ]
         },
         {
-            name: 'Contact Us',
+            name: L('contact', 0),
             page: 'contact',
             hash: '',
             isContact: true,
             dropdown: [
-                { name: 'Contact Form', page: 'contact/form', hash: '' },
-                { name: 'Office Locations', page: 'contact/locations', hash: '' },
-                { name: 'Hotline / Email', page: 'contact/hotline', hash: '' },
-                { name: 'Google Map', page: 'contact/map', hash: '' }
+                { name: L('contact', 1), page: 'contact/form', hash: '' },
+                { name: L('contact', 2), page: 'contact/locations', hash: '' },
+                { name: L('contact', 3), page: 'contact/hotline', hash: '' },
+                { name: L('contact', 4), page: 'contact/map', hash: '' }
             ]
         }
     ];

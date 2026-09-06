@@ -53,7 +53,8 @@ const HOME_DEFAULTS = {
     },
     ps: {
         specLabel: 'KEY SPECIFICATIONS',
-        specs: ['Excellent Weldability and Bendability', 'Earthquake Resistant Properties', 'Advanced Rib Design for better bonding'],
+        specs: [
+            'Ultimate Tensile Strength: 500 MPa','Excellent Weldability and Bendability', 'Earthquake Resistant Properties', 'Advanced Rib Design for better bonding'],
         loading: 'Loading products...',
         empty: 'No products published yet.',
     },
@@ -354,7 +355,6 @@ export const ProductService = () => {
             <div style={{ marginBottom: "1.5rem" }}>
               <h4 style={{ color: "var(--accent)", marginBottom: "0.8rem", letterSpacing: "0.1em", fontSize: "0.9rem", fontFamily: "var(--font-heading)" }}>{home.ps.specLabel}</h4>
               <ul className="product-spec-list">
-                <li>Ultimate Tensile Strength: 500 MPa</li>
                 {home.ps.specs.map((t) => <li key={t}>{t}</li>)}
               </ul>
             </div>

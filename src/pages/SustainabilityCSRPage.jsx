@@ -25,6 +25,7 @@ const CONTAINER = {
 // content-schema.js এর পথের সাথে হুবহু মেলে।
 const DEFAULTS = {
     banner: {
+        image: '/community-outreach.jpg',
         label: 'CORPORATE SOCIAL RESPONSIBILITY',
         title: 'Community Outreach',
         accent: '& Welfare',
@@ -94,7 +95,7 @@ const SustainabilityCSRPage = () => {
             style={{ background: 'var(--primary)', color: 'var(--text)', minHeight: '100vh', overflowX: 'hidden' }}
         >
             <PageBanner
-                image="/community-outreach.jpg"
+                image={c.banner.image}
                 label={c.banner.label}
                 title={c.banner.title}
                 accent={c.banner.accent}

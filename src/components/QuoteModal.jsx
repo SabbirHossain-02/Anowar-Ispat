@@ -1,6 +1,32 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import gsap from 'gsap';
+import { useContent } from '../lib/content';
+
+// অ্যাডমিন কিছু না বদলালে এগুলোই দেখা যায়
+const DEFAULTS = {
+    title: 'REQUEST A',
+    accent: 'QUOTATION',
+    sub: 'Submit your requirements for an exact estimation.',
+    catalogBtn: 'DOWNLOAD CATALOGUE',
+    step1: 'Product Information',
+    step2: 'Contact Information',
+    products: [
+        { value: 'Anwars 500CWR', label: 'Anwars 500CWR TMT Rebar' },
+        { value: 'Anwars 500DWR', label: 'Anwars 500DWR High-Tensile' },
+        { value: 'Anwars 420DWR', label: 'Anwars 420DWR Rebar' },
+        { value: 'Other', label: 'Other Product' },
+    ],
+    labels: [
+        'PRODUCT NAME', 'SIZE (MM)', 'QUANTITY (TON)', 'QUANTITY (PCS)',
+        'ADDITIONAL PRODUCTS', 'BUSINESS NAME', 'FULL NAME *', 'EMAIL ADDRESS',
+        'MOBILE NUMBER *', 'ADDRESS', 'POLICE STATION', 'SELECT DISTRICT', 'MESSAGE',
+    ],
+    submit: 'SUBMIT QUOTATION REQUEST',
+    ok: 'QUOTATION SUBMITTED SUCCESSFULLY — We will contact you shortly.',
+    missing: 'Full Name and Mobile Number are required.',
+    failed: 'Submission failed. Please try again.',
+};
 
 const QuoteModal = ({ isOpen, onClose, preset }) => {
     const modalRef = useRef(null);
@@ -8,6 +34,9 @@ const QuoteModal = ({ isOpen, onClose, preset }) => {
     const gridLinesRef = useRef([]);
     const textStaggerRef = useRef([]);
 
+    const c = useContent('quote-modal', DEFAULTS);
+    // লাইন মুছে ফেললে বা কম লাইন থাকলে কোডের নামটাই ফিরে আসে
+    const lb = (i) => (Array.isArray(c.labels) && c.labels[i]) || DEFAULTS.labels[i];
     const [selectedProduct, setSelectedProduct] = useState("Anwars 500CWR");
     const [sizeMM, setSizeMM] = useState("");
     const [quantityTon, setQuantityTon] = useState("");
@@ -119,8 +148,8 @@ const QuoteModal = ({ isOpen, onClose, preset }) => {
 
             <div ref={contentRef} className="contact-content-wrapper" style={{ maxWidth: '1200px', margin: 'auto', padding: '4rem 0' }}>
                 <div className="contact-header" ref={el => addToRefs(el, textStaggerRef)} style={{ marginBottom: '2rem' }}>
-                    <h2 className="tech-heading" style={{ color: 'var(--text)' }}>REQUEST A <span className="accent-text">QUOTATION</span></h2>
-                    <p className="tech-subheading" style={{ marginBottom: '1.5rem' }}>Submit your requirements for an exact estimation.</p>
+                    <h2 className="tech-heading" style={{ color: 'var(--text)' }}>{c.title} <span className="accent-text">{c.accent}</span></h2>
+                    <p className="tech-subheading" style={{ marginBottom: '1.5rem' }}>{c.sub}</p>
                     
                     <a 
                         href="/files/anwar_ispat_catalog.pdf" 
@@ -158,17 +187,17 @@ const QuoteModal = ({ isOpen, onClose, preset }) => {
                             e.currentTarget.style.transform = 'none';
                         }}
                     >
-                        DOWNLOAD CATALOGUE
+                        {c.catalogBtn}
                     </a>
 
                     {submitStatus === 'success' && (
                         <div style={{ marginTop: '1rem', padding: '1rem 2rem', background: 'rgba(0,200,100,0.12)', border: '1px solid rgba(0,200,100,0.4)', borderRadius: '8px', color: '#00cc66', fontFamily: 'monospace', letterSpacing: '0.1em', fontSize: '0.9rem' }}>
-                            ✓ QUOTATION SUBMITTED SUCCESSFULLY — We will contact you shortly.
+                            ✓ {c.ok}
                         </div>
                     )}
                     {submitStatus === 'error' && (
                         <div style={{ marginTop: '1rem', padding: '1rem 2rem', background: 'rgba(227,24,45,0.12)', border: '1px solid rgba(227,24,45,0.4)', borderRadius: '8px', color: '#E3182D', fontFamily: 'monospace', letterSpacing: '0.1em', fontSize: '0.9rem' }}>
-                            ✕ {!fullName.trim() || !mobile.trim() ? 'Full Name and Mobile Number are required.' : 'Submission failed. Please try again.'}
+                            ✕ {!fullName.trim() || !mobile.trim() ? c.missing : c.failed}
                         </div>
                     )}
                 </div>
@@ -183,21 +212,20 @@ const QuoteModal = ({ isOpen, onClose, preset }) => {
                     {/* Left Column */}
                     <div className="form-cell" style={{ paddingLeft: 0 }}>
                         <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.5rem', marginBottom: '1.5rem', color: 'var(--text)' }} ref={el => addToRefs(el, textStaggerRef)}>
-                            01. <span className="accent-text">Product Information</span>
+                            01. <span className="accent-text">{c.step1}</span>
                         </h3>
                         <div className="command-form">
                             <div className="input-group" ref={el => addToRefs(el, textStaggerRef)}>
-                                <label>PRODUCT NAME</label>
+                                <label>{lb(0)}</label>
                                 <select value={selectedProduct} onChange={e => setSelectedProduct(e.target.value)}
                                     style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--subtext)', padding: '0.8rem', fontFamily: 'var(--font-main)', fontSize: '0.9rem' }}>
-                                    <option value="Anwars 500CWR">Anwars 500CWR TMT Rebar</option>
-                                    <option value="Anwars 500DWR">Anwars 500DWR High-Tensile</option>
-                                    <option value="Anwars 420DWR">Anwars 420DWR Rebar</option>
-                                    <option value="Other">Other Product</option>
+                                    {c.products.map(pr => (
+                                        <option key={pr.value} value={pr.value}>{pr.label}</option>
+                                    ))}
                                 </select>
                             </div>
                             <div className="input-group" ref={el => addToRefs(el, textStaggerRef)}>
-                                <label>SIZE (MM)</label>
+                                <label>{lb(1)}</label>
                                 <select value={sizeMM} onChange={e => setSizeMM(e.target.value)}
                                     style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--subtext)', padding: '0.8rem', fontFamily: 'var(--font-main)', fontSize: '0.9rem' }}>
                                     <option value="">Select Size</option>
@@ -206,16 +234,16 @@ const QuoteModal = ({ isOpen, onClose, preset }) => {
                             </div>
                             <div className="form-row">
                                 <div className="input-group" style={{ flex: 1 }} ref={el => addToRefs(el, textStaggerRef)}>
-                                    <label>QUANTITY (TON)</label>
+                                    <label>{lb(2)}</label>
                                     <input type="number" placeholder="Enter Ton" value={quantityTon} onChange={e => setQuantityTon(e.target.value)} />
                                 </div>
                                 <div className="input-group" style={{ flex: 1 }} ref={el => addToRefs(el, textStaggerRef)}>
-                                    <label>QUANTITY (PCS)</label>
+                                    <label>{lb(3)}</label>
                                     <input type="number" placeholder="Enter Pcs" value={quantityPcs} onChange={e => setQuantityPcs(e.target.value)} />
                                 </div>
                             </div>
                             <div className="input-group" ref={el => addToRefs(el, textStaggerRef)}>
-                                <label>ADDITIONAL PRODUCTS</label>
+                                <label>{lb(4)}</label>
                                 <textarea rows="3" placeholder="Product name, size, quantity" value={additionalProducts} onChange={e => setAdditionalProducts(e.target.value)}></textarea>
                             </div>
                         </div>
@@ -224,40 +252,40 @@ const QuoteModal = ({ isOpen, onClose, preset }) => {
                     {/* Right Column */}
                     <div className="form-cell" style={{ paddingLeft: '2rem' }}>
                         <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.5rem', marginBottom: '1.5rem', color: 'var(--text)' }} ref={el => addToRefs(el, textStaggerRef)}>
-                            02. <span className="accent-text">Contact Information</span>
+                            02. <span className="accent-text">{c.step2}</span>
                         </h3>
                         <div className="command-form">
                             <div className="form-row">
                                 <div className="input-group" style={{ flex: 1 }} ref={el => addToRefs(el, textStaggerRef)}>
-                                    <label>BUSINESS NAME</label>
+                                    <label>{lb(5)}</label>
                                     <input type="text" placeholder="Business Name" value={businessName} onChange={e => setBusinessName(e.target.value)} />
                                 </div>
                                 <div className="input-group" style={{ flex: 1 }} ref={el => addToRefs(el, textStaggerRef)}>
-                                    <label>FULL NAME *</label>
+                                    <label>{lb(6)}</label>
                                     <input type="text" placeholder="Full Name" value={fullName} onChange={e => setFullName(e.target.value)} />
                                 </div>
                             </div>
                             <div className="form-row">
                                 <div className="input-group" style={{ flex: 1 }} ref={el => addToRefs(el, textStaggerRef)}>
-                                    <label>EMAIL ADDRESS</label>
+                                    <label>{lb(7)}</label>
                                     <input type="email" placeholder="Enter your email" value={email} onChange={e => setEmail(e.target.value)} />
                                 </div>
                                 <div className="input-group" style={{ flex: 1 }} ref={el => addToRefs(el, textStaggerRef)}>
-                                    <label>MOBILE NUMBER *</label>
+                                    <label>{lb(8)}</label>
                                     <input type="tel" placeholder="Enter your mobile number" value={mobile} onChange={e => setMobile(e.target.value)} />
                                 </div>
                             </div>
                             <div className="input-group" ref={el => addToRefs(el, textStaggerRef)}>
-                                <label>ADDRESS</label>
+                                <label>{lb(9)}</label>
                                 <input type="text" placeholder="Address" value={address} onChange={e => setAddress(e.target.value)} />
                             </div>
                             <div className="form-row">
                                 <div className="input-group" style={{ flex: 1 }} ref={el => addToRefs(el, textStaggerRef)}>
-                                    <label>POLICE STATION</label>
+                                    <label>{lb(10)}</label>
                                     <input type="text" placeholder="Enter police station" value={policeStation} onChange={e => setPoliceStation(e.target.value)} />
                                 </div>
                                 <div className="input-group" style={{ flex: 1 }} ref={el => addToRefs(el, textStaggerRef)}>
-                                    <label>SELECT DISTRICT</label>
+                                    <label>{lb(11)}</label>
                                     <select value={district} onChange={e => setDistrict(e.target.value)}
                                         style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--subtext)', padding: '0.8rem', fontFamily: 'var(--font-main)', fontSize: '0.9rem' }}>
                                         <option value="">Select District</option>
@@ -266,7 +294,7 @@ const QuoteModal = ({ isOpen, onClose, preset }) => {
                                 </div>
                             </div>
                             <div className="input-group" ref={el => addToRefs(el, textStaggerRef)}>
-                                <label>MESSAGE</label>
+                                <label>{lb(12)}</label>
                                 <textarea rows="2" placeholder="Enter your message" value={message} onChange={e => setMessage(e.target.value)}></textarea>
                             </div>
                         </div>
@@ -277,7 +305,7 @@ const QuoteModal = ({ isOpen, onClose, preset }) => {
                     <button className="command-submit-btn"
                         style={{ padding: '1rem 4rem', fontSize: '1rem', opacity: submitting ? 0.6 : 1, cursor: submitting ? 'not-allowed' : 'pointer' }}
                         onClick={handleSubmit} disabled={submitting}>
-                        <span className="btn-text">{submitting ? 'SUBMITTING...' : 'SUBMIT QUOTATION REQUEST'}</span>
+                        <span className="btn-text">{submitting ? 'SUBMITTING...' : c.submit}</span>
                         <span className="shine"></span>
                     </button>
                 </div>

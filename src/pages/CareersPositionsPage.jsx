@@ -5,6 +5,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import PageBanner from '../components/PageBanner';
+import { useContent } from '../lib/content';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -16,34 +17,48 @@ const CONTAINER = {
 };
 
 // আগের পাতায় ছয়টি নির্দিষ্ট পদ বিজ্ঞাপিত ছিল — পদ, জেলা, অভিজ্ঞতা,
-// তারিখসহ। কোনোটিই সত্যি নয়, ব্যাকএন্ডে চাকরির টেবিলও নেই। তাই
-// এখানে কেবল যে বিভাগগুলোতে নিয়োগ হয় সেগুলোর নাম, কোনো শূন্যপদ নয়।
-const DISCIPLINES = [
-    'Engineering',
-    'Production',
-    'Quality control',
-    'Operations',
-    'Sales',
-    'Finance',
-    'Human resources',
-];
-
-const STEPS = [
-    {
-        title: 'Send your CV',
-        text: 'Write to careers@anwarispat.com with your CV attached and the area of work you are applying for in the subject line.',
-    },
-    {
-        title: 'We review',
-        text: 'Applications are read against current and upcoming requirements. You will hear from us if there is a fit.',
-    },
-    {
-        title: 'Interview and offer',
-        text: 'Shortlisted candidates are called for interview at the head office or the Narayanganj works, depending on the role.',
-    },
-];
-
-const APPLY_TO = 'careers@anwarispat.com';
+// তারিখসহ। কোনোটিই সত্যি ছিল না, তাই সরানো হয়েছে; শূন্যপদ এখন
+// অ্যাডমিন প্যানেল থেকে আসে। নিচের লেখাগুলো অ্যাডমিন কিছু না
+// বদলালে যা দেখা যায়।
+const DEFAULTS = {
+    banner: { image: '/careers-banner.jpg', label: 'CAREERS', title: 'Open', accent: 'Positions' },
+    eyebrow: 'CAREER OPPORTUNITIES',
+    statement: 'A chance for you to use your skills for future advancement.',
+    lead: 'Anwar Ispat has been rolling steel in Bangladesh for over four decades. The mill runs on the people in it — engineers on the floor, inspectors at the spectrometer, and the teams behind them.',
+    discEyebrow: 'WHERE WE RECRUIT',
+    disciplines: [
+        'Engineering',
+        'Production',
+        'Quality control',
+        'Operations',
+        'Sales',
+        'Finance',
+        'Human resources',
+    ],
+    email: 'careers@anwarispat.com',
+    vacancyLabel: 'CURRENT VACANCIES',
+    openLabel: 'OPEN APPLICATIONS',
+    openTitleWith: 'Nothing above a fit? Write to us anyway',
+    emptyLabel: 'CURRENT VACANCIES',
+    openTitleNone: 'Specific openings are posted here as they arise',
+    openText: 'We accept open applications year-round. If your experience fits one of the areas above, send it to us and it will be held against upcoming requirements.',
+    loading: 'Checking for current vacancies…',
+    steps: [
+        {
+            title: 'Send your CV',
+            text: 'Write to careers@anwarispat.com with your CV attached and the area of work you are applying for in the subject line.',
+        },
+        {
+            title: 'We review',
+            text: 'Applications are read against current and upcoming requirements. You will hear from us if there is a fit.',
+        },
+        {
+            title: 'Interview and offer',
+            text: 'Shortlisted candidates are called for interview at the head office or the Narayanganj works, depending on the role.',
+        },
+    ],
+    next: 'What it is like to work here',
+};
 
 const CareersPositionsPage = () => {
     const rootRef = useRef(null);
@@ -51,6 +66,10 @@ const CareersPositionsPage = () => {
 
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
+    const c = useContent('careers-positions', DEFAULTS);
+    const DISCIPLINES = c.disciplines;
+    const STEPS = c.steps;
+    const APPLY_TO = c.email;
 
     // শূন্যপদ আসে অ্যাডমিন প্যানেল থেকে। কিছু না থাকলে পাতাটি খালি
     // দেখায় না — খোলা আবেদনের আহ্বানই থেকে যায়।
@@ -82,10 +101,10 @@ const CareersPositionsPage = () => {
             style={{ background: 'var(--primary)', color: 'var(--text)', minHeight: '100vh', overflowX: 'hidden' }}
         >
             <PageBanner
-                image="/careers-banner.jpg"
-                label="CAREERS"
-                title="Open"
-                accent="Positions"
+                image={c.banner.image}
+                label={c.banner.label}
+                title={c.banner.title}
+                accent={c.banner.accent}
                 crumbs={[
                     { label: 'Home', to: '/' },
                     { label: 'Careers' },
@@ -104,17 +123,11 @@ const CareersPositionsPage = () => {
             }}>
                 <div className="cr-open">
                     <div className="cr-reveal">
-                        <span className="cr-eyebrow">CAREER OPPORTUNITIES</span>
-                        <p className="cr-statement">
-                            A chance for you to use your skills for future advancement.
-                        </p>
+                        <span className="cr-eyebrow">{c.eyebrow}</span>
+                        <p className="cr-statement">{c.statement}</p>
                     </div>
 
-                    <p className="cr-reveal cr-open-text">
-                        Anwar Ispat has been rolling steel in Bangladesh for over four decades.
-                        The mill runs on the people in it — engineers on the floor, inspectors at
-                        the spectrometer, and the teams behind them.
-                    </p>
+                    <p className="cr-reveal cr-open-text">{c.lead}</p>
                 </div>
             </section>
 
@@ -128,7 +141,7 @@ const CareersPositionsPage = () => {
                 background: 'var(--glass)',
             }}>
                 <div style={CONTAINER}>
-                    <span className="cr-reveal cr-eyebrow">WHERE WE RECRUIT</span>
+                    <span className="cr-reveal cr-eyebrow">{c.discEyebrow}</span>
 
                     {/* বাক্স বা কার্ড নয় — নামগুলোই বড় হরফে, একটানা */}
                     <p className="cr-reveal cr-disciplines">
@@ -157,7 +170,7 @@ const CareersPositionsPage = () => {
                 {jobs.length > 0 && (
                     <div className="cr-vacancies">
                         <span className="cr-reveal cr-eyebrow">
-                            CURRENT VACANCIES — {String(jobs.length).padStart(2, '0')}
+                            {c.vacancyLabel} — {String(jobs.length).padStart(2, '0')}
                         </span>
 
                         {jobs.map((j) => (
@@ -205,17 +218,13 @@ const CareersPositionsPage = () => {
                 <div className="cr-apply">
                     <div className="cr-reveal cr-apply-lead">
                         <span className="cr-eyebrow">
-                            {jobs.length > 0 ? 'OPEN APPLICATIONS' : 'CURRENT VACANCIES'}
+                            {jobs.length > 0 ? c.openLabel : c.emptyLabel}
                         </span>
                         <h2 className="cr-apply-title">
-                            {jobs.length > 0
-                                ? 'Nothing above a fit? Write to us anyway'
-                                : 'Specific openings are posted here as they arise'}
+                            {jobs.length > 0 ? c.openTitleWith : c.openTitleNone}
                         </h2>
                         <p className="cr-apply-text">
-                            {loading
-                                ? 'Checking for current vacancies…'
-                                : 'We accept open applications year-round. If your experience fits one of the areas above, send it to us and it will be held against upcoming requirements.'}
+                            {loading ? c.loading : c.openText}
                         </p>
 
                         <a className="cr-cta" href={`mailto:${APPLY_TO}`}>
@@ -238,7 +247,7 @@ const CareersPositionsPage = () => {
                 </div>
 
                 <button type="button" className="cr-reveal cr-next" onClick={() => navigate('/careers/experience')}>
-                    What it is like to work here
+                    {c.next}
                     <ArrowRight size={15} strokeWidth={2.2} />
                 </button>
             </section>

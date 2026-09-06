@@ -4,25 +4,12 @@ import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useContent } from '../lib/content';
+import { PRESS_DEFAULTS, releaseSlug, tone } from '../lib/press';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// রঙগুলো সাজসজ্জা, JSON এ যায় না — কোডে থেকে ক্রম অনুযায়ী বসে
-const TONES = ['#E3182D', '#3b82f6', '#22c55e', '#eab308', '#a855f7', '#ec4899'];
-const tone = (i) => TONES[i % TONES.length];
-
-// অ্যাডমিন কিছু না বদলালে এগুলোই দেখা যায়
-const DEFAULTS = {
-    hero: { tag: 'Official Statements', title: 'Press', accent: 'Releases' },
-    releases: [
-  { id:0, slug:'strategic-expansion-2026', pr:'PR-2026-001', cat:'Corporate',icon:'speakerphone', title:'Anwar Ispat Announces Strategic Expansion and New Product Line Launch for 2026', date:'June 16, 2026', read:'3 min read',featured:true },
-  { id:1, slug:'q1-financial-results-2026', pr:'PR-2026-002', cat:'Financial',icon:'chart-bar', title:'Q1 2026 Financial Results — Record Revenue Growth of 28%', date:'May 30, 2026', read:'4 min read',featured:false },
-  { id:2, slug:'iso-certification-renewal-2026', pr:'PR-2026-003', cat:'Regulatory',icon:'certificate', title:'ISO 9001:2015 & BDS Certification Renewal — Quality Assurance Confirmed', date:'May 10, 2026', read:'2 min read',featured:false },
-  { id:3, slug:'narayanganj-rolling-mill-2026', pr:'PR-2026-004', cat:'Operational',icon:'building-factory', title:'New Rolling Mill Facility Commissioned in Narayanganj Industrial Zone', date:'April 20, 2026', read:'3 min read',featured:false },
-  { id:4, slug:'esg-report-2025', pr:'PR-2026-005', cat:'ESG',icon:'leaf', title:'Anwar Ispat ESG Report 2025 Released — Zero Waste Water Policy Achieved', date:'April 5, 2026', read:'5 min read',featured:false },
-  { id:5, slug:'bgmea-partnership-ratified', pr:'PR-2026-006', cat:'Corporate',icon:'file-description', title:'Board Resolution: Strategic Partnership with BGMEA Ratified', date:'March 18, 2026', read:'2 min read',featured:false },
-],
-};
+// তালিকা আর ভেতরের পাতা একই উৎস থেকে পড়ে — src/lib/press.js
+const DEFAULTS = PRESS_DEFAULTS;
 
 const MediaPressPage = () => {
   const containerRef = useRef(null);
@@ -53,7 +40,9 @@ const MediaPressPage = () => {
     });
   }, { scope:containerRef });
 
-  const categories = ['All','Corporate','Financial','Regulatory','Operational','ESG'];
+  // হাতে লেখা তালিকা রাখলে প্যানেলে নতুন বিভাগ যোগ করলে সেটা
+  // এখানে দেখা যেত না
+  const categories = ['All', ...new Set(c.releases.map(r => r.cat).filter(Boolean))];
   const featured = c.releases[0];
   const filtered = c.releases.slice(1).filter(r => activeCategory === 'All' || r.cat === activeCategory);
 
@@ -93,20 +82,20 @@ const MediaPressPage = () => {
         {/* FEATURED */}
         {secLabel('Latest Release')}
         <div className="mp-fade" data-delay="0.1"
-          onClick={() => navigate('/media/press/' + featured.slug)}
+          onClick={() => navigate('/media/press/' + releaseSlug(featured, 0))}
           style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 360px', gap:0, marginBottom:'40px', border:'1px solid var(--glass-border)', borderRadius:'14px', overflow:'hidden', cursor:'pointer', opacity:0, transform:'translateY(30px)', transition:'border-color 0.25s' }}
           onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(227,24,45,0.4)'; }}
           onMouseLeave={e => { e.currentTarget.style.borderColor='var(--glass-border)'; }}>
-          <div style={{ position:'relative', aspectRatio:isMobile?'16/9':'1/1', background:featured.imgBg, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'12px' }}>
+          <div style={{ position:'relative', aspectRatio:isMobile?'16/9':'1/1', background:tone(0)+'14', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'12px' }}>
             <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="rgba(227,24,45,0.3)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 11l19-9-9 19-2-8-8-2z"/>
             </svg>
-            <span style={{ fontSize:'9px', letterSpacing:'2px', textTransform:'uppercase', color:'rgba(255,255,255,0.15)' }}>Official Image</span>
+            <span style={{ fontSize:'9px', letterSpacing:'2px', textTransform:'uppercase', color:'rgba(255,255,255,0.15)' }}>{c.imageNote}</span>
           </div>
           <div style={{ padding:'28px 26px', display:'flex', flexDirection:'column', justifyContent:'space-between', borderLeft:isMobile?'none':'1px solid var(--glass-border)', background:'rgba(255,255,255,0.015)' }}>
             <div>
               <div style={{ display:'flex', gap:'8px', marginBottom:'14px', flexWrap:'wrap' }}>
-                <span style={{ display:'inline-block', background:'var(--accent)', color:'#fff', fontSize:'9px', letterSpacing:'1.5px', textTransform:'uppercase', padding:'3px 9px', borderRadius:'3px', fontWeight:700 }}>Official Statement</span>
+                <span style={{ display:'inline-block', background:'var(--accent)', color:'#fff', fontSize:'9px', letterSpacing:'1.5px', textTransform:'uppercase', padding:'3px 9px', borderRadius:'3px', fontWeight:700 }}>{c.stamp}</span>
                 <span style={{ display:'inline-block', background:'rgba(227,24,45,0.1)', color:'var(--accent)', border:'1px solid rgba(227,24,45,0.25)', fontSize:'9px', letterSpacing:'1.5px', textTransform:'uppercase', padding:'3px 9px', borderRadius:'3px', fontWeight:700 }}>Corporate</span>
               </div>
               <div style={{ fontSize:'9px', letterSpacing:'2px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'10px', fontWeight:700 }}>{featured.pr} · {featured.date}</div>
@@ -138,7 +127,7 @@ const MediaPressPage = () => {
         <div style={{ display:'flex', flexDirection:'column', gap:'10px', marginBottom:'40px' }}>
           {filtered.map((r, i) => (
             <div key={r.id} className="mp-card"
-              onClick={() => navigate('/media/press/' + r.slug)}
+              onClick={() => navigate('/media/press/' + releaseSlug(r, c.releases.indexOf(r)))}
               style={{ borderRadius:'10px', padding:'16px 20px', cursor:'pointer', display:'flex', alignItems:'center', gap:'16px', background:'var(--glass)', border:'1px solid var(--glass-border)', transition:'all 0.2s', opacity:0, transform:'translateX(-20px)' }}
               onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(227,24,45,0.35)'; e.currentTarget.style.background='rgba(227,24,45,0.03)'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor='var(--glass-border)'; e.currentTarget.style.background='var(--glass)'; }}>

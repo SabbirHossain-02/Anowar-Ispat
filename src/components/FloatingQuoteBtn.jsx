@@ -1,10 +1,14 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { MessageSquare } from 'lucide-react';
+import { useContent } from '../lib/content';
+
+const DEFAULTS = { quoteBtn: 'GET QUOTE' };
 
 const FloatingQuoteBtn = () => {
     const [isVisible, setIsVisible] = useState(true);
     const location = useLocation();
+    const c = useContent('navbar', DEFAULTS);
 
     useEffect(() => {
         const checkVisibility = () => {
@@ -41,10 +45,10 @@ const FloatingQuoteBtn = () => {
         <button
             className={`floating-quote-btn ${isVisible ? 'visible' : ''}`}
             onClick={() => window.dispatchEvent(new CustomEvent('open-quote'))}
-            aria-label="Get Quote"
+            aria-label={c.quoteBtn}
         >
             <MessageSquare size={20} />
-            <span>GET QUOTE</span>
+            <span>{c.quoteBtn}</span>
         </button>
     );
 };
