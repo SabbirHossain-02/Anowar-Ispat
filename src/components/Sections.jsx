@@ -16,9 +16,15 @@ const HOME_DEFAULTS = {
     about: {
         aTitle: 'BUILDING A LEGACY OF',
         aAccent: 'STEEL.',
+        aName: 'LATE ANWAR HOSSAIN',
+        aRole: 'FOUNDER, ANWAR GROUP',
+        aImg: '/founder.webp',
         aQuote: "Our foundation isn't just laid in concrete; it's forged in unwavering commitment and intense heat. We started with a vision to build the unbuildable.",
         bTitle: 'ENGINEERING THE NEXT',
         bAccent: 'CENTURY.',
+        bName: 'MANWAR HOSSAIN',
+        bRole: 'GROUP MANAGING DIRECTOR',
+        bImg: '/md.webp',
         bQuote: "We don't just supply materials; we engineer the resilience required to propel Bangladesh into the forefront of monumental construction.",
     },
     why: {
@@ -547,7 +553,7 @@ export const AboutUs = () => {
                   color: "var(--text)",
                 }}
               >
-                LATE ANWAR HOSSAIN
+                {home.about.aName}
               </h4>
               <p
                 style={{
@@ -556,7 +562,7 @@ export const AboutUs = () => {
                   fontSize: "0.8rem",
                 }}
               >
-                FOUNDER, ANWAR GROUP
+                {home.about.aRole}
               </p>
             </div>
 
@@ -603,7 +609,7 @@ export const AboutUs = () => {
                   color: "var(--text)",
                 }}
               >
-                MANWAR HOSSAIN
+                {home.about.bName}
               </h4>
               <p
                 style={{
@@ -612,7 +618,7 @@ export const AboutUs = () => {
                   fontSize: "0.8rem",
                 }}
               >
-                GROUP MANAGING DIRECTOR
+                {home.about.bRole}
               </p>
             </div>
           </div>
@@ -639,8 +645,8 @@ export const AboutUs = () => {
           <img
             ref={founderImgRef}
             className="founder-img"
-            src="/founder.webp"
-            alt="Founder Anwar Hossain"
+            src={home.about.aImg}
+            alt={home.about.aName}
             width="800"
             height="600"
             style={{
@@ -658,8 +664,8 @@ export const AboutUs = () => {
           <img
             ref={mdImgRef}
             className="md-img"
-            src="/md.webp"
-            alt="MD Manwar Hossain"
+            src={home.about.bImg}
+            alt={home.about.bName}
             width="800"
             height="600"
             style={{
