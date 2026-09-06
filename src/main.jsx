@@ -5,17 +5,9 @@ import './index.css'
 
 import { BrowserRouter } from 'react-router-dom'
 
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then((registration) => {
-                console.log('SW registered:', registration);
-            })
-            .catch((error) => {
-                console.log('SW registration failed:', error);
-            });
-    });
-}
+// সার্ভিস ওয়ার্কার আর নিবন্ধন করা হয় না — ওটি পুরনো index.html
+// ধরে রেখে সাইট ফাঁকা করে দিত। /sw.js এখনও আছে, তবে সেটি কেবল
+// আগের কপিটি মুছে নিজেকে বাতিল করার জন্য; নতুন করে বসে না।
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>

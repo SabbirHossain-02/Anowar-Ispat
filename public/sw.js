@@ -1,121 +1,42 @@
-/* কেন v4:
+/* এই ফাইলটি আর কিছু জমায় না — নিজেকে মুছে ফেলে।
 
-   আগের সংস্করণে পাতা (document) আসত cache-first — অর্থাৎ ব্রাউজারে
-   জমানো index.html আগে, নেটওয়ার্ক পরে। ফলে নতুন কিছু ছাড়ার পর
-   ফিরে আসা প্রত্যেক দর্শক পুরনো index.html পেত, যেখানে আগের বিল্ডের
-   assets/index-XXXX.js লেখা। সেই ফাইল আর সার্ভারে নেই, তাই 404,
-   আর 404 এ nginx পাতাটাই ফেরত দেয় — জাভাস্ক্রিপ্টের জায়গায় HTML।
-   ব্রাউজার সেটা চালাতে না পেরে ফাঁকা কালো পাতা দেখাত।
+   কেন: আগের সার্ভিস ওয়ার্কার পাতা cache-first দিত, ফলে নতুন কিছু
+   ছাড়ার পর ফিরে আসা দর্শক আগের index.html পেত, যেখানে আগের বিল্ডের
+   assets/index-XXXX.js লেখা। সেই ফাইল আর নেই, তাই কালো ফাঁকা পাতা।
+   কৌশল ঠিক করেও লাভ হয়নি — যে ব্রাউজারে পুরনো কপিটি বসে আছে, সে
+   তো নতুন নিয়মটাই পড়তে পারছে না।
 
-   nginx index.html এ no-cache পাঠায়, কিন্তু সার্ভিস ওয়ার্কার
-   নেটওয়ার্কের আগেই উত্তর দিয়ে দিত বলে সেই হেডার কোনো কাজে আসত না।
+   তাই ক্যাশ রাখাই বন্ধ। ইস্পাত কোম্পানির সাইট অফলাইনে পড়ার জিনিস
+   নয়, অথচ এই ব্যবস্থাটা দুবার পুরো সাইট ফেলে দিয়েছে।
 
-   এখন: পাতা সবসময় নেটওয়ার্ক থেকে। জমানো কপিটি কেবল তখনই, যখন
-   নেটওয়ার্ক নেই। hash দেওয়া ফাইল (assets/) নাম বদলায় বলে সেগুলো
-   জমিয়ে রাখা নিরাপদ।
+   এই কিস্তিটি বসামাত্র সব ক্যাশ মুছে দেয়, নিজের নিবন্ধন বাতিল করে,
+   আর খোলা পাতাগুলো একবার নতুন করে তোলে। তারপর থেকে ব্রাউজার
+   সরাসরি সার্ভারের সাথে কথা বলে — মাঝখানে কেউ নেই।
 
-   নাম v3 → v4 করা হয়েছে ইচ্ছে করেই: activate এ পুরনো নামের সব ক্যাশ
-   মুছে যায়, তাই আটকে থাকা ব্রাউজারগুলোও নিজে থেকেই ছাড়া পায়। */
+   index.html এ no-cache আগে থেকেই আছে, hash দেওয়া ফাইল এক বছর
+   ক্যাশ হয় — নাম বদলায় বলে সেটা নিরাপদ। ব্রাউজারের নিজের ক্যাশই
+   যথেষ্ট। */
 
-const CACHE = 'anwar-ispat-v4';
-const RUNTIME = 'anwar-ispat-runtime-v4';
-const SHELL = '/index.html';
-
-// index.html এখানে নেই — ওটি জমিয়ে রাখলেই আগের সমস্যা ফিরে আসত
-const STATIC_ASSETS = [
-  '/Logo.png',
-  '/logo-dark.png',
-  '/product_image.png',
-  '/founder.webp',
-  '/md.webp',
-  '/anwar_favicon.png',
-];
-
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE).then((cache) =>
-      // একটি ফাইল না থাকলে addAll পুরো ইনস্টল ফেলে দিত, তাই আলাদা করে
-      Promise.allSettled(STATIC_ASSETS.map((u) => cache.add(u)))
-    )
-  );
+self.addEventListener('install', () => {
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys()
-      .then((names) => Promise.all(
-        names.filter((n) => n !== CACHE && n !== RUNTIME).map((n) => caches.delete(n))
-      ))
-      .then(() => self.clients.claim())
-  );
+  event.waitUntil((async () => {
+    // জমানো সবকিছু ফেলে দিই — পুরনো index.html সহ
+    const names = await caches.keys();
+    await Promise.all(names.map((n) => caches.delete(n)));
+
+    await self.registration.unregister();
+
+    // যে পাতাগুলো এখনও পুরনো কপি দেখাচ্ছে, সেগুলো একবার তুলে দিই।
+    // নিবন্ধন বাতিল হয়ে গেছে বলে এরপর আর কেউ মাঝখানে থাকবে না,
+    // তাই বারবার হওয়ার ভয় নেই।
+    const clients = await self.clients.matchAll({ type: 'window' });
+    clients.forEach((c) => {
+      if ('navigate' in c) c.navigate(c.url);
+    });
+  })());
 });
 
-self.addEventListener('fetch', (event) => {
-  const { request } = event;
-
-  if (request.method !== 'GET') return;
-
-  let url;
-  try { url = new URL(request.url); } catch (e) { return; }
-  if (url.origin !== location.origin) return;
-
-  // API কখনও জমানো হয় না — অ্যাডমিন কিছু বদলালে সঙ্গে সঙ্গে দেখা চাই
-  if (url.pathname.startsWith('/api/')) return;
-
-  // ---- পাতা: নেটওয়ার্ক আগে ----
-  if (request.mode === 'navigate' || request.destination === 'document') {
-    event.respondWith(
-      fetch(request)
-        .then((res) => {
-          // অফলাইনে দেখানোর জন্য একটি কপি রাখি
-          if (res && res.ok) {
-            const copy = res.clone();
-            caches.open(RUNTIME).then((c) => c.put(SHELL, copy)).catch(() => {});
-          }
-          return res;
-        })
-        .catch(() => caches.match(SHELL).then((c) => c || Response.error()))
-    );
-    return;
-  }
-
-  // ---- hash দেওয়া ফাইল: জমানো আগে, নাম বদলায় বলে নিরাপদ ----
-  if (url.pathname.startsWith('/assets/')) {
-    event.respondWith(
-      caches.match(request).then((cached) => cached || fetch(request).then((res) => {
-        if (res && res.ok) {
-          const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put(request, copy)).catch(() => {});
-        }
-        return res;
-      }))
-    );
-    return;
-  }
-
-  // ---- ছবি ও ভিডিও ----
-  if (['image', 'video', 'audio', 'font'].includes(request.destination)) {
-    event.respondWith(
-      caches.match(request).then((cached) => {
-        const networked = fetch(request)
-          .then((res) => {
-            if (res && res.ok) {
-              const copy = res.clone();
-              caches.open(RUNTIME).then((c) => c.put(request, copy)).catch(() => {});
-            }
-            return res;
-          })
-          .catch(() => cached);
-        return cached || networked;
-      })
-    );
-    return;
-  }
-
-  // বাকি সব ব্রাউজার নিজেই সামলাক
-});
-
-self.addEventListener('message', (event) => {
-  if (event.data === 'skipWaiting') self.skipWaiting();
-});
+// fetch ধরাই হয় না — সব অনুরোধ সোজা নেটওয়ার্কে যায়
