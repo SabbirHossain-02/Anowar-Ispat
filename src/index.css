@@ -3394,11 +3394,28 @@ body.light-mode .floating-quote-btn:hover {
   margin: 0;
 }
 
+/* শেয়ারের বোতামগুলো একসাথে ডান কিনারায় */
+.na-share {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+.na-share-link {
+  color: var(--sh);
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.na-share-link:hover { opacity: 0.75; }
+
 .na-copy {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  margin-left: auto;
   padding: 0;
   border: none;
   background: none;

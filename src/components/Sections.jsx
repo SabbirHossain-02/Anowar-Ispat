@@ -1,5 +1,7 @@
 ﻿import React, { useState, useEffect, useRef, useMemo, memo } from "react";
 import { ChevronLeft, ChevronRight, X, History, Globe, Zap, Shield, Target, Building2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { articleSlug } from "../lib/news";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -914,24 +916,6 @@ export const WhyChooseUs = () => {
   );
 };
 
-// খবরের নিজস্ব পাতা /media/news/<id>-<শিরোনাম> — শেয়ারের ঠিকানা
-// সেটিই, মোডালের নয়, যাতে যিনি খুলবেন তিনি পুরো লেখাটাই পান
-const postUrl = (p) => {
-  const slug = String(p.title || '')
-    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 70);
-  return window.location.origin + '/media/news/' + (p.id != null ? p.id + '-' : '') + slug;
-};
-
-const shareLinks = (p) => {
-  const u = encodeURIComponent(postUrl(p));
-  const t = encodeURIComponent(p.title || '');
-  return [
-    { name: 'LinkedIn', color: '#0077b5', href: 'https://www.linkedin.com/sharing/share-offsite/?url=' + u },
-    { name: 'Facebook', color: '#1877f2', href: 'https://www.facebook.com/sharer/sharer.php?u=' + u },
-    { name: 'WhatsApp', color: '#25d366', href: 'https://wa.me/?text=' + t + '%20' + u },
-  ];
-};
-
 const BroadcastCard = ({ date, title, desc, img, isHovering, onHover, onOpen }) => {
   return (
     <div
@@ -1185,21 +1169,7 @@ export const ProjectShowcase = () => {
 export const MediaEvents = () => {
   const home = useContent('home', HOME_DEFAULTS);
   const [isHovered, setIsHovered] = useState(false);
-  const [openPost, setOpenPost] = useState(null);
-  const [copied, setCopied] = useState(false);
-
-  // মোডাল খোলা থাকলে পেছনের স্মুথ স্ক্রল থামে, নইলে লেখার পেছনে
-  // পাতা নড়তে থাকে। Escape এ বন্ধ।
-  useEffect(() => {
-    if (!openPost) return;
-    window.dispatchEvent(new CustomEvent('lenis-stop'));
-    const onKey = (e) => { if (e.key === 'Escape') setOpenPost(null); };
-    window.addEventListener('keydown', onKey);
-    return () => {
-      window.removeEventListener('keydown', onKey);
-      window.dispatchEvent(new CustomEvent('lenis-start'));
-    };
-  }, [openPost]);
+  const navigate = useNavigate();
 
   // ── API: load media posts from backend ───────────────────────────────────
   const [broadcastData, setBroadcastData] = useState([]);
@@ -1300,7 +1270,7 @@ export const MediaEvents = () => {
                 ? [...broadcastData, ...broadcastData, ...broadcastData]
                 : broadcastData
               ).map((event, index) => (
-                <BroadcastCard key={index} {...event} onHover={setIsHovered} onOpen={() => setOpenPost(event)} />
+                <BroadcastCard key={index} {...event} onHover={setIsHovered} onOpen={() => navigate('/media/news/' + articleSlug(event))} />
               ))}
             </div>
           )}
@@ -1324,72 +1294,6 @@ export const MediaEvents = () => {
           .broadcast-marquee { transform: none !important; animation: scrollUpMobile 20s linear infinite !important; }
         }
       `}</style>
-      {openPost && (
-        <div
-          onClick={() => setOpenPost(null)}
-          data-lenis-prevent="true"
-          style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem', overflowY: 'auto' }}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{ background: 'var(--primary)', border: '1px solid rgba(227,24,45,0.3)', borderRadius: '16px', width: '100%', maxWidth: '820px', maxHeight: '90vh', overflowY: 'auto', position: 'relative' }}
-          >
-            <button
-              onClick={() => setOpenPost(null)}
-              aria-label="Close"
-              style={{ position: 'absolute', top: '1rem', right: '1rem', zIndex: 2, background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', borderRadius: '50%', width: '38px', height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-            >
-              <X size={20} />
-            </button>
-
-            {/* পুরো ছবি — কাটা নয়, তাই contain */}
-            {openPost.img && (
-              <div style={{ background: '#000', borderRadius: '16px 16px 0 0', overflow: 'hidden', maxHeight: '46vh', display: 'flex', justifyContent: 'center' }}>
-                <img src={openPost.img} alt={openPost.title} style={{ width: '100%', maxHeight: '46vh', objectFit: 'contain', display: 'block' }} />
-              </div>
-            )}
-
-            <div style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
-              <p style={{ fontFamily: 'monospace', color: 'var(--accent)', letterSpacing: '0.15em', fontSize: '0.78rem', margin: 0 }}>
-                {openPost.date}
-              </p>
-
-              <h3 style={{ fontSize: 'clamp(1.4rem, 3vw, 2.1rem)', color: 'var(--text)', fontFamily: 'var(--font-heading)', lineHeight: 1.2, margin: '0.75rem 0 1.25rem' }}>
-                {openPost.title}
-              </h3>
-
-              {/* পুরো বিবরণ — ফাঁকা লাইনে অনুচ্ছেদ ভাগ */}
-              {String(openPost.desc || '').split(/\r?\n\s*\r?\n/).filter(Boolean).map((para, i) => (
-                <p key={i} style={{ color: 'var(--subtext)', fontSize: '1rem', lineHeight: 1.8, marginBottom: '1rem', whiteSpace: 'pre-line' }}>
-                  {para.trim()}
-                </p>
-              ))}
-
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem', alignItems: 'center', marginTop: '1.75rem', paddingTop: '1.25rem', borderTop: '1px solid var(--glass-border)' }}>
-                <span style={{ fontFamily: 'monospace', fontSize: '0.72rem', letterSpacing: '0.15em', color: 'var(--subtext)', marginRight: '0.3rem' }}>SHARE</span>
-                {shareLinks(openPost).map((sh) => (
-                  <a
-                    key={sh.name}
-                    href={sh.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ padding: '0.45rem 0.95rem', borderRadius: '999px', border: '1px solid ' + sh.color + '55', background: sh.color + '14', color: sh.color, fontSize: '0.78rem', fontWeight: 600, textDecoration: 'none' }}
-                  >
-                    {sh.name}
-                  </a>
-                ))}
-                <button
-                  onClick={() => { navigator.clipboard.writeText(postUrl(openPost)); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
-                  style={{ padding: '0.45rem 0.95rem', borderRadius: '999px', border: '1px solid var(--glass-border)', background: 'transparent', color: copied ? '#22c55e' : 'var(--subtext)', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
-                >
-                  {copied ? 'Copied' : 'Copy link'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
     </section>
   );
 };

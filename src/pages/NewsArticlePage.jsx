@@ -21,6 +21,13 @@ const DEFAULTS = {
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
+// রং সাজসজ্জা, তাই কোডেই থাকে
+const SHARE = [
+    { name: 'LinkedIn', color: '#0077b5', href: (u) => 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(u) },
+    { name: 'Facebook', color: '#1877f2', href: (u) => 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(u) },
+    { name: 'WhatsApp', color: '#25d366', href: (u, t) => 'https://wa.me/?text=' + encodeURIComponent((t || '') + ' ' + u) },
+];
+
 const CONTAINER = {
     maxWidth: '1180px',
     margin: '0 auto',
@@ -109,7 +116,7 @@ const NewsArticlePage = () => {
     return shell(
         <>
             <button type="button" className="na-back na-reveal" onClick={() => navigate('/media/news')}>
-                <ArrowLeft size={15} strokeWidth={2.2} /> All news
+                <ArrowLeft size={15} strokeWidth={2.2} /> {c.artBack}
             </button>
 
             <article className="na-article">
@@ -119,11 +126,25 @@ const NewsArticlePage = () => {
                     <div className="nw-meta na-meta">
                         {article.event_date && <span>{String(article.event_date).toUpperCase()}</span>}
                         <span>{readTime(article.description)}</span>
-                        <button type="button" className="na-copy" onClick={copyLink}>
-                            {copied
-                                ? <><Check size={13} strokeWidth={2.4} /> Link copied</>
-                                : <><Link2 size={13} strokeWidth={2.2} /> Copy link</>}
-                        </button>
+                        <span className="na-share">
+                            {SHARE.map((sh) => (
+                                <a
+                                    key={sh.name}
+                                    className="na-share-link"
+                                    style={{ '--sh': sh.color }}
+                                    href={sh.href(window.location.href, article.title)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    {sh.name}
+                                </a>
+                            ))}
+                            <button type="button" className="na-copy" onClick={copyLink}>
+                                {copied
+                                    ? <><Check size={13} strokeWidth={2.4} /> Link copied</>
+                                    : <><Link2 size={13} strokeWidth={2.2} /> Copy link</>}
+                            </button>
+                        </span>
                     </div>
                 </header>
 
