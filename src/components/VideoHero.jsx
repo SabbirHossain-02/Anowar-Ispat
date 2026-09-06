@@ -3,33 +3,33 @@ import React, { useRef, useEffect, useState } from 'react'
 // অ্যাডমিন থেকে কোনো স্লাইড যোগ না করা থাকলে বা API না পেলে এগুলো দেখানো হয়
 const defaultSlides = [
     {
-        media: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776601119/Hero_Slide_1_akmt2o.mp4",
+        media: "",
         type: "video",
-        poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776601119/Hero_Slide_1_akmt2o.jpg",
+        poster: "",
         prefix: "SHAPING THE",
         accent: "FUTURE",
         subtitle: "Unrelenting strength. Uncompromising quality. The structural backbone of tomorrow's infrastructure."
     },
     {
-        media: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776602663/13820828_3840_2160_30Fps_pkmnv5.mp4",
+        media: "",
         type: "video",
-        poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776602663/13820828_3840_2160_30Fps_pkmnv5.jpg",
+        poster: "",
         prefix: "FORGED IN",
         accent: "FIRE",
         subtitle: "A cinematic journey of power, precision, and the steel that builds nations."
     },
     {
-        media: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776602664/5121751-Uhd_3840_2160_25Fps_dilffe.mp4",
+        media: "",
         type: "video",
-        poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776602664/5121751-Uhd_3840_2160_25Fps_dilffe.jpg",
+        poster: "",
         prefix: "ENGINEERED FOR",
         accent: "ENDURANCE",
         subtitle: "Leading the industry with cutting-edge technology and engineering excellence."
     },
     {
-        media: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776603016/6997856-Hd_1920_1080_25Fps_tyjyst.mp4",
+        media: "",
         type: "video",
-        poster: "https://res.cloudinary.com/dswgpcl6a/video/upload/v1776603016/6997856-Hd_1920_1080_25Fps_tyjyst.jpg",
+        poster: "",
         prefix: "SUSTAINABLE",
         accent: "PROGRESS",
         subtitle: "Committed to eco-friendly practices that power a greener tomorrow."
