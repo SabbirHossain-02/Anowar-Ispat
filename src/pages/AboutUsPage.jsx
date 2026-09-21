@@ -326,7 +326,7 @@ const AboutUsPage = () => {
                                     d={wave.d}
                                     fill="none"
                                     stroke="url(#tl-fade)"
-                                    strokeWidth="2"
+                                    strokeWidth="3"
                                     strokeDasharray={wave.total || 1}
                                     strokeDashoffset={wave.total || 1}
                                 />
