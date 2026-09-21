@@ -55,8 +55,48 @@ const CONTAINER = {
 
 const AboutUsPage = () => {
     const rootRef = useRef(null);
-    const timelineRef = useRef(null);
     const c = useContent('about', DEFAULTS);
+    const timelineRef = useRef(null);
+
+    // সোজা রেখার বদলে sine ঢেউ। উপরের কার্ডের নিচে ঢেউ ওঠে, নিচের
+    // কার্ডের উপরে নামে — এক ঢেউ = দুটি ঘটনা। বিন্দুগুলো ঢেউয়ের
+    // ঠিক উপরে বসে, তাই প্রতিটি আইটেমে --wave দিয়ে সেই উচ্চতা দেওয়া।
+    const WAVE_AMP = 32;
+    const [wave, setWave] = useState({ d: '', w: 0, h: 0 });
+
+    useEffect(() => {
+        const el = timelineRef.current;
+        if (!el) return;
+        const track = el.querySelector('.tl-track');
+        if (!track) return;
+
+        const draw = () => {
+            const items = Array.from(track.querySelectorAll('.tl-item'));
+            const W = track.scrollWidth;
+            const H = track.offsetHeight;
+            if (!items.length || !W || !H) return;
+
+            const mid = H / 2;
+            const x0 = items[0].offsetLeft + items[0].offsetWidth / 2;
+            // পাশাপাশি দুটি আইটেমের মাঝের দূরত্ব = অর্ধেক ঢেউ
+            const L = items.length > 1
+                ? (items[1].offsetLeft + items[1].offsetWidth / 2) - x0
+                : items[0].offsetWidth;
+
+            // প্রথম আইটেম (উপরের কার্ড) ঢেউয়ের চূড়ায় → -A
+            const y = (x) => mid - WAVE_AMP * Math.cos((Math.PI * (x - x0)) / L);
+
+            let d = '';
+            for (let x = 0; x <= W; x += 6) d += (x ? ' L' : 'M') + x.toFixed(1) + ' ' + y(x).toFixed(2);
+            d += ' L' + W + ' ' + y(W).toFixed(2);
+            setWave({ d, w: W, h: H });
+        };
+
+        draw();
+        const ro = new ResizeObserver(draw);
+        ro.observe(track);
+        return () => ro.disconnect();
+    }, [c.timeline.items.length]);
     const [isMobile, setIsMobile] = useState(false);
 
     // মাউসের চাকা ঘোরালে টাইমলাইন পাশে সরে। Lenis (স্মুথ স্ক্রল)
@@ -228,7 +268,26 @@ const AboutUsPage = () => {
                 {/* পুরো চওড়া জুড়ে — কনটেইনারে আটকালে রেখাটা ছোট দেখাত */}
                 <div className="tl-scroll" ref={timelineRef}>
                     <ol className="tl-track">
-                        <span className="tl-line" aria-hidden="true" />
+                        {wave.d && (
+                            <svg
+                                className="tl-line"
+                                aria-hidden="true"
+                                width={wave.w}
+                                height={wave.h}
+                                viewBox={`0 0 ${wave.w} ${wave.h}`}
+                            >
+                                <defs>
+                                    {/* দুই কিনারায় মিলিয়ে যায় — আগের গ্রেডিয়েন্টের মতোই */}
+                                    <linearGradient id="tl-fade" x1="0" x2="1" y1="0" y2="0">
+                                        <stop offset="0" stopColor="var(--glass-border)" stopOpacity="0" />
+                                        <stop offset="0.04" stopColor="var(--glass-border)" stopOpacity="1" />
+                                        <stop offset="0.96" stopColor="var(--glass-border)" stopOpacity="1" />
+                                        <stop offset="1" stopColor="var(--glass-border)" stopOpacity="0" />
+                                    </linearGradient>
+                                </defs>
+                                <path d={wave.d} fill="none" stroke="url(#tl-fade)" strokeWidth="2" />
+                            </svg>
+                        )}
 
                         {c.timeline.items.map((m, i) => (
                             <li
@@ -239,6 +298,7 @@ const AboutUsPage = () => {
                                     m.highlight ? 'is-key' : '',
                                     m.memoriam ? 'is-memoriam' : '',
                                 ].filter(Boolean).join(' ')}
+                                style={{ '--wave': `${i % 2 === 0 ? -WAVE_AMP : WAVE_AMP}px` }}
                             >
                                 <div className="tl-card">
                                     <span className="tl-year">{m.year}</span>

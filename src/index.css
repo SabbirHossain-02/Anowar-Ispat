@@ -3869,18 +3869,15 @@ body.light-mode .floating-quote-btn:hover {
   width: max-content;
 }
 
-/* গাছের ডাল — পুরো তালিকার নিচ দিয়ে একটানা */
+/* গাছের ডাল — এখন sine ঢেউ, SVG দিয়ে আঁকা। path টি JS হিসাব করে
+   কারণ চূড়া-খাদ আইটেমের মাঝবরাবর পড়া চাই, আর আইটেমের প্রস্থ
+   পর্দার মাপে বদলায়। */
 .tl-line {
   position: absolute;
   left: 0;
-  right: 0;
-  top: 50%;
-  height: 2px;
-  background: linear-gradient(to right,
-      transparent 0,
-      var(--glass-border) 3rem,
-      var(--glass-border) calc(100% - 3rem),
-      transparent 100%);
+  top: 0;
+  pointer-events: none;
+  overflow: visible;
 }
 
 .tl-item {
@@ -3893,7 +3890,7 @@ body.light-mode .floating-quote-btn:hover {
 /* বিন্দুটি ঠিক রেখার উপর */
 .tl-dot {
   position: absolute;
-  top: 50%;
+  top: calc(50% + var(--wave, 0px));
   left: 50%;
   width: 11px;
   height: 11px;
@@ -3915,8 +3912,8 @@ body.light-mode .floating-quote-btn:hover {
   background: var(--glass-border);
 }
 
-.tl-item.is-above .tl-stem { bottom: 50%; }
-.tl-item.is-below .tl-stem { top: 50%; }
+.tl-item.is-above .tl-stem { bottom: calc(50% - var(--wave, 0px)); }
+.tl-item.is-below .tl-stem { top: calc(50% + var(--wave, 0px)); }
 
 .tl-card {
   position: absolute;
@@ -3926,8 +3923,8 @@ body.light-mode .floating-quote-btn:hover {
   text-align: center;
 }
 
-.tl-item.is-above .tl-card { bottom: calc(50% + 34px); }
-.tl-item.is-below .tl-card { top: calc(50% + 34px); }
+.tl-item.is-above .tl-card { bottom: calc(50% + 34px - var(--wave, 0px)); }
+.tl-item.is-below .tl-card { top: calc(50% + 34px + var(--wave, 0px)); }
 
 .tl-year {
   display: block;
