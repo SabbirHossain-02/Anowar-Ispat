@@ -63,6 +63,21 @@ const AboutUsPage = () => {
     // ঠিক উপরে বসে, তাই প্রতিটি আইটেমে --wave দিয়ে সেই উচ্চতা দেওয়া।
     const WAVE_AMP = 32;
     const [wave, setWave] = useState({ d: '', w: 0, h: 0 });
+    const pathRef = useRef(null);
+    // ঢেউটা স্ক্রলের সাথে আঁকা হয় — যত নম্বর সাল পর্যন্ত ফুটেছে, লাইন
+    // ততটুকুই। তাই প্রতিটি সালের বিন্দু পর্যন্ত রেখার দৈর্ঘ্য মনে রাখি,
+    // আর শেষ কতটা আঁকা হয়েছিল সেটাও — মাপ বদলে আবার আঁকলে ফিরিয়ে দিতে
+    const waveMeta = useRef({ total: 0, lenAt: [], due: 0 });
+
+    // due নম্বর সাল পর্যন্ত রেখা টানা
+    const drawTo = (due) => {
+        const path = pathRef.current;
+        const { total, lenAt } = waveMeta.current;
+        if (!path || !total) return;
+        waveMeta.current.due = due;
+        const upto = due > 0 ? (lenAt[due - 1] ?? total) : 0;
+        path.style.strokeDashoffset = String(total - upto);
+    };
 
     useEffect(() => {
         const el = timelineRef.current;
@@ -86,10 +101,25 @@ const AboutUsPage = () => {
             // প্রথম আইটেম (উপরের কার্ড) ঢেউয়ের চূড়ায় → -A
             const y = (x) => mid - WAVE_AMP * Math.cos((Math.PI * (x - x0)) / L);
 
-            let d = '';
-            for (let x = 0; x <= W; x += 6) d += (x ? ' L' : 'M') + x.toFixed(1) + ' ' + y(x).toFixed(2);
+            // path আঁকতে আঁকতে দৈর্ঘ্যও জমাই, আর প্রতিটি সালের মাঝবরাবর
+            // পৌঁছালে সেই মুহূর্তের দৈর্ঘ্য টুকে রাখি
+            const centres = items.map((it) => it.offsetLeft + it.offsetWidth / 2);
+            const lenAt = [];
+            let d = '', len = 0, px = 0, py = y(0), ci = 0;
+            for (let x = 0; x <= W; x += 6) {
+                const yy = y(x);
+                if (x) len += Math.hypot(x - px, yy - py);
+                d += (x ? ' L' : 'M') + x.toFixed(1) + ' ' + yy.toFixed(2);
+                while (ci < centres.length && x >= centres[ci]) { lenAt.push(len); ci += 1; }
+                px = x; py = yy;
+            }
+            len += Math.hypot(W - px, y(W) - py);
             d += ' L' + W + ' ' + y(W).toFixed(2);
-            setWave({ d, w: W, h: H });
+            while (ci < centres.length) { lenAt.push(len); ci += 1; }
+
+            waveMeta.current.total = len;
+            waveMeta.current.lenAt = lenAt;
+            setWave({ d, w: W, h: H, total: len });
         };
 
         draw();
@@ -153,6 +183,8 @@ const AboutUsPage = () => {
                 items.length,
                 Math.floor(el.scrollLeft / REVEAL_STEP) + 1,
             );
+
+            drawTo(due);
 
             let newly = 0;
             for (let i = 0; i < due; i += 1) {
@@ -285,7 +317,19 @@ const AboutUsPage = () => {
                                         <stop offset="1" stopColor="var(--glass-border)" stopOpacity="0" />
                                     </linearGradient>
                                 </defs>
-                                <path d={wave.d} fill="none" stroke="url(#tl-fade)" strokeWidth="2" />
+                                <path
+                                    ref={(el) => {
+                                        pathRef.current = el;
+                                        // নতুন করে আঁকা হলে যতটা ছিল ততটাই থাক
+                                        if (el) requestAnimationFrame(() => drawTo(waveMeta.current.due));
+                                    }}
+                                    d={wave.d}
+                                    fill="none"
+                                    stroke="url(#tl-fade)"
+                                    strokeWidth="2"
+                                    strokeDasharray={wave.total || 1}
+                                    strokeDashoffset={wave.total || 1}
+                                />
                             </svg>
                         )}
 

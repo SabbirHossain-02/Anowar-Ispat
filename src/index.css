@@ -3880,6 +3880,11 @@ body.light-mode .floating-quote-btn:hover {
   overflow: visible;
 }
 
+/* রেখাটা একটানে না এসে পরের বিন্দু পর্যন্ত গড়িয়ে যায় */
+.tl-line path {
+  transition: stroke-dashoffset 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 .tl-item {
   position: relative;
   flex: 0 0 auto;
