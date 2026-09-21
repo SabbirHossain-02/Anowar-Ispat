@@ -28,8 +28,11 @@ export const merge = (base, over) => {
 
     Object.keys(over).forEach((k) => {
         const val = over[k];
-        // খালি স্ট্রিং মানে অ্যাডমিনে ঘরটি খালি — ডিফল্টই থাকুক
-        if (val === undefined || val === null || val === '') return;
+        // কী-টা না থাকলে (কখনও সংরক্ষিত হয়নি) কোডের লেখাই থাকে।
+        // কিন্তু খালি স্ট্রিং মানে অ্যাডমিন ইচ্ছে করে মুছে দিয়েছেন —
+        // তখন সাইটেও খালি। আগে খালি স্ট্রিংও ডিফল্টে ফিরত, ফলে
+        // প্যানেল থেকে কোনো লেখা সরানোর উপায়ই ছিল না।
+        if (val === undefined || val === null) return;
         out[k] = isPlain(val) && isPlain(base?.[k]) ? merge(base[k], val) : val;
     });
 
