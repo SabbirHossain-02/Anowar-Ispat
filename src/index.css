@@ -1410,20 +1410,28 @@ body.light-mode .hero-title.muted {
    Heritage টাইমলাইন — বাঁ পাশে সাল, ডান পাশে ঘটনা, মাঝে একটানা
    রেখা। রেখাটাই ১৮৩৪ থেকে ২০২২ পর্যন্ত ধারাবাহিকতা বোঝায়।
    ============================================================ */
-.hr-row {
+/* ঘটনাগুলো পাশাপাশি — জায়গা থাকলে তিনটি, সরু পর্দায় কমে আসে।
+   auto-fill + minmax, তাই আলাদা করে ব্রেকপয়েন্ট বাঁধতে হয় না। */
+.hr-grid {
   display: grid;
-  gap: clamp(1rem, 2vw, 1.75rem);
-  align-items: start;
-  padding: 0.95rem 0;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
+  gap: clamp(1.1rem, 2.2vw, 1.9rem) clamp(1.25rem, 2.5vw, 2.25rem);
+  padding-top: 0.6rem;
 }
 
+.hr-row {
+  padding: 0.15rem 0;
+}
+
+/* সাল এখন নামের পাশে নয়, উপরে — কলাম সরু, পাশে রাখলে লেখা চেপে যেত */
 .hr-year {
+  display: block;
   font-family: var(--font-heading);
   font-size: clamp(0.95rem, 1.3vw, 1.1rem);
   font-weight: 800;
   letter-spacing: 0.04em;
   color: var(--subtext);
-  padding-top: 0.1rem;
+  margin-bottom: 0.3rem;
   transition: color 0.3s ease;
 }
 
@@ -1469,7 +1477,6 @@ body.light-mode .hero-title.muted {
   line-height: 1.7;
   color: var(--subtext);
   margin: 0.3rem 0 0;
-  max-width: 56ch;
 }
 
 @media (hover: hover) {

@@ -155,22 +155,27 @@ const HeritagePage = () => {
                                 </p>
                             </div>
 
-                            {era.events.map((e, i) => (
-                                <div
-                                    key={`${e.year}-${e.name}`}
-                                    className="hr-reveal hr-row"
-                                    style={{ gridTemplateColumns: isMobile ? '64px 1fr' : '104px 1fr' }}
-                                >
-                                    <span className="hr-year">{e.year}</span>
-
-                                    <div className="hr-entry">
-                                        <h3 className={`hr-name${e.highlight ? ' hr-name-accent' : ''}`}>
-                                            {e.name}
-                                        </h3>
-                                        <p className="hr-text">{e.text}</p>
+                            {/* আগে প্রতিটি ঘটনা পুরো প্রস্থ নিয়ে একটা সারি ছিল —
+                                ২৯টি ঘটনা মানে ২৯ বার নিচে নামা। এখন পাশাপাশি
+                                বসে, বাঁ থেকে ডানে পড়ে পরের সারিতে যায়। গ্রিড
+                                নিজেই সারি-ক্রমে সাজায়, তাই সালের ধারাবাহিকতা
+                                অটুট থাকে। */}
+                            <div className="hr-grid">
+                                {era.events.map((e) => (
+                                    <div
+                                        key={`${e.year}-${e.name}`}
+                                        className="hr-reveal hr-row"
+                                    >
+                                        <div className="hr-entry">
+                                            <span className="hr-year">{e.year}</span>
+                                            <h3 className={`hr-name${e.highlight ? ' hr-name-accent' : ''}`}>
+                                                {e.name}
+                                            </h3>
+                                            <p className="hr-text">{e.text}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
                     ))}
                 </div>
