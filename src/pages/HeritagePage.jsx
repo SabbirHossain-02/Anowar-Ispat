@@ -72,6 +72,45 @@ const HeritagePage = () => {
         });
     }, { scope: rootRef });
 
+    // এবাউট পাতার টাইমলাইনের মতোই — বিন্দু ফোটে, তারপর রেখা নামে,
+    // শেষে লেখা উঠে আসে। একই সারির ঘটনাগুলো একসাথে না ফুটে বাঁ থেকে
+    // ডানে একটু পরপর, তাই offsetTop দেখে সারি চিনে নিয়ে দেরি বসাই।
+    useEffect(() => {
+        const rows = Array.from(document.querySelectorAll('.hr-row'));
+        if (!rows.length) return;
+
+        const stagger = () => {
+            const byTop = new Map();
+            rows.forEach((el) => {
+                const top = Math.round(el.offsetTop);
+                if (!byTop.has(top)) byTop.set(top, []);
+                byTop.get(top).push(el);
+            });
+            byTop.forEach((group) => {
+                group
+                    .sort((a, b) => a.offsetLeft - b.offsetLeft)
+                    .forEach((el, i) => el.style.setProperty('--hr-delay', `${i * 0.08}s`));
+            });
+        };
+        stagger();
+
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+                entry.target.classList.add('is-in');
+                io.unobserve(entry.target);
+            });
+        }, { rootMargin: '0px 0px -12% 0px' });
+
+        rows.forEach((el) => io.observe(el));
+
+        // কলামের সংখ্যা বদলালে সারিও বদলায়, দেরিগুলো নতুন করে
+        const ro = new ResizeObserver(stagger);
+        if (rows[0].parentElement) ro.observe(rows[0].parentElement);
+
+        return () => { io.disconnect(); ro.disconnect(); };
+    }, [eras.length]);
+
     return (
         <div
             ref={rootRef}
@@ -164,7 +203,7 @@ const HeritagePage = () => {
                                 {era.events.map((e) => (
                                     <div
                                         key={`${e.year}-${e.name}`}
-                                        className="hr-reveal hr-row"
+                                        className="hr-row"
                                     >
                                         <div className="hr-entry">
                                             <span className="hr-year">{e.year}</span>
