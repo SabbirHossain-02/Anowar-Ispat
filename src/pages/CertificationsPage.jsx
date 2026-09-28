@@ -25,6 +25,7 @@ const DEFAULTS = {
         title: 'Tested, audited and',
         accent: 'Certified',
     },
+    crumb: 'Certifications',
     eyebrow: 'CERTIFICATIONS',
     title: 'Every claim below is issued by a body outside Anwar Ispat',
     lead: 'The rebar is certified against Bangladeshi, British, Indian and American standards. The mill itself is audited to ISO quality and environmental management systems, and tested independently by BUET.',
@@ -108,7 +109,7 @@ const CertificationsPage = () => {
                 crumbs={[
                     { label: 'Home', to: '/' },
                     { label: 'Products', to: '/products' },
-                    { label: 'Certifications' },
+                    { label: c.crumb },
                 ]}
             />
 
@@ -125,12 +126,13 @@ const CertificationsPage = () => {
                 </div>
 
                 <div className="cert-grid">
-                    {c.items.map((c) => (
-                        <article key={c.code} className="cert-card">
+                    {(Array.isArray(c.items) ? c.items : []).map((c, i) => (
+                        <article key={i} className="cert-card">
                             {/* প্লেট দুই থিমেই সাদা — কয়েকটি লোগো কালো কালিতে
-                                আঁকা, গাঢ় পটভূমিতে মিলিয়ে যেত */}
+                                আঁকা, গাঢ় পটভূমিতে মিলিয়ে যেত। লোগো না দিলে
+                                প্লেট ফাঁকা থাকে, ভাঙা ছবির চিহ্ন দেখায় না। */}
                             <div className="cert-plate">
-                                <img src={c.logo} alt={`${c.code} certification`} loading="lazy" />
+                                {c.logo && <img src={c.logo} alt={`${c.code} certification`} loading="lazy" />}
                             </div>
 
                             <div className="cert-body">
