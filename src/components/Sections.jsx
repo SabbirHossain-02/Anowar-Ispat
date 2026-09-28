@@ -1451,8 +1451,9 @@ const ORBIT_RY = 32;
    নোড ছোট ও ফিকে হয়ে কেন্দ্রের কার্ডের পেছনে যায়, সামনেরগুলো সামনে
    আসে — তাই গভীরতার অনুভূতি থাকে, WebGL ছাড়াই। স্ক্রল এর কিছু বদলায় না।
 
-   ফোনে (৬৪০px এর নিচে) কক্ষপথে সাতটি লেবেল ধরে না — তখন কেন্দ্রের
-   কার্ডের নিচে একটি পরিষ্কার তালিকা।
+   মঞ্চ পর্দার যতটা জায়গা পায় পুরোটা নেয়, আর কক্ষপথের মাপ সেই
+   জায়গা থেকে px এ হিসাব হয়: চওড়া পর্দায় চ্যাপ্টা উপবৃত্ত, ফোনে প্রায়
+   বৃত্ত। তাই কোনো পর্দাতেই কক্ষপথ বাদ যায় না।
    ---------------------------------------------------------------------- */
 export const CoreStrengths = () => {
   const home = useContent('home', HOME_DEFAULTS);
@@ -1461,22 +1462,13 @@ export const CoreStrengths = () => {
 
   const sectionRef = useRef(null);
   const stageRef = useRef(null);
+  const ringMainRef = useRef(null);
+  const ringFaintRef = useRef(null);
   const nodeRefs = useRef([]);
   const visibleRef = useRef(false);
   const pausedRef = useRef(false);
 
   const [inView, setInView] = useState(false);
-  const [compact, setCompact] = useState(false);
-
-  // ফোন না বড় পর্দা
-  useEffect(() => {
-    // সরু পর্দা, বা এত কম উচ্চতা যে কক্ষপথের লেখা ৯px এর নিচে নামত — দুই ক্ষেত্রেই তালিকা
-    const mq = window.matchMedia('(max-width: 767px), (max-height: 560px)');
-    const on = () => setCompact(mq.matches);
-    on();
-    mq.addEventListener('change', on);
-    return () => mq.removeEventListener('change', on);
-  }, []);
 
   // দৃশ্যে এলে একবার শুরু, আর কেবল দেখা গেলেই ঘোরে
   useEffect(() => {
@@ -1492,27 +1484,56 @@ export const CoreStrengths = () => {
 
   // ঘোরা — প্রতিটি নোড উপবৃত্তের উপর; সামনে এলে বড়, পেছনে গেলে ছোট
   useEffect(() => {
-    if (compact) return undefined;
     const stage = stageRef.current;
     if (!stage) return undefined;
 
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const n = items.length || 1;
-    // পুরো নকশা মঞ্চের সাথে একসাথে ছোট-বড় হয়: ১০০০px চওড়া মঞ্চে
-    // আসল মাপ, ছোট মঞ্চে সেই অনুপাতে। লেবেল নিজের মাপে থাকলে ছোট
-    // পর্দায় একটার গায়ে আরেকটা উঠে যেত।
+
     let W = 0;
     let H = 0;
     let k = 1;
+    let rx = 0;
+    let ry = 0;
+    let cy = 0;
+    let labels = [];
+    let labelW = [];
     const measure = () => {
       W = stage.clientWidth;
       H = stage.clientHeight;
-      k = Math.max(0.55, Math.min(1, W / 1000));
+      // পুরো নকশা মঞ্চের সাথে একসাথে ছোট-বড় হয়, তবে ০.৬৮ এর নিচে
+      // নামে না — তার নিচে লেবেলের লেখা আর পড়া যায় না
+      k = Math.max(0.68, Math.min(1, W / 1000, H / 560));
       stage.style.setProperty('--cs-k', String(k));
+      // সরু মঞ্চে লম্বা লেবেল দুই লাইনে ভাঙে, নইলে দুই পাশের দুটো গায়ে লাগত
+      if (W < 700) stage.dataset.narrow = '';
+      else delete stage.dataset.narrow;
+
+      labels = nodeRefs.current.map((el) => (el ? el.querySelector('.cs-node-label') : null));
+      labelW = labels.map((el) => (el ? el.offsetWidth : 0));
+      const labelH = Math.max(0, ...labels.map((el) => (el ? el.offsetHeight : 0)));
+
+      // উপরের নোডের লেবেল বিন্দুর উপরে বসে, তাই উপরে তার জায়গা রাখা
+      const top = (14 + labelH) * k + 8;
+      const bottom = 14;
+      ry = Math.max(40, (H - top - bottom) / 2);
+      cy = top + ry;
+      rx = Math.min(W / 2 - 16, ry * 2.6);
+      stage.style.setProperty('--cs-cy', `${cy}px`);
+
+      const main = ringMainRef.current;
+      const faint = ringFaintRef.current;
+      if (main && W && H) {
+        main.setAttribute('cy', String((cy / H) * 100));
+        main.setAttribute('rx', String((rx / W) * 100));
+        main.setAttribute('ry', String((ry / H) * 100));
+      }
+      if (faint && W && H) {
+        faint.setAttribute('cy', String((cy / H) * 100));
+        faint.setAttribute('rx', String(((rx + 0.1 * ry) / W) * 100));
+        faint.setAttribute('ry', String((ry * 1.1 / H) * 100));
+      }
     };
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(stage);
 
     let raf = 0;
     let last = performance.now();
@@ -1524,15 +1545,33 @@ export const CoreStrengths = () => {
       nodeRefs.current.forEach((el, i) => {
         if (!el) return;
         const a = angle + (i / n) * Math.PI * 2;
-        const x = (0.5 + (ORBIT_RX / 100) * spread * Math.cos(a)) * W;
-        const y = (0.5 + (ORBIT_RY / 100) * spread * Math.sin(a)) * H;
+        const x = W / 2 + rx * spread * Math.cos(a);
+        const y = cy + ry * spread * Math.sin(a);
         const depth = (Math.sin(a) + 1) / 2;        // 0 = পেছনে (উপরে), 1 = সামনে (নিচে)
         const scale = k * (0.8 + 0.2 * depth);
         el.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
         el.style.opacity = String(inView ? 0.5 + 0.5 * depth : 0);
         el.style.zIndex = depth > 0.45 ? '6' : '2';  // কেন্দ্রের কার্ড ৪ এ
+
+        // বিন্দু কক্ষপথেই থাকে; কিনারার কাছে লেবেলটুকু ভেতরে সরে যায়,
+        // যাতে মঞ্চের বাইরে কেটে না যায়
+        const label = labels[i];
+        if (!label) return;
+        const half = (labelW[i] * scale) / 2;
+        const lx = half * 2 < W - 12 ? Math.min(Math.max(x, half + 6), W - half - 6) : W / 2;
+        label.style.transform = `translateX(calc(-50% + ${((lx - x) / scale).toFixed(1)}px))`;
       });
     };
+
+    let alive = true;
+    const refit = () => { if (alive) { measure(); place(); } };
+    refit();
+    const ro = new ResizeObserver(refit);
+    ro.observe(stage);
+    // লেখা বদলালে (CMS থেকে পরে এলে) লেবেলের চওড়াও বদলায়
+    labels.forEach((el) => { if (el) ro.observe(el); });
+    // ওয়েব ফন্ট পরে এলে লেবেলের চওড়া বদলায়
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(refit).catch(() => {});
 
     const tick = (now) => {
       raf = requestAnimationFrame(tick);
@@ -1544,10 +1583,9 @@ export const CoreStrengths = () => {
       place();
     };
 
-    place();
     raf = requestAnimationFrame(tick);
-    return () => { cancelAnimationFrame(raf); ro.disconnect(); };
-  }, [compact, inView, items.length]);
+    return () => { alive = false; cancelAnimationFrame(raf); ro.disconnect(); };
+  }, [inView, items.length]);
 
   const core = (
     <div className={`cs-core${inView ? ' is-in' : ''}`}>
@@ -1572,62 +1610,47 @@ export const CoreStrengths = () => {
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '150px', background: 'linear-gradient(to bottom, var(--primary) 0%, transparent 100%)', pointerEvents: 'none', zIndex: 2 }} />
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '150px', background: 'linear-gradient(to top, var(--primary) 0%, transparent 100%)', pointerEvents: 'none', zIndex: 2 }} />
 
-      {compact ? (
-        <div className="cs-compact">
-          {core}
-          <ul className={`cs-list${inView ? ' is-in' : ''}`}>
-            {items.map((title, i) => {
-              const Icon = ORBIT_ICONS[i % ORBIT_ICONS.length];
-              return (
-                <li key={i} className="strength-label" style={{ transitionDelay: `${0.35 + i * 0.07}s` }}>
-                  <span className="icon-box"><Icon size={16} color="#e3182d" /></span>
-                  <span className="strength-title">{title}</span>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      ) : (
-        <div
-          ref={stageRef}
-          className="cs-stage"
-          onMouseEnter={() => { pausedRef.current = true; }}
-          onMouseLeave={() => { pausedRef.current = false; }}
-        >
-          <svg className="cs-ring" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-            <ellipse
-              className={`cs-ring-main${inView ? ' is-in' : ''}`}
-              cx="50" cy="50" rx={ORBIT_RX} ry={ORBIT_RY}
-              pathLength="1"
-              vectorEffect="non-scaling-stroke"
-            />
-            <ellipse
-              className="cs-ring-faint"
-              cx="50" cy="50" rx={ORBIT_RX + 4} ry={ORBIT_RY + 3.2}
-              vectorEffect="non-scaling-stroke"
-            />
-          </svg>
+      <div
+        ref={stageRef}
+        className="cs-stage"
+        onMouseEnter={() => { pausedRef.current = true; }}
+        onMouseLeave={() => { pausedRef.current = false; }}
+      >
+        <svg className="cs-ring" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <ellipse
+            ref={ringMainRef}
+            className={`cs-ring-main${inView ? ' is-in' : ''}`}
+            cx="50" cy="50" rx={ORBIT_RX} ry={ORBIT_RY}
+            pathLength="1"
+            vectorEffect="non-scaling-stroke"
+          />
+          <ellipse
+            ref={ringFaintRef}
+            className="cs-ring-faint"
+            cx="50" cy="50" rx={ORBIT_RX + 4} ry={ORBIT_RY + 3.2}
+            vectorEffect="non-scaling-stroke"
+          />
+        </svg>
 
-          {core}
+        {core}
 
-          {items.map((title, i) => {
-            const Icon = ORBIT_ICONS[i % ORBIT_ICONS.length];
-            return (
-              <div
-                key={i}
-                className="cs-node"
-                ref={(el) => { nodeRefs.current[i] = el; }}
-              >
-                <span className={`cs-node-dot${i % 2 === 0 ? ' is-red' : ''}`} aria-hidden="true" />
-                <div className="strength-label cs-node-label">
-                  <span className="icon-box"><Icon size={18} color="#e3182d" /></span>
-                  <span className="strength-title">{title}</span>
-                </div>
+        {items.map((title, i) => {
+          const Icon = ORBIT_ICONS[i % ORBIT_ICONS.length];
+          return (
+            <div
+              key={i}
+              className="cs-node"
+              ref={(el) => { nodeRefs.current[i] = el; }}
+            >
+              <span className={`cs-node-dot${i % 2 === 0 ? ' is-red' : ''}`} aria-hidden="true" />
+              <div className="strength-label cs-node-label">
+                <span className="icon-box"><Icon size={18} color="#e3182d" /></span>
+                <span className="strength-title">{title}</span>
               </div>
-            );
-          })}
-        </div>
-      )}
+            </div>
+          );
+        })}
+      </div>
     </section>
   );
 };

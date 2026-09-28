@@ -1957,15 +1957,15 @@ body.light-mode button[style*="border: 1px solid rgba(255,255,255,0.2)"] {
 
 /* ============================================================
    Core Strengths কক্ষপথ — SVG + DOM, WebGL নয়।
-   মঞ্চের অনুপাত বাঁধা (16:10), তাই কক্ষপথ ও নোড সব পর্দায় একই
-   আকৃতিতে থাকে; উচ্চতা পর্দার ৮০% এর বেশি হয় না।
+   মঞ্চ উপরের নেভবার বাদে পর্দার বাকি জায়গা নেয়; কক্ষপথের আকার JS
+   সেই মাপ থেকে বসায়, তাই ফোন থেকে বড় মনিটর সবখানে কক্ষপথই থাকে।
    ============================================================ */
 .cs-stage {
   position: relative;
   z-index: 3;
-  /* উপরের নেভবার বাদ দিয়ে যতটা উচ্চতা থাকে তাতেই ধরে */
-  width: min(1040px, 100%, calc((100vh - 150px) * 1.6));
-  aspect-ratio: 16 / 10;
+  width: min(1100px, 100%);
+  height: clamp(380px, calc(100vh - 130px), 720px);
+  height: clamp(380px, calc(100svh - 130px), 720px);
 }
 
 .cs-ring {
@@ -2001,7 +2001,7 @@ body.light-mode button[style*="border: 1px solid rgba(255,255,255,0.2)"] {
 .cs-core {
   position: absolute;
   left: 50%;
-  top: 50%;
+  top: var(--cs-cy, 50%);
   z-index: 4;
   transform: translate(-50%, -50%) scale(calc(var(--cs-k, 1) * 0.85));
   opacity: 0;
@@ -2101,65 +2101,21 @@ body.light-mode button[style*="border: 1px solid rgba(255,255,255,0.2)"] {
 .cs-node-label .icon-box {
   width: 30px;
   height: 30px;
+  flex-shrink: 0;
 }
 
 .cs-node-label .strength-title {
   font-size: 0.85rem;
 }
 
-/* ফোন: কেন্দ্রের কার্ড, নিচে তালিকা */
-.cs-compact {
-  position: relative;
-  z-index: 3;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2.25rem;
+/* সরু মঞ্চ (ফোন): লম্বা লেবেল দুই লাইনে */
+.cs-stage[data-narrow] .cs-node-label {
+  max-width: 230px;
 }
 
-.cs-compact .cs-core {
-  position: relative;
-  left: auto;
-  top: auto;
-  transform: scale(0.9);
-  min-height: 170px;
-}
-
-.cs-compact .cs-core.is-in {
-  transform: scale(1);
-}
-
-.cs-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.6rem;
-}
-
-.cs-list .strength-label {
-  padding: 0.45rem 0.9rem 0.45rem 0.45rem;
-  gap: 0.55rem;
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.5s ease, transform 0.55s cubic-bezier(0.2, 0.7, 0.3, 1);
-}
-
-.cs-list.is-in .strength-label {
-  opacity: 1;
-  transform: none;
-}
-
-.cs-list .icon-box {
-  width: 28px;
-  height: 28px;
-}
-
-.cs-list .strength-title {
-  font-size: 0.72rem;
+.cs-stage[data-narrow] .cs-node-label .strength-title {
+  font-size: 0.95rem;
+  line-height: 1.15;
 }
 
 @media (prefers-reduced-motion: reduce) {
