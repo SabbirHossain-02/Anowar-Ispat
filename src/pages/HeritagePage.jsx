@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
@@ -36,8 +36,216 @@ const CONTAINER = {
     padding: '0 clamp(1.25rem, 5vw, 3rem)',
 };
 
-// ২৯টি মাইলফলক একটানা তালিকায় দিলে কেউ পড়ে না। তাই যুগ অনুযায়ী
-// চার ভাগে ভাগ করা — প্রতিটি ভাগ নিজেই একটা গল্প বলে।
+// ঢেউয়ের উচ্চতা — এবাউট পাতার টাইমলাইনের সমান
+const AMP = 32;
+// ঢেউটি প্রতি কত px এ একবার মাপা হয়
+const STEP = 4;
+
+/* ----------------------------------------------------------------------
+   একটি যুগ = একটি পিন করা সেকশন, একটিই সারি।
+
+   পাতা নিচে গড়ালে সেকশনটি পর্দায় আটকে থাকে, আর সেই উল্লম্ব স্ক্রলই
+   টাইমলাইনকে বাঁ থেকে ডানে টেনে নেয়। একটি "সামনের রেখা" (front)
+   প্রথম ঘটনা থেকে শেষ ঘটনা পর্যন্ত এগোয়:
+     • ঢেউ ঠিক ততদূর আঁকা — বিন্দুতে বিন্দুতে নয়, একটানা
+     • যে ঘটনার কেন্দ্র সেই রেখা পেরিয়েছে, সেটি ফোটে
+     • ট্র্যাক এমনভাবে সরে যে সামনের রেখা পর্দার মাঝামাঝি থাকে
+   উল্টো দিকে গড়ালে সবই উল্টো চলে।
+   ---------------------------------------------------------------------- */
+const EraTimeline = ({ era, index }) => {
+    const sectionRef = useRef(null);
+    const viewRef = useRef(null);
+    const trackRef = useRef(null);
+    const pathRef = useRef(null);
+    const stRef = useRef(null);
+
+    // মাপজোখ — রেন্ডার ঘটায় না, তাই ref এ
+    const geo = useRef({ lens: [], centres: [], x0: 0, x1: 0, total: 0, trackW: 0 });
+    const [wave, setWave] = useState({ d: '', w: 0, h: 0, total: 0 });
+
+    // প্রগতি (0 → 1) থেকে সবকিছু
+    const update = useCallback((p) => {
+        const g = geo.current;
+        const track = trackRef.current;
+        const view = viewRef.current;
+        if (!track || !view || !g.centres.length) return;
+
+        const front = g.x0 + p * (g.x1 - g.x0);
+
+        // ক্যামেরা: সামনের রেখা পর্দার ৫৫% এ থাকুক, দুই প্রান্তে থেমে যাক
+        const vw = view.clientWidth;
+        const maxShift = Math.max(0, g.trackW - vw);
+        const shift = Math.min(maxShift, Math.max(0, front - vw * 0.55));
+        track.style.transform = `translate3d(${-shift}px, 0, 0)`;
+
+        // ঢেউ সামনের রেখা পর্যন্ত
+        const path = pathRef.current;
+        if (path && g.total) {
+            const i = Math.max(0, Math.min(g.lens.length - 1, Math.round(front / STEP)));
+            path.style.strokeDashoffset = String(g.total - g.lens[i]);
+        }
+
+        // কেন্দ্র পেরোলে ফোটে, পিছিয়ে গেলে আবার লুকায়
+        const items = track.querySelectorAll('.tl-item');
+        items.forEach((el, k) => {
+            el.classList.toggle('is-in', g.centres[k] <= front + 0.5);
+        });
+    }, []);
+
+    // ঢেউ ও কেন্দ্রগুলো মাপা
+    useEffect(() => {
+        const track = trackRef.current;
+        if (!track) return undefined;
+
+        let raf = 0;
+        const measure = () => {
+            raf = 0;
+            const items = Array.from(track.querySelectorAll('.tl-item'));
+            if (!items.length) return;
+
+            const W = track.scrollWidth;
+            const H = track.offsetHeight;
+            const centres = items.map((el) => el.offsetLeft + el.offsetWidth / 2);
+            const c0 = centres[0];
+            const L = centres.length > 1 ? centres[1] - c0 : items[0].offsetWidth;
+            const mid = H / 2;
+            // প্রথম ঘটনা (লেখা উপরে) চূড়ায়, পরেরটি খাদে
+            const y = (x) => mid - AMP * Math.cos((Math.PI * (x - c0)) / L);
+
+            // প্রতি STEP px এ বিন্দু; সাথে সেই পর্যন্ত মোট দৈর্ঘ্য
+            const lens = [];
+            let d = '';
+            let len = 0;
+            let px = 0;
+            let py = y(0);
+            for (let x = 0; x <= W; x += STEP) {
+                const yy = y(x);
+                if (x) len += Math.hypot(x - px, yy - py);
+                d += (x ? ' L' : 'M') + x + ' ' + yy.toFixed(2);
+                lens.push(len);
+                px = x; py = yy;
+            }
+
+            geo.current = {
+                lens,
+                centres,
+                x0: c0,
+                x1: centres[centres.length - 1],
+                total: len,
+                trackW: W,
+            };
+            setWave({ d, w: W, h: H, total: len });
+
+            // পিনের দৈর্ঘ্য মাপের উপর নির্ভর করে
+            ScrollTrigger.refresh();
+        };
+
+        const schedule = () => { if (!raf) raf = requestAnimationFrame(measure); };
+        schedule();
+
+        const ro = new ResizeObserver(schedule);
+        ro.observe(track);
+        if (viewRef.current) ro.observe(viewRef.current);
+
+        return () => {
+            ro.disconnect();
+            if (raf) cancelAnimationFrame(raf);
+        };
+    }, [era.events.length]);
+
+    // নতুন ঢেউ আঁকা হলে বর্তমান প্রগতিতেই বসাই
+    useEffect(() => {
+        update(stRef.current ? stRef.current.progress : 0);
+    }, [wave.total, update]);
+
+    // পিন ও স্ক্রল
+    useGSAP(() => {
+        if (!sectionRef.current) return;
+        stRef.current = ScrollTrigger.create({
+            trigger: sectionRef.current,
+            start: 'top top',
+            // যত পথ ঢেউকে যেতে হবে, স্ক্রলও মোটামুটি ততটা — কম ঘটনার
+            // যুগেও অন্তত খানিকটা পথ থাকে, নইলে এক ঝলকে শেষ হত
+            end: () => {
+                const g = geo.current;
+                const span = Math.max(0, g.x1 - g.x0);
+                return '+=' + Math.max(window.innerHeight * 0.8, span * 1.15);
+            },
+            pin: true,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+            onUpdate: (self) => update(self.progress),
+            onRefresh: (self) => update(self.progress),
+        });
+        return () => {
+            if (stRef.current) stRef.current.kill();
+            stRef.current = null;
+        };
+    }, { scope: sectionRef, dependencies: [era.events.length] });
+
+    return (
+        <section ref={sectionRef} className="hr-era" aria-labelledby={`hr-era-${index}`}>
+            <div style={CONTAINER} className="hr-era-head">
+                <span className="hr-era-span">{era.span}</span>
+                <h2 id={`hr-era-${index}`} className="hr-era-title">{era.title}</h2>
+                <p className="hr-era-note">{era.note}</p>
+            </div>
+
+            <div className="hr-era-view" ref={viewRef}>
+                <ol className="tl-track hr-track" ref={trackRef}>
+                    {wave.d && (
+                        <svg
+                            className="tl-line hr-line"
+                            aria-hidden="true"
+                            width={wave.w}
+                            height={wave.h}
+                            viewBox={`0 0 ${wave.w} ${wave.h}`}
+                        >
+                            <defs>
+                                <linearGradient id={`hr-fade-${index}`} x1="0" x2="1" y1="0" y2="0">
+                                    <stop offset="0" stopColor="var(--glass-border)" stopOpacity="0" />
+                                    <stop offset="0.04" stopColor="var(--glass-border)" stopOpacity="1" />
+                                    <stop offset="0.96" stopColor="var(--glass-border)" stopOpacity="1" />
+                                    <stop offset="1" stopColor="var(--glass-border)" stopOpacity="0" />
+                                </linearGradient>
+                            </defs>
+                            <path
+                                ref={pathRef}
+                                d={wave.d}
+                                fill="none"
+                                stroke={`url(#hr-fade-${index})`}
+                                strokeWidth="3"
+                                strokeDasharray={wave.total || 1}
+                                strokeDashoffset={wave.total || 1}
+                            />
+                        </svg>
+                    )}
+
+                    {era.events.map((m, i) => (
+                        <li
+                            key={`${m.year}-${m.name}`}
+                            className={[
+                                'tl-item',
+                                i % 2 === 0 ? 'is-above' : 'is-below',
+                                m.highlight ? 'is-key' : '',
+                                m.memoriam ? 'is-memoriam' : '',
+                            ].filter(Boolean).join(' ')}
+                            style={{ '--wave': `${i % 2 === 0 ? -AMP : AMP}px` }}
+                        >
+                            <div className="tl-card">
+                                <span className="tl-year">{m.year}</span>
+                                <h3 className="tl-name">{m.name}</h3>
+                                <p className="tl-text">{m.text}</p>
+                            </div>
+                            <span className="tl-stem" aria-hidden="true" />
+                            <span className="tl-dot" aria-hidden="true" />
+                        </li>
+                    ))}
+                </ol>
+            </div>
+        </section>
+    );
+};
 
 const HeritagePage = () => {
     const rootRef = useRef(null);
@@ -53,15 +261,7 @@ const HeritagePage = () => {
             const y = parseInt(m.year, 10);
             return y >= parseInt(era.from, 10) && y <= parseInt(era.to, 10);
         }),
-    }));
-    const [isMobile, setIsMobile] = useState(false);
-
-    useEffect(() => {
-        const onResize = () => setIsMobile(window.innerWidth < 900);
-        onResize();
-        window.addEventListener('resize', onResize);
-        return () => window.removeEventListener('resize', onResize);
-    }, []);
+    })).filter((era) => era.events.length > 0);
 
     useGSAP(() => {
         gsap.utils.toArray('.hr-reveal').forEach((el) => {
@@ -71,160 +271,6 @@ const HeritagePage = () => {
             });
         });
     }, { scope: rootRef });
-
-    // এবাউট পাতার টাইমলাইনের মতোই — বিন্দুগুলো ঢেউয়ের উপর বসে, ঢেউ
-    // স্ক্রলের সাথে বাঁ থেকে ডানে আঁকা হয়, তারপর বিন্দু → রেখা → লেখা
-    // ধাপে ধাপে ফোটে। সেখানে এক ঢেউ = দুটি ঘটনা; এখানে গ্রিডের এক
-    // সারিতে যতগুলো ঘটনা, তাদের উপর দিয়েই এক ঢেউ যায়।
-    const HR_AMP = 26;
-    const [waves, setWaves] = useState([]);
-
-    useEffect(() => {
-        const grids = Array.from(document.querySelectorAll('.hr-grid'));
-        if (!grids.length) return;
-
-        // নথির ক্রমেই সালের ক্রম — প্রথম যুগ থেকে শেষ পর্যন্ত
-        const items = Array.from(document.querySelectorAll('.hr-row'));
-        if (!items.length) return;
-
-        let rows = [];        // প্রতিটি দৃশ্যমান সারি: বাঁক ও তার দৈর্ঘ্যের হিসাব
-        let area = { top: 0, height: 1 };
-        let sig = '';
-        let frame = 0;
-
-        const layout = () => {
-            const next = [];
-            rows = [];
-            let base = 0;     // এই গ্রিডের আগে কতগুলি ঘটনা পেরিয়ে এসেছি
-
-            grids.forEach((grid, gi) => {
-                const own = Array.from(grid.querySelectorAll('.hr-row'));
-                if (!own.length) return;
-
-                // একই offsetTop মানে একই সারি
-                const byTop = new Map();
-                own.forEach((el) => {
-                    const top = Math.round(el.offsetTop);
-                    if (!byTop.has(top)) byTop.set(top, []);
-                    byTop.get(top).push(el);
-                });
-
-                let r = 0;
-                byTop.forEach((group) => {
-                    group.sort((a, b) => a.offsetLeft - b.offsetLeft);
-                    const key = gi + '-' + r;
-
-                    group.forEach((el, i) => {
-                        // জোড় ঘর ঢেউয়ের চূড়ায়, লেখা উপরে; বিজোড় খাদে, লেখা নিচে
-                        el.style.setProperty('--hr-wave', `${i % 2 === 0 ? -HR_AMP : HR_AMP}px`);
-                        el.classList.toggle('is-above', i % 2 === 0);
-                        el.classList.toggle('is-below', i % 2 !== 0);
-                    });
-
-                    const first = items.indexOf(group[0]);
-
-                    if (group.length > 1) {
-                        const gr = grid.getBoundingClientRect();
-                        const dots = group.map((el) => {
-                            const rc = el.getBoundingClientRect();
-                            return {
-                                x: rc.left - gr.left + rc.width / 2,
-                                y: rc.top - gr.top + rc.height / 2,
-                            };
-                        });
-
-                        const x0 = dots[0].x;
-                        const L = dots[1].x - dots[0].x;
-                        const W = dots[dots.length - 1].x - x0;
-                        const mid = HR_AMP;
-                        const y = (x) => mid - HR_AMP * Math.cos((Math.PI * x) / L);
-
-                        // এবাউটের মতো: আঁকতে আঁকতে দৈর্ঘ্য জমাই, আর প্রতিটি
-                        // বিন্দুতে পৌঁছালে সেই মুহূর্তের দৈর্ঘ্য টুকে রাখি
-                        const xs = dots.map((d) => d.x - x0);
-                        const lenAt = [];
-                        let d = '', len = 0, px = 0, py = y(0), ci = 0;
-                        for (let x = 0; x <= W; x += 4) {
-                            const yy = y(x);
-                            if (x) len += Math.hypot(x - px, yy - py);
-                            d += (x ? ' L' : 'M') + x.toFixed(1) + ' ' + yy.toFixed(2);
-                            while (ci < xs.length && x >= xs[ci]) { lenAt.push(len); ci += 1; }
-                            px = x; py = yy;
-                        }
-                        while (ci < xs.length) { lenAt.push(len); ci += 1; }
-
-                        next.push({ key, left: x0, top: dots[0].y - HR_AMP, w: W, h: HR_AMP * 2, d, len });
-                        rows.push({ key, first, count: group.length, lenAt, total: len });
-                    } else {
-                        rows.push({ key, first, count: group.length, lenAt: [], total: 0 });
-                    }
-                    r += 1;
-                });
-
-                base += own.length;
-            });
-
-            // পুরো টাইমলাইন অংশটি পাতায় কোথায়, কতটা লম্বা
-            const firstR = items[0].getBoundingClientRect();
-            const lastR = items[items.length - 1].getBoundingClientRect();
-            area = {
-                top: firstR.top + window.scrollY,
-                height: Math.max(1, lastR.bottom + window.scrollY - (firstR.top + window.scrollY)),
-            };
-
-            const k = next.map((w) => w.key + w.left + w.top + w.w).join('|');
-            if (k !== sig) { sig = k; setWaves(next); }
-        };
-
-        // এবাউটের সাথে এক নিয়ম: স্ক্রলের দূরত্ব গুনে একটা একটা করে ফোটে।
-        // সেখানে এক ধাপ ১২০px, কিন্তু সেটি ছিল ভেতরের আড়াআড়ি স্ক্রল।
-        // এখানে পুরো অংশটুকু যতটা লম্বা, তাকে ঘটনার সংখ্যা দিয়ে ভাগ করি —
-        // তাই শেষ ঘটনাটিও অংশ ছাড়ার আগেই ফুটে ওঠে।
-        const apply = () => {
-            frame = 0;
-            const step = Math.max(60, area.height / items.length);
-            // অংশটি পর্দার ৮০% পর্যন্ত উঠে এলে গোনা শুরু
-            const from = area.top - window.innerHeight * 0.8;
-            const due = Math.max(0, Math.min(
-                items.length,
-                Math.floor((window.scrollY - from) / step) + 1,
-            ));
-
-            // যতগুলি ফুটেছে, প্রতিটি সারির ঢেউ ততদূর আঁকা
-            rows.forEach((row) => {
-                const path = document.querySelector(`.hr-wave[data-wave="${row.key}"] path`);
-                if (!path || !row.total) return;
-                const shown = Math.max(0, Math.min(row.count, due - row.first));
-                const upto = shown > 0 ? (row.lenAt[shown - 1] ?? row.total) : 0;
-                path.style.strokeDashoffset = String(row.total - upto);
-            });
-
-            let newly = 0;
-            for (let i = 0; i < due; i += 1) {
-                const el = items[i];
-                if (el.classList.contains('is-in')) continue;
-                // দ্রুত গড়ালে একসাথে কয়েকটি পাওনা হয়ে যায় — তখনও একটু পরপর
-                el.style.setProperty('--hr-delay', `${newly * 0.08}s`);
-                el.classList.add('is-in');
-                newly += 1;
-            }
-        };
-
-        const onScroll = () => { if (!frame) frame = requestAnimationFrame(apply); };
-
-        layout();
-        apply();
-
-        window.addEventListener('scroll', onScroll, { passive: true });
-        const ro = new ResizeObserver(() => { layout(); apply(); });
-        grids.forEach((g) => ro.observe(g));
-
-        return () => {
-            window.removeEventListener('scroll', onScroll);
-            ro.disconnect();
-            if (frame) cancelAnimationFrame(frame);
-        };
-    }, [eras.length]);
 
     return (
         <div
@@ -262,104 +308,11 @@ const HeritagePage = () => {
             </section>
 
             {/* ---------------------------------------------------------- */}
-            {/* TIMELINE */}
+            {/* TIMELINE — প্রতিটি যুগ একটি পিন করা সেকশন, একটিই ঢেউ */}
             {/* ---------------------------------------------------------- */}
-            <section style={{
-                minHeight: 'auto', display: 'block',
-                paddingTop: 0,
-                paddingBottom: `calc(${SECTION_PAD} * 1.4)`,
-                paddingLeft: 0, paddingRight: 0,
-            }}>
-                <div style={CONTAINER}>
-                    {eras.map((era, eraIndex) => (
-                        <div key={era.span} style={{ paddingTop: SECTION_PAD }}>
-                            {/* যুগের শিরোনাম — ডেস্কটপে স্ক্রলের সাথে আটকে থাকে,
-                                তাই লম্বা তালিকা পড়ার সময়ও কোন যুগ চলছে বোঝা যায় */}
-                            <div
-                                className="hr-reveal"
-                                style={{
-                                    position: isMobile ? 'static' : 'sticky',
-                                    top: '92px',
-                                    zIndex: 3,
-                                    background: 'var(--primary)',
-                                    paddingBottom: '1.1rem',
-                                    borderBottom: '1px solid var(--glass-border)',
-                                    marginBottom: '0.5rem',
-                                }}
-                            >
-                                <span style={{
-                                    fontFamily: 'var(--font-main)', fontSize: '0.74rem', fontWeight: 700,
-                                    letterSpacing: '0.2em', color: 'var(--accent)',
-                                }}>
-                                    {era.span}
-                                </span>
-                                <h2 style={{
-                                    fontFamily: 'var(--font-heading)',
-                                    fontSize: 'clamp(1.5rem, 2.8vw, 2.1rem)',
-                                    fontWeight: 800, letterSpacing: '0.02em',
-                                    margin: '0.5rem 0 0.55rem', textTransform: 'none',
-                                }}>
-                                    {era.title}
-                                </h2>
-                                <p style={{
-                                    fontFamily: 'var(--font-main)', fontSize: '0.92rem',
-                                    lineHeight: 1.7, color: 'var(--subtext)', margin: 0, maxWidth: '58ch',
-                                }}>
-                                    {era.note}
-                                </p>
-                            </div>
-
-                            {/* আগে প্রতিটি ঘটনা পুরো প্রস্থ নিয়ে একটা সারি ছিল —
-                                ২৯টি ঘটনা মানে ২৯ বার নিচে নামা। এখন পাশাপাশি
-                                বসে, বাঁ থেকে ডানে পড়ে পরের সারিতে যায়। গ্রিড
-                                নিজেই সারি-ক্রমে সাজায়, তাই সালের ধারাবাহিকতা
-                                অটুট থাকে। */}
-                            <div className="hr-grid">
-                                {waves
-                                    .filter((w) => w.key.startsWith(`${eraIndex}-`))
-                                    .map((w) => (
-                                        <svg
-                                            key={w.key}
-                                            className="hr-wave"
-                                            data-wave={w.key}
-                                            aria-hidden="true"
-                                            width={w.w}
-                                            height={w.h}
-                                            viewBox={`0 0 ${w.w} ${w.h}`}
-                                            style={{ left: w.left, top: w.top }}
-                                        >
-                                            <path
-                                                d={w.d}
-                                                fill="none"
-                                                stroke="var(--glass-border)"
-                                                strokeWidth="2"
-                                                strokeDasharray={w.len}
-                                                strokeDashoffset={w.len}
-                                            />
-                                        </svg>
-                                    ))}
-
-                                {era.events.map((e) => (
-                                    <div
-                                        key={`${e.year}-${e.name}`}
-                                        className="hr-row"
-                                    >
-                                        <div className="hr-card">
-                                            <span className="hr-year">{e.year}</span>
-                                            <h3 className={`hr-name${e.highlight ? ' hr-name-accent' : ''}`}>
-                                                {e.name}
-                                            </h3>
-                                            <p className="hr-text">{e.text}</p>
-                                        </div>
-                                        <span className="hr-stem" aria-hidden="true" />
-                                        <span className="hr-dot" aria-hidden="true" />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </section>
+            {eras.map((era, i) => (
+                <EraTimeline key={era.span} era={era} index={i} />
+            ))}
         </div>
     );
 };
