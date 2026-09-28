@@ -73,7 +73,7 @@ const MediaNewsPage = () => {
                 scrollTrigger: { trigger: el, start: 'top 92%' },
             });
         });
-    }, { scope: rootRef, dependencies: [shown.length] });
+    }, { scope: rootRef, dependencies: [shown.length], revertOnUpdate: true });
 
     const open = (p) => navigate('/media/news/' + articleSlug(p));
 

@@ -75,7 +75,7 @@ const NewsArticlePage = () => {
                 scrollTrigger: { trigger: el, start: 'top 93%' },
             });
         });
-    }, { scope: rootRef, dependencies: [article?.id] });
+    }, { scope: rootRef, dependencies: [article?.id], revertOnUpdate: true });
 
     const copyLink = () => {
         navigator.clipboard.writeText(window.location.href).then(() => {

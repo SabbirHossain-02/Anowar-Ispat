@@ -90,7 +90,7 @@ const CareersPositionsPage = () => {
                 scrollTrigger: { trigger: el, start: 'top 90%' },
             });
         });
-    }, { scope: rootRef, dependencies: [jobs.length, loading] });
+    }, { scope: rootRef, dependencies: [jobs.length, loading], revertOnUpdate: true });
 
     const mailtoFor = (title) =>
         `mailto:${APPLY_TO}?subject=${encodeURIComponent('Application: ' + title)}`;

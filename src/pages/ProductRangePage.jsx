@@ -85,6 +85,9 @@ const ProductRangePage = () => {
         return () => window.removeEventListener('resize', onResize);
     }, []);
 
+    // প্রোডাক্ট এলে এটি আবার চলে। আগের চালানো ফিরিয়ে না নিলে, তখনও না
+    // ফোটা ঘটনাগুলোর opacity 0 কেই gsap.from শেষ মান ধরে নিত — গ্রেডের
+    // কার্ডগুলো চিরকাল অদৃশ্য থেকে যেত। revertOnUpdate আগেরটা মুছে দেয়।
     useGSAP(() => {
         gsap.utils.toArray('.pr-reveal').forEach((el) => {
             gsap.from(el, {
@@ -92,7 +95,7 @@ const ProductRangePage = () => {
                 scrollTrigger: { trigger: el, start: 'top 86%' },
             });
         });
-    }, { scope: rootRef, dependencies: [products.length] });
+    }, { scope: rootRef, dependencies: [products.length], revertOnUpdate: true });
 
     const askForQuote = () => window.dispatchEvent(new CustomEvent('open-quote'));
 
