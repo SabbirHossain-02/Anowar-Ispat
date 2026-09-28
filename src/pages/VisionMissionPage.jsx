@@ -23,6 +23,8 @@ const DEFAULTS = {
         title: 'Since 1834,',
         accent: 'Forged in Purpose',
     },
+    crumb: 'Vision, Mission & Values',
+    intro: 'Since 1834, Anwar Group has been at the forefront of industry in Bangladesh, evolving from a single trading operation to a diverse set of ventures.',
     vision: {
         tag: 'Vision',
         title: 'Continuing the heritage',
@@ -35,6 +37,7 @@ const DEFAULTS = {
     },
     values: {
         eyebrow: 'OUR VALUES',
+        title: 'What we hold to',
         items: [
             { title: 'Continuous Innovation', text: 'Aspire to continuously introduce new products and services to support the economic growth of Bangladesh.' },
             { title: 'Business Diversity', text: 'Strive to maintain our position as the most diversified group in Bangladesh, to respond efficiently to evolving customer needs and market trends.' },
@@ -45,7 +48,7 @@ const DEFAULTS = {
     },
 };
 
-// ছবি JSON এ যায় না, তাই কোডেই থাকে ও ক্রম অনুযায়ী বসে
+// প্যানেলে কোনো কার্ডের ছবি না দিলে ক্রম অনুযায়ী এগুলোর একটি বসে
 const VALUE_IMAGES = ['/value-1.jpg', '/value-2.jpg', '/value-3.jpg', '/value-4.jpg', '/value-5.jpg'];
 
 const VisionMissionPage = () => {
@@ -82,7 +85,7 @@ const VisionMissionPage = () => {
                 crumbs={[
                     { label: 'Home', to: '/' },
                     { label: 'About us', to: '/about' },
-                    { label: 'Vision, Mission & Values' },
+                    { label: c.crumb },
                 ]}
             />
 
@@ -99,8 +102,7 @@ const VisionMissionPage = () => {
                     lineHeight: 1.8, color: 'var(--text)', textAlign: 'center',
                     margin: '0 auto', maxWidth: '860px',
                 }}>
-                    Since 1834, Anwar Group has been at the forefront of industry in Bangladesh,
-                    evolving from a single trading operation to a diverse set of ventures.
+                    {c.intro}
                 </p>
             </section>
 
@@ -125,8 +127,8 @@ const VisionMissionPage = () => {
                     {[
                         { icon: Eye, accent: true, ...c.vision },
                         { icon: Target, ...c.mission },
-                    ].map(({ icon: Icon, tag, title, body, accent }) => (
-                        <article key={tag} className="vm-reveal" style={{
+                    ].map(({ icon: Icon, tag, title, body, accent }, i) => (
+                        <article key={i} className="vm-reveal" style={{
                             background: accent
                                 ? 'linear-gradient(165deg, rgba(227,24,45,0.10) 0%, var(--surface) 60%)'
                                 : 'var(--surface)',
@@ -195,7 +197,7 @@ const VisionMissionPage = () => {
                             fontFamily: 'var(--font-heading)', fontSize: 'clamp(1.9rem, 4vw, 3rem)',
                             fontWeight: 800, margin: '0.8rem 0 0', letterSpacing: '0.02em',
                         }}>
-                            What we hold to
+                            {c.values.title}
                         </h2>
                     </div>
 
@@ -209,10 +211,10 @@ const VisionMissionPage = () => {
                             : 'repeat(3, 1fr)',
                         gap: 'clamp(1rem, 1.6vw, 1.4rem)',
                     }}>
-                        {c.values.items.map(({ title, text }, i) => {
-                            const image = VALUE_IMAGES[i % VALUE_IMAGES.length];
+                        {c.values.items.map(({ title, text, img }, i) => {
+                            const image = img || VALUE_IMAGES[i % VALUE_IMAGES.length];
                             return (
-                            <article key={title} className="vm-reveal vmv-card">
+                            <article key={i} className="vm-reveal vmv-card">
                                 <div className="vmv-media">
                                     <img src={image} alt={title} loading="lazy" />
                                 </div>
