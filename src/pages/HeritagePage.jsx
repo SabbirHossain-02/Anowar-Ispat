@@ -16,6 +16,7 @@ const DEFAULTS = {
         title: 'Nearly two centuries of',
         accent: 'Building',
     },
+    crumb: 'Heritage',
     lede: 'A legacy to value and enjoy in the present, and to preserve and pass on to future generations.',
     eras: [
         { span: '1834 — 1946', title: 'The founding trades', note: 'Four generations before steel, the family traded cloth, hide and household goods.', from: '1834', to: '1946' },
@@ -171,10 +172,12 @@ const EraTimeline = ({ era, index }) => {
         };
     }, [era.events.length]);
 
-    // নতুন ঢেউ আঁকা হলে বর্তমান প্রগতিতেই বসাই
+    // নতুন ঢেউ আঁকা হলে, বা প্যানেল থেকে লেখা বদলালে (তখন React পুরনো
+    // ঘটনার জায়গায় নতুন ঘটনা বসায়, যার গায়ে is-in নেই) বর্তমান
+    // প্রগতিতেই বসাই — নইলে পরের স্ক্রল পর্যন্ত নতুনটা লুকিয়ে থাকত
     useEffect(() => {
         update(stRef.current ? stRef.current.progress : 0);
-    }, [wave.total, update]);
+    }, [wave.total, era.events, update]);
 
     // পিন ও স্ক্রল
     useGSAP(() => {
@@ -303,7 +306,7 @@ const HeritagePage = () => {
                 crumbs={[
                     { label: 'Home', to: '/' },
                     { label: 'About us', to: '/about' },
-                    { label: 'Heritage' },
+                    { label: c.crumb },
                 ]}
             />
 
@@ -329,7 +332,8 @@ const HeritagePage = () => {
             {/* TIMELINE — প্রতিটি যুগ একটি পিন করা সেকশন, একটিই ঢেউ */}
             {/* ---------------------------------------------------------- */}
             {eras.map((era, i) => (
-                <EraTimeline key={era.span} era={era} index={i} />
+                // ক্রম ধরে চেনা — যুগের সাল বদলালে সেকশনটি নতুন করে গড়া হয় না
+                <EraTimeline key={i} era={era} index={i} />
             ))}
         </div>
     );
