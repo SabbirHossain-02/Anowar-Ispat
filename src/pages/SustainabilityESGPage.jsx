@@ -27,6 +27,7 @@ const DEFAULTS = {
         title: 'Sustainable Steel',
         accent: 'Development',
     },
+    crumb: 'Environmental, Social, Governance',
     lede: 'Championing the Sustainable Development Goals through how the mill is run — sustainable business practice, community empowerment and environmental stewardship.',
     stats: [
         { n: '48+', l: 'Years responsible' },
@@ -37,6 +38,7 @@ const DEFAULTS = {
         text: 'I envision Anwar Group not just as a business entity but as a catalyst for progress, for a sustainable and equitable future.',
         name: 'Manwar Hossain',
         role: 'Chairman, Anwar Group',
+        photo: '/Manwar-Hossain-transparent-1by1-ar.png',
     },
     pillars: {
         eyebrow: 'THREE PILLARS',
@@ -112,7 +114,7 @@ const SustainabilityESGPage = () => {
                 crumbs={[
                     { label: 'Home', to: '/' },
                     { label: 'Sustainability' },
-                    { label: 'Environmental, Social, Governance' },
+                    { label: c.crumb },
                 ]}
             />
 
@@ -126,8 +128,8 @@ const SustainabilityESGPage = () => {
                 <p className="esg-reveal esg-lede">{c.lede}</p>
 
                 <div className="esg-reveal esg-stats">
-                    {c.stats.map((s) => (
-                        <div key={s.l} className="esg-stat">
+                    {(Array.isArray(c.stats) ? c.stats : []).map((s, i) => (
+                        <div key={i} className="esg-stat">
                             <span className="esg-stat-n">{s.n}</span>
                             <span className="esg-stat-l">{s.l}</span>
                         </div>
@@ -147,7 +149,7 @@ const SustainabilityESGPage = () => {
                 <div style={CONTAINER}>
                     <figure className="esg-reveal esg-quote">
                         <div className="esg-portrait">
-                            <img src="/Manwar-Hossain-transparent-1by1-ar.png" alt="Manwar Hossain" loading="lazy" />
+                            {c.quote.photo && <img src={c.quote.photo} alt={c.quote.name} loading="lazy" />}
                         </div>
                         <div className="esg-quote-body">
                             <blockquote>{c.quote.text}</blockquote>
@@ -171,13 +173,13 @@ const SustainabilityESGPage = () => {
                 {heading(c.pillars.eyebrow, c.pillars.title)}
 
                 <div className="esg-pillars">
-                    {c.pillars.items.map((p) => (
-                        <article key={p.letter} className="esg-pillar">
+                    {(Array.isArray(c.pillars.items) ? c.pillars.items : []).map((p, i) => (
+                        <article key={i} className="esg-pillar">
                             <span className="esg-pillar-letter" aria-hidden="true">{p.letter}</span>
                             <h3 className="esg-pillar-title">{p.title}</h3>
                             <p className="esg-pillar-sub">{p.sub}</p>
                             <ul className="esg-pillar-list">
-                                {p.items.map((it) => <li key={it}>{it}</li>)}
+                                {(Array.isArray(p.items) ? p.items : []).map((it, k) => <li key={k}>{it}</li>)}
                             </ul>
                         </article>
                     ))}
@@ -199,10 +201,10 @@ const SustainabilityESGPage = () => {
                     {/* সাতটি — তালিকা হিসেবেই রাখা, কার্ড নয়। তালিকার শেষ
                         সারিতে একটি পড়লে সেটা অস্বাভাবিক দেখায় না */}
                     <ul className="esg-sdg esg-reveal">
-                        {c.sdg.items.map((label, i) => {
+                        {(Array.isArray(c.sdg.items) ? c.sdg.items : []).map((label, i) => {
                             const Icon = SDG_ICONS[i % SDG_ICONS.length];
                             return (
-                                <li key={label}>
+                                <li key={i}>
                                     <span className="esg-sdg-icon"><Icon size={17} strokeWidth={1.75} /></span>
                                     {label}
                                 </li>
@@ -225,12 +227,12 @@ const SustainabilityESGPage = () => {
 
                 <div className="esg-commit">
                     <div className="esg-reveal esg-commit-text">
-                        {c.commit.items.map((t) => <p key={t.slice(0, 24)}>{t}</p>)}
+                        {(Array.isArray(c.commit.items) ? c.commit.items : []).map((t, i) => <p key={i}>{t}</p>)}
                     </div>
 
                     <div className="esg-reveal esg-practices">
-                        {c.practices.map((p, i) => (
-                            <article key={p.label} className="esg-practice">
+                        {(Array.isArray(c.practices) ? c.practices : []).map((p, i) => (
+                            <article key={i} className="esg-practice">
                                 <span className="esg-practice-n" aria-hidden="true">
                                     {String(i + 1).padStart(2, '0')}
                                 </span>
