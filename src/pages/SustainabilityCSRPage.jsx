@@ -30,6 +30,7 @@ const DEFAULTS = {
         title: 'Community Outreach',
         accent: '& Welfare',
     },
+    crumb: 'CSR Activities',
     open: {
         eyebrow: 'WHERE WE STAND',
         statement: 'Anwar Group and Anwar Ispat stand close to the communities the mill is built in.',
@@ -102,7 +103,7 @@ const SustainabilityCSRPage = () => {
                 crumbs={[
                     { label: 'Home', to: '/' },
                     { label: 'Sustainability' },
-                    { label: 'CSR Activities' },
+                    { label: c.crumb },
                 ]}
             />
 
@@ -123,8 +124,8 @@ const SustainabilityCSRPage = () => {
                     </div>
 
                     <dl className="csr-reveal csr-figures">
-                        {c.figures.map((f) => (
-                            <div key={f.l} className="csr-figure">
+                        {(Array.isArray(c.figures) ? c.figures : []).map((f, i) => (
+                            <div key={i} className="csr-figure">
                                 <dt className="csr-figure-n">{f.n}</dt>
                                 <dd className="csr-figure-l">{f.l}</dd>
                             </div>
@@ -144,8 +145,8 @@ const SustainabilityCSRPage = () => {
             }}>
                 <div style={CONTAINER}>
                     <div className="csr-principles">
-                        {c.principles.map((p) => (
-                            <article key={p.label} className="csr-reveal csr-principle">
+                        {(Array.isArray(c.principles) ? c.principles : []).map((p, i) => (
+                            <article key={i} className="csr-reveal csr-principle">
                                 <span className="csr-eyebrow">{p.label}</span>
                                 <h2 className="csr-principle-title">{p.title}</h2>
                                 <p className="csr-principle-text">{p.text}</p>
@@ -170,10 +171,10 @@ const SustainabilityCSRPage = () => {
                 </div>
 
                 <div className="csr-list">
-                    {c.initiatives.map(({ title, text }, i) => {
+                    {(Array.isArray(c.initiatives) ? c.initiatives : []).map(({ title, text }, i) => {
                         const Icon = ICONS[i % ICONS.length];
                         return (
-                        <article key={title + i} className="csr-item">
+                        <article key={i} className="csr-item">
                             <div className="csr-item-mark">
                                 <span className="csr-item-n">{String(i + 1).padStart(2, '0')}</span>
                                 <span className="csr-item-icon"><Icon size={19} strokeWidth={1.6} /></span>
