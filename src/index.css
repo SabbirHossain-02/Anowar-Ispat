@@ -1955,6 +1955,217 @@ body.light-mode button[style*="border: 1px solid rgba(255,255,255,0.2)"] {
   color: var(--text) !important;
 }
 
+/* ============================================================
+   Core Strengths কক্ষপথ — SVG + DOM, WebGL নয়।
+   মঞ্চের অনুপাত বাঁধা (16:10), তাই কক্ষপথ ও নোড সব পর্দায় একই
+   আকৃতিতে থাকে; উচ্চতা পর্দার ৮০% এর বেশি হয় না।
+   ============================================================ */
+.cs-stage {
+  position: relative;
+  z-index: 3;
+  width: min(1040px, 100%, calc(80vh * 1.6));
+  aspect-ratio: 16 / 10;
+}
+
+.cs-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.cs-ring-main {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  stroke-opacity: 0.55;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s;
+}
+
+.cs-ring-main.is-in {
+  stroke-dashoffset: 0;
+}
+
+.cs-ring-faint {
+  fill: none;
+  stroke: var(--glass-border);
+  stroke-width: 1;
+}
+
+/* কেন্দ্র: আভা ও কার্ড */
+.cs-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 4;
+  transform: translate(-50%, -50%) scale(0.85);
+  opacity: 0;
+  transition: opacity 0.9s ease 0.5s, transform 1s cubic-bezier(0.19, 1, 0.22, 1) 0.5s;
+  display: grid;
+  place-items: center;
+}
+
+.cs-core.is-in {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.cs-orb {
+  position: absolute;
+  width: clamp(120px, 16vw, 190px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(227, 24, 45, 0.55), rgba(227, 24, 45, 0.12) 55%, transparent 72%);
+  filter: blur(2px);
+  animation: cs-pulse 4.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes cs-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+.cs-card {
+  position: relative;
+  width: max-content;
+}
+
+.cs-card-eyebrow {
+  color: var(--subtext);
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+  margin: 0 0 0.4rem;
+  font-family: monospace;
+}
+
+.cs-card-brand {
+  color: var(--text);
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  font-family: var(--font-heading);
+  margin: 0;
+}
+
+.cs-card-tail {
+  color: var(--text);
+  font-size: 0.88rem;
+  margin: 0.4rem 0 0;
+  font-weight: 600;
+}
+
+/* ঘূর্ণায়মান নোড: উপবৃত্তের উপর বিন্দু, তার উপরে লেবেল।
+   অবস্থান JS বসায় translate3d দিয়ে — left/top নয়, তাই লেআউট নড়ে না। */
+.cs-node {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.cs-node-dot {
+  position: absolute;
+  left: -6px;
+  top: -6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 1px var(--glass-border), 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.cs-node-dot.is-red {
+  background: var(--accent);
+  box-shadow: 0 0 12px rgba(227, 24, 45, 0.7);
+}
+
+.cs-node-label {
+  position: absolute;
+  left: 0;
+  bottom: 14px;
+  transform: translateX(-50%);
+  gap: 0.6rem;
+  padding: 0.55rem 1.05rem 0.55rem 0.55rem;
+}
+
+.cs-node-label .icon-box {
+  width: 30px;
+  height: 30px;
+}
+
+.cs-node-label .strength-title {
+  font-size: clamp(0.62rem, 0.95vw, 0.85rem);
+}
+
+/* ফোন: কেন্দ্রের কার্ড, নিচে তালিকা */
+.cs-compact {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.25rem;
+}
+
+.cs-compact .cs-core {
+  position: relative;
+  left: auto;
+  top: auto;
+  transform: scale(0.9);
+  min-height: 170px;
+}
+
+.cs-compact .cs-core.is-in {
+  transform: scale(1);
+}
+
+.cs-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.cs-list .strength-label {
+  padding: 0.45rem 0.9rem 0.45rem 0.45rem;
+  gap: 0.55rem;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s ease, transform 0.55s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.cs-list.is-in .strength-label {
+  opacity: 1;
+  transform: none;
+}
+
+.cs-list .icon-box {
+  width: 28px;
+  height: 28px;
+}
+
+.cs-list .strength-title {
+  font-size: 0.72rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-orb { animation: none; }
+  .cs-ring-main { transition: none; stroke-dashoffset: 0; }
+}
+
 /* CoreStrengths Labels */
 .strength-label {
   display: flex;

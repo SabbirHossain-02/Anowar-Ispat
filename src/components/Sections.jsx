@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect, useRef, useMemo, memo } from "react";
-import { ChevronLeft, ChevronRight, X, History, Globe, Zap, Shield, Target, Building2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, History, Globe, Zap, Shield, Target, Building2, Maximize, Flame, GripHorizontal, Cpu, Crosshair, Box } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { articleSlug } from "../lib/news";
 import gsap from "gsap";
@@ -7,7 +7,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { Canvas } from "@react-three/fiber";
 import ForgeThread3D from "./three/ForgeThread3D";
-import CoreStrengths3D from "./three/CoreStrengths3D";
 import { useContent } from "../lib/content";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -1434,27 +1433,189 @@ export const Footer = ({ onOpenContact }) => {
   );
 };
 
+// প্রতিটি গুণের পাশে তার প্রতীক — ক্রম অনুযায়ী, লেখার সাথে সংরক্ষিত নয়
+const ORBIT_ICONS = [Shield, Maximize, Flame, GripHorizontal, Cpu, Crosshair, Box];
+
+// কক্ষপথের মাপ — মঞ্চের প্রস্থ ও উচ্চতার শতাংশে। SVG ellipse আর
+// লেবেলের অবস্থান একই সংখ্যা থেকে আসে, তাই দুটো কখনও আলাদা হয় না।
+const ORBIT_RX = 42;
+const ORBIT_RY = 32;
+
+/* ----------------------------------------------------------------------
+   Core Strengths — আগে Three.js দৃশ্য ছিল, লেবেলগুলো 3D ক্যামেরার সাথে
+   HTML হিসেবে বসত। স্ক্রলের সময় সেগুলো জায়গা হারিয়ে ভেঙে পড়ত, আর
+   সরু পর্দায় কক্ষপথ কেটে যেত (ক্লায়েন্ট রিভিউ)।
+
+   এখন পুরোটা SVG আর সাধারণ DOM: একটি নির্দিষ্ট অনুপাতের মঞ্চ, তার
+   ভেতরে উপবৃত্তাকার কক্ষপথ, আর সাতটি নোড শতাংশ হিসেবে ঘোরে। পেছনের
+   নোড ছোট ও ফিকে হয়ে কেন্দ্রের কার্ডের পেছনে যায়, সামনেরগুলো সামনে
+   আসে — তাই গভীরতার অনুভূতি থাকে, WebGL ছাড়াই। স্ক্রল এর কিছু বদলায় না।
+
+   ফোনে (৬৪০px এর নিচে) কক্ষপথে সাতটি লেবেল ধরে না — তখন কেন্দ্রের
+   কার্ডের নিচে একটি পরিষ্কার তালিকা।
+   ---------------------------------------------------------------------- */
 export const CoreStrengths = () => {
   const home = useContent('home', HOME_DEFAULTS);
-  const sectionRef = useRef(null);
-  const [inView, setInView] = useState(false);
+  const t = home.strengths;
+  const items = Array.isArray(t.items) ? t.items : [];
 
+  const sectionRef = useRef(null);
+  const stageRef = useRef(null);
+  const nodeRefs = useRef([]);
+  const visibleRef = useRef(false);
+  const pausedRef = useRef(false);
+
+  const [inView, setInView] = useState(false);
+  const [compact, setCompact] = useState(false);
+
+  // ফোন না বড় পর্দা
   useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => { if (entry.isIntersecting) setInView(true); }, { threshold: 0.3 });
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
+    const mq = window.matchMedia('(max-width: 640px)');
+    const on = () => setCompact(mq.matches);
+    on();
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
   }, []);
 
+  // দৃশ্যে এলে একবার শুরু, আর কেবল দেখা গেলেই ঘোরে
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return undefined;
+    const io = new IntersectionObserver(([e]) => {
+      visibleRef.current = e.isIntersecting;
+      if (e.isIntersecting) setInView(true);
+    }, { threshold: 0.2 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  // ঘোরা — প্রতিটি নোড উপবৃত্তের উপর; সামনে এলে বড়, পেছনে গেলে ছোট
+  useEffect(() => {
+    if (compact) return undefined;
+    const stage = stageRef.current;
+    if (!stage) return undefined;
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const n = items.length || 1;
+    let W = stage.clientWidth;
+    let H = stage.clientHeight;
+    const ro = new ResizeObserver(() => { W = stage.clientWidth; H = stage.clientHeight; });
+    ro.observe(stage);
+
+    let raf = 0;
+    let last = performance.now();
+    let angle = -Math.PI / 2;
+    // শুরুতে নোডগুলো দূরে, দৃশ্যে এলে কক্ষপথে টেনে আনা হয়
+    let spread = inView ? 1 : 1.7;
+
+    const place = () => {
+      nodeRefs.current.forEach((el, i) => {
+        if (!el) return;
+        const a = angle + (i / n) * Math.PI * 2;
+        const x = (0.5 + (ORBIT_RX / 100) * spread * Math.cos(a)) * W;
+        const y = (0.5 + (ORBIT_RY / 100) * spread * Math.sin(a)) * H;
+        const depth = (Math.sin(a) + 1) / 2;        // 0 = পেছনে (উপরে), 1 = সামনে (নিচে)
+        const scale = 0.8 + 0.2 * depth;
+        el.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
+        el.style.opacity = String(inView ? 0.5 + 0.5 * depth : 0);
+        el.style.zIndex = depth > 0.45 ? '6' : '2';  // কেন্দ্রের কার্ড ৪ এ
+      });
+    };
+
+    const tick = (now) => {
+      raf = requestAnimationFrame(tick);
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      if (!visibleRef.current) return;
+      if (!reduce && !pausedRef.current) angle += dt * 0.14;
+      spread += ((inView ? 1 : 1.7) - spread) * Math.min(1, dt * 2.4);
+      place();
+    };
+
+    place();
+    raf = requestAnimationFrame(tick);
+    return () => { cancelAnimationFrame(raf); ro.disconnect(); };
+  }, [compact, inView, items.length]);
+
+  const core = (
+    <div className={`cs-core${inView ? ' is-in' : ''}`}>
+      <span className="cs-orb" aria-hidden="true" />
+      <div className="core-strength-card cs-card">
+        <h3 className="cs-card-eyebrow">{t.heading}</h3>
+        <p className="cs-card-brand">
+          {t.brand} <span style={{ color: 'var(--accent)' }}>{t.brandAccent}</span>
+        </p>
+        <p className="cs-card-tail">{t.tail}</p>
+      </div>
+    </div>
+  );
+
   return (
-    <section ref={sectionRef} style={{ minHeight: '100vh', width: '100%', position: 'relative', background: 'var(--bg-section, rgba(11, 11, 11, 0.7))', backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', borderTop: '1px solid rgba(255, 60, 0, 0.1)', borderBottom: '1px solid rgba(255, 60, 0, 0.1)', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '30px 5%' }}>
+    <section
+      ref={sectionRef}
+      className="cs-section"
+      style={{ minHeight: '100vh', width: '100%', position: 'relative', background: 'var(--bg-section, rgba(11, 11, 11, 0.7))', backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', borderTop: '1px solid rgba(255, 60, 0, 0.1)', borderBottom: '1px solid rgba(255, 60, 0, 0.1)', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '30px 5%' }}
+    >
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at center, rgba(227, 24, 45, 0.03) 0%, transparent 60%)', pointerEvents: 'none', zIndex: 1 }} />
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '150px', background: 'linear-gradient(to bottom, var(--primary) 0%, transparent 100%)', pointerEvents: 'none', zIndex: 2 }} />
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '150px', background: 'linear-gradient(to top, var(--primary) 0%, transparent 100%)', pointerEvents: 'none', zIndex: 2 }} />
-      <div style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 3 }}>
-        <Canvas camera={{ position: [0, 4, 16], fov: 45 }} dpr={[1, 1.5]} gl={{ powerPreference: "low-power" }}>
-          <CoreStrengths3D inView={inView} text={home.strengths} />
-        </Canvas>
-      </div>
+
+      {compact ? (
+        <div className="cs-compact">
+          {core}
+          <ul className={`cs-list${inView ? ' is-in' : ''}`}>
+            {items.map((title, i) => {
+              const Icon = ORBIT_ICONS[i % ORBIT_ICONS.length];
+              return (
+                <li key={i} className="strength-label" style={{ transitionDelay: `${0.35 + i * 0.07}s` }}>
+                  <span className="icon-box"><Icon size={16} color="#e3182d" /></span>
+                  <span className="strength-title">{title}</span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ) : (
+        <div
+          ref={stageRef}
+          className="cs-stage"
+          onMouseEnter={() => { pausedRef.current = true; }}
+          onMouseLeave={() => { pausedRef.current = false; }}
+        >
+          <svg className="cs-ring" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <ellipse
+              className={`cs-ring-main${inView ? ' is-in' : ''}`}
+              cx="50" cy="50" rx={ORBIT_RX} ry={ORBIT_RY}
+              pathLength="1"
+              vectorEffect="non-scaling-stroke"
+            />
+            <ellipse
+              className="cs-ring-faint"
+              cx="50" cy="50" rx={ORBIT_RX + 4} ry={ORBIT_RY + 3.2}
+              vectorEffect="non-scaling-stroke"
+            />
+          </svg>
+
+          {core}
+
+          {items.map((title, i) => {
+            const Icon = ORBIT_ICONS[i % ORBIT_ICONS.length];
+            return (
+              <div
+                key={i}
+                className="cs-node"
+                ref={(el) => { nodeRefs.current[i] = el; }}
+              >
+                <span className={`cs-node-dot${i % 2 === 0 ? ' is-red' : ''}`} aria-hidden="true" />
+                <div className="strength-label cs-node-label">
+                  <span className="icon-box"><Icon size={18} color="#e3182d" /></span>
+                  <span className="strength-title">{title}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 };
