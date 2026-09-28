@@ -8,7 +8,6 @@ const DEFAULTS = {
     title: 'REQUEST A',
     accent: 'QUOTATION',
     sub: 'Submit your requirements for an exact estimation.',
-    catalogBtn: 'DOWNLOAD CATALOGUE',
     step1: 'Product Information',
     step2: 'Contact Information',
     products: [
@@ -150,45 +149,8 @@ const QuoteModal = ({ isOpen, onClose, preset }) => {
                 <div className="contact-header" ref={el => addToRefs(el, textStaggerRef)} style={{ marginBottom: '2rem' }}>
                     <h2 className="tech-heading" style={{ color: 'var(--text)' }}>{c.title} <span className="accent-text">{c.accent}</span></h2>
                     <p className="tech-subheading" style={{ marginBottom: '1.5rem' }}>{c.sub}</p>
-                    
-                    <a 
-                        href="/files/anwar_ispat_catalog.pdf" 
-                        download 
-                        className="download-catalog-btn" 
-                        style={{ 
-                            display: 'inline-flex', 
-                            alignItems: 'center', 
-                            gap: '8px', 
-                            padding: '0.6rem 1.5rem', 
-                            fontSize: '0.75rem',
-                            fontWeight: '700',
-                            border: '1px solid var(--accent)',
-                            background: 'transparent',
-                            color: 'var(--text)',
-                            cursor: 'pointer',
-                            borderRadius: '4px',
-                            textDecoration: 'none',
-                            letterSpacing: '0.1em',
-                            transition: 'all 0.3s ease',
-                            fontFamily: 'var(--font-main)',
-                            textTransform: 'uppercase',
-                            marginBottom: '1.5rem'
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background = 'var(--accent)';
-                            e.currentTarget.style.color = '#fff';
-                            e.currentTarget.style.boxShadow = '0 4px 12px rgba(227, 24, 45, 0.4)';
-                            e.currentTarget.style.transform = 'translateY(-2px)';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background = 'transparent';
-                            e.currentTarget.style.color = 'var(--text)';
-                            e.currentTarget.style.boxShadow = 'none';
-                            e.currentTarget.style.transform = 'none';
-                        }}
-                    >
-                        {c.catalogBtn}
-                    </a>
+                    {/* ক্যাটালগ ডাউনলোডের বোতাম ছিল — ক্লায়েন্টের রিভিউতে বাদ: এই পপ-আপের
+                        একমাত্র কাজ কোটেশন পাঠানো, নিচের বোতামটিই প্রধান CTA */}
 
                     {submitStatus === 'success' && (
                         <div style={{ marginTop: '1rem', padding: '1rem 2rem', background: 'rgba(0,200,100,0.12)', border: '1px solid rgba(0,200,100,0.4)', borderRadius: '8px', color: '#00cc66', fontFamily: 'monospace', letterSpacing: '0.1em', fontSize: '0.9rem' }}>
