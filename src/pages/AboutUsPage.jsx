@@ -23,9 +23,12 @@ const DEFAULTS = {
         title: 'Forged in Fire, Built for',
         accent: 'Eternity',
     },
+    crumb: 'About us',
     intro: "As a proud concern of the century-old Anwar Group, Anwar Ispat has led the mild steel industry since 1978. We were the first to introduce 60-grade steel to Bangladesh and have consistently upgraded our facilities to bring the world's most advanced technology to the local market. From the tallest skyscrapers to complex nuclear power plants, our commitment to quality ensures that every structure built with Anwar Ispat is resilient, durable, and safe.",
     timeline: {
         title: 'A legacy to value in the present, and to pass on to future generations',
+        // {count}, {first}, {last} — তালিকা থেকে নিজেই বসে
+        note: '{count} milestones from {first} to {last}. Scroll to follow the line.',
         items: MILESTONES,
     },
     why: {
@@ -166,12 +169,13 @@ const AboutUsPage = () => {
     // পর্দার সাতটা ঘটনাই "দৃশ্যমান অবস্থানে" থাকে — অবস্থান দেখলে
     // সবগুলোই একসাথে খুলে যেত। প্রতি REVEAL_STEP পিক্সেল গড়ালে
     // পরেরটি ফোটে, তাই একটা স্ক্রলে একটাই।
+    // প্যানেল থেকে সাল যোগ বা বদল হলে পাতা রিফ্রেশ হয় না — তখন নতুন
+    // ঘটনাগুলোকেও একই নিয়মে ফোটাতে হয়, তাই apply বাইরে থেকে ডাকা যায়
+    const revealRef = useRef(null);
+
     useEffect(() => {
         const el = timelineRef.current;
         if (!el) return;
-
-        const items = Array.from(el.querySelectorAll('.tl-item'));
-        if (items.length === 0) return;
 
         const REVEAL_STEP = 120; // মাউসের এক ধাপের কাছাকাছি
         let started = false;
@@ -179,6 +183,10 @@ const AboutUsPage = () => {
 
         const apply = () => {
             frame = 0;
+            // প্রতিবার নতুন করে খুঁজি — লেখা বদলালে React পুরনো ঘটনার
+            // জায়গায় নতুন ঘটনা বসায়, আগের তালিকা তখন আর পাতায় নেই
+            const items = Array.from(el.querySelectorAll('.tl-item'));
+            if (items.length === 0) return;
             const due = Math.min(
                 items.length,
                 Math.floor(el.scrollLeft / REVEAL_STEP) + 1,
@@ -214,12 +222,19 @@ const AboutUsPage = () => {
         );
 
         io.observe(el);
+        revealRef.current = () => { if (started && !frame) frame = requestAnimationFrame(apply); };
         return () => {
+            revealRef.current = null;
             io.disconnect();
             el.removeEventListener('scroll', onScroll);
             if (frame) cancelAnimationFrame(frame);
         };
     }, []);
+
+    // লেখা এলে (প্রথমবার বা প্যানেলে সংরক্ষণের পর) যা ফোটার কথা তা ফোটাই
+    useEffect(() => {
+        if (revealRef.current) revealRef.current();
+    }, [c.timeline.items]);
 
     useEffect(() => {
         const onResize = () => setIsMobile(window.innerWidth < 900);
@@ -251,7 +266,7 @@ const AboutUsPage = () => {
                 accent={c.banner.accent}
                 crumbs={[
                     { label: 'Home', to: '/' },
-                    { label: 'About us' },
+                    { label: c.crumb },
                 ]}
             />
 
@@ -290,10 +305,14 @@ const AboutUsPage = () => {
                         <h2 className="tl-title">
                             {c.timeline.title}
                         </h2>
-                        <p className="tl-note">
-                            {c.timeline.items.length} milestones from {c.timeline.items[0]?.year} to{' '}
-                            {c.timeline.items[c.timeline.items.length - 1]?.year}. Scroll to follow the line.
-                        </p>
+                        {c.timeline.note && (
+                            <p className="tl-note">
+                                {String(c.timeline.note)
+                                    .replace(/\{count\}/g, c.timeline.items.length)
+                                    .replace(/\{first\}/g, c.timeline.items[0]?.year ?? '')
+                                    .replace(/\{last\}/g, c.timeline.items[c.timeline.items.length - 1]?.year ?? '')}
+                            </p>
+                        )}
                     </div>
                 </div>
 
