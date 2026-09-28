@@ -4,7 +4,7 @@ import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useContent } from '../lib/content';
-import { PRESS_DEFAULTS, releaseSlug, tone } from '../lib/press';
+import { PRESS_DEFAULTS, releaseSlug, tone, summaryOf } from '../lib/press';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -24,11 +24,20 @@ const MediaPressPage = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const releases = Array.isArray(c.releases) ? c.releases : [];
+  const archive = Array.isArray(c.archive) ? c.archive : [];
+
+  // মাথার অংশ একবারই ফোটে
   useGSAP(() => {
     gsap.fromTo('.mp-hero-tag', { opacity:0, y:20 }, { opacity:1, y:0, duration:0.8, delay:0.2, ease:'power3.out' });
     gsap.fromTo('.mp-hero-title', { opacity:0, y:40 }, { opacity:1, y:0, duration:1, delay:0.3, ease:'power3.out' });
     gsap.fromTo('.mp-hero-sub', { opacity:0, y:20 }, { opacity:1, y:0, duration:0.8, delay:0.5, ease:'power3.out' });
     gsap.fromTo('.mp-cats', { opacity:0, y:20 }, { opacity:1, y:0, duration:0.8, delay:0.7, ease:'power3.out' });
+  }, { scope:containerRef });
+
+  // কার্ডগুলো শুরুতে অদৃশ্য (opacity 0) — স্ক্রলে ফোটে। প্যানেল থেকে
+  // বিজ্ঞপ্তি যোগ হলে বা বিভাগ বদলালে নতুন কার্ডও যেন ফোটে, তাই আবার চলে
+  useGSAP(() => {
     gsap.utils.toArray('.mp-fade').forEach(el => {
       ScrollTrigger.create({ trigger:el, start:'top 88%', onEnter:() => gsap.to(el, { opacity:1, y:0, duration:0.7, delay:parseFloat(el.dataset.delay||0), ease:'power3.out' }) });
     });
@@ -38,13 +47,18 @@ const MediaPressPage = () => {
     gsap.utils.toArray('.mp-arc').forEach((el, i) => {
       ScrollTrigger.create({ trigger:el, start:'top 92%', onEnter:() => gsap.to(el, { opacity:1, y:0, duration:0.5, delay:i*0.1, ease:'power3.out' }) });
     });
-  }, { scope:containerRef });
+  }, { scope:containerRef, dependencies:[releases.length, archive.length, activeCategory], revertOnUpdate:true });
 
   // হাতে লেখা তালিকা রাখলে প্যানেলে নতুন বিভাগ যোগ করলে সেটা
   // এখানে দেখা যেত না
-  const categories = ['All', ...new Set(c.releases.map(r => r.cat).filter(Boolean))];
-  const featured = c.releases[0];
-  const filtered = c.releases.slice(1).filter(r => activeCategory === 'All' || r.cat === activeCategory);
+  const categories = ['All', ...new Set(releases.map(r => r.cat).filter(Boolean))];
+  const featured = releases[0];
+  const filtered = releases.slice(1).filter(r => activeCategory === 'All' || r.cat === activeCategory);
+
+  // বাছাই করা বিভাগের শেষ বিজ্ঞপ্তিটি মুছে গেলে সব দেখাই
+  useEffect(() => {
+    if (activeCategory !== 'All' && !categories.includes(activeCategory)) setActiveCategory('All');
+  }, [categories.join('|'), activeCategory]);
 
   const secLabel = (text) => (
     <div className="mp-fade" data-delay="0" style={{ fontSize:'10px', letterSpacing:'3px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'20px', display:'flex', alignItems:'center', gap:'12px', opacity:0, transform:'translateY(20px)' }}>
@@ -61,10 +75,10 @@ const MediaPressPage = () => {
         <div style={{ maxWidth:'860px', margin:'0 auto' }}>
           <div className="mp-hero-tag" style={{ fontSize:'10px', letterSpacing:'4px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'14px', opacity:0 }}>{c.hero.tag}</div>
           <h1 className="mp-hero-title" style={{ fontSize:'clamp(30px,5vw,52px)', fontWeight:900, lineHeight:1.05, textTransform:'uppercase', letterSpacing:'-1px', marginBottom:'16px', opacity:0, fontFamily:'var(--font-heading)' }}>
-            {c.hero.title} <span style={{ color:'var(--accent)' }}>{c.hero.accent}</span> &<br/>Announcements
+            {c.hero.title} <span style={{ color:'var(--accent)' }}>{c.hero.accent}</span>{c.hero.tail ? <> &<br/>{c.hero.tail}</> : null}
           </h1>
           <p className="mp-hero-sub" style={{ fontSize:isMobile?'13px':'15px', color:'var(--subtext)', maxWidth:'500px', margin:'0 auto 24px', lineHeight:1.8, opacity:0 }}>
-            Official statements, corporate declarations and announcements from Anwar Ispat board of directors.
+            {c.hero.sub}
           </p>
           <div className="mp-cats" style={{ display:'flex', gap:'8px', flexWrap:'wrap', justifyContent:'center', opacity:0 }}>
             {categories.map(cat => (
@@ -80,13 +94,15 @@ const MediaPressPage = () => {
       <div style={{ maxWidth:'1000px', margin:'0 auto', padding:isMobile?'36px 24px 60px':'44px 40px 64px' }}>
 
         {/* FEATURED */}
-        {secLabel('Latest Release')}
+        {featured && <>
+        {secLabel(c.labels.latest)}
         <div className="mp-fade" data-delay="0.1"
           onClick={() => navigate('/media/press/' + releaseSlug(featured, 0))}
           style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 360px', gap:0, marginBottom:'40px', border:'1px solid var(--glass-border)', borderRadius:'14px', overflow:'hidden', cursor:'pointer', opacity:0, transform:'translateY(30px)', transition:'border-color 0.25s' }}
           onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(227,24,45,0.4)'; }}
           onMouseLeave={e => { e.currentTarget.style.borderColor='var(--glass-border)'; }}>
-          <div style={{ position:'relative', aspectRatio:isMobile?'16/9':'1/1', background:tone(0)+'14', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'12px' }}>
+          <div style={{ position:'relative', aspectRatio:isMobile?'16/9':'1/1', background:tone(0)+'14', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'12px', overflow:'hidden' }}>
+            {featured.img && <img src={featured.img} alt={featured.title} style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover' }} />}
             <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="rgba(227,24,45,0.3)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 11l19-9-9 19-2-8-8-2z"/>
             </svg>
@@ -96,11 +112,11 @@ const MediaPressPage = () => {
             <div>
               <div style={{ display:'flex', gap:'8px', marginBottom:'14px', flexWrap:'wrap' }}>
                 <span style={{ display:'inline-block', background:'var(--accent)', color:'#fff', fontSize:'9px', letterSpacing:'1.5px', textTransform:'uppercase', padding:'3px 9px', borderRadius:'3px', fontWeight:700 }}>{c.stamp}</span>
-                <span style={{ display:'inline-block', background:'rgba(227,24,45,0.1)', color:'var(--accent)', border:'1px solid rgba(227,24,45,0.25)', fontSize:'9px', letterSpacing:'1.5px', textTransform:'uppercase', padding:'3px 9px', borderRadius:'3px', fontWeight:700 }}>Corporate</span>
+                <span style={{ display:'inline-block', background:'rgba(227,24,45,0.1)', color:'var(--accent)', border:'1px solid rgba(227,24,45,0.25)', fontSize:'9px', letterSpacing:'1.5px', textTransform:'uppercase', padding:'3px 9px', borderRadius:'3px', fontWeight:700 }}>{featured.cat}</span>
               </div>
               <div style={{ fontSize:'9px', letterSpacing:'2px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'10px', fontWeight:700 }}>{featured.pr} · {featured.date}</div>
               <h2 style={{ fontSize:isMobile?'15px':'18px', fontWeight:900, lineHeight:1.2, textTransform:'uppercase', letterSpacing:'-0.3px', marginBottom:'12px', fontFamily:'var(--font-heading)' }}>{featured.title}</h2>
-              <p style={{ fontSize:'12px', color:'var(--subtext)', lineHeight:1.7 }}>The Board of Directors of Anwar Ispat Limited hereby announces a major strategic expansion initiative targeting 40% increase in production capacity alongside the ANWARS 500W TMT Bar launch.</p>
+              <p style={{ fontSize:'12px', color:'var(--subtext)', lineHeight:1.7 }}>{summaryOf(featured)}</p>
             </div>
             <div style={{ display:'flex', alignItems:'center', gap:'14px', marginTop:'20px', flexWrap:'wrap' }}>
               <div style={{ display:'flex', alignItems:'center', gap:'6px', fontSize:'10px', color:'var(--subtext)' }}>
@@ -112,22 +128,27 @@ const MediaPressPage = () => {
                 {featured.pr}
               </div>
               <div style={{ marginLeft:'auto', display:'flex', gap:'12px' }}>
-                <span style={{ fontSize:'10px', color:'var(--accent)', fontWeight:700, cursor:'pointer', display:'flex', alignItems:'center', gap:'4px' }}>
+                {/* PDF কেবল তখনই, যখন প্যানেলে ফাইল দেওয়া আছে — আগে লেখাটা ছিল, কাজ করত না */}
+                {featured.pdf && (
+                <a href={featured.pdf} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ fontSize:'10px', color:'var(--accent)', fontWeight:700, cursor:'pointer', display:'flex', alignItems:'center', gap:'4px', textDecoration:'none' }}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                  PDF
-                </span>
-                <span style={{ fontSize:'10px', color:'var(--accent)', fontWeight:700, cursor:'pointer' }}>Read More →</span>
+                  {c.pdfLabel}
+                </a>
+                )}
+                <span style={{ fontSize:'10px', color:'var(--accent)', fontWeight:700, cursor:'pointer' }}>{c.readMore}</span>
               </div>
             </div>
           </div>
         </div>
 
+        </>}
+
         {/* ALL RELEASES */}
-        {secLabel('All Releases')}
+        {filtered.length > 0 && secLabel(c.labels.all)}
         <div style={{ display:'flex', flexDirection:'column', gap:'10px', marginBottom:'40px' }}>
           {filtered.map((r, i) => (
-            <div key={r.id} className="mp-card"
-              onClick={() => navigate('/media/press/' + releaseSlug(r, c.releases.indexOf(r)))}
+            <div key={releases.indexOf(r)} className="mp-card"
+              onClick={() => navigate('/media/press/' + releaseSlug(r, releases.indexOf(r)))}
               style={{ borderRadius:'10px', padding:'16px 20px', cursor:'pointer', display:'flex', alignItems:'center', gap:'16px', background:'var(--glass)', border:'1px solid var(--glass-border)', transition:'all 0.2s', opacity:0, transform:'translateX(-20px)' }}
               onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(227,24,45,0.35)'; e.currentTarget.style.background='rgba(227,24,45,0.03)'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor='var(--glass-border)'; e.currentTarget.style.background='var(--glass)'; }}>
@@ -146,8 +167,8 @@ const MediaPressPage = () => {
               <div style={{ flexShrink:0, textAlign:'right' }}>
                 <div style={{ fontSize:'10px', color:'var(--subtext)', marginBottom:'8px', opacity:0.6 }}>{r.date}</div>
                 <div style={{ display:'flex', gap:'10px', justifyContent:'flex-end' }}>
-                  <span style={{ fontSize:'10px', color:'var(--accent)', fontWeight:700 }}>PDF ↓</span>
-                  <span style={{ fontSize:'10px', color:'var(--accent)', fontWeight:700 }}>Read →</span>
+                  {r.pdf && <a href={r.pdf} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ fontSize:'10px', color:'var(--accent)', fontWeight:700, textDecoration:'none' }}>{c.pdfLabel} ↓</a>}
+                  <span style={{ fontSize:'10px', color:'var(--accent)', fontWeight:700 }}>{c.readLabel}</span>
                 </div>
               </div>
             </div>
@@ -155,16 +176,16 @@ const MediaPressPage = () => {
         </div>
 
         {/* ARCHIVE */}
-        {secLabel('Archive')}
+        {archive.length > 0 && secLabel(c.labels.archive)}
         <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)', gap:'12px' }}>
-          {[{y:'2025',n:12},{y:'2024',n:10},{y:'2023',n:9}].map((a,i) => (
+          {archive.map((a,i) => (
             <div key={i} className="mp-arc"
               style={{ borderRadius:'10px', padding:'18px 20px', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'space-between', background:'var(--glass)', border:'1px solid var(--glass-border)', transition:'border-color 0.2s', opacity:0, transform:'translateY(20px)' }}
               onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(227,24,45,0.3)'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor='var(--glass-border)'; }}>
               <div>
-                <div style={{ fontSize:'22px', fontWeight:900, color:'var(--accent)' }}>{a.y}</div>
-                <div style={{ fontSize:'10px', color:'var(--subtext)', marginTop:'3px', letterSpacing:'1px' }}>{a.n} Releases</div>
+                <div style={{ fontSize:'22px', fontWeight:900, color:'var(--accent)' }}>{a.year}</div>
+                <div style={{ fontSize:'10px', color:'var(--subtext)', marginTop:'3px', letterSpacing:'1px' }}>{a.count} {c.archiveUnit}</div>
               </div>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--subtext)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity:0.3 }}>
                 <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>

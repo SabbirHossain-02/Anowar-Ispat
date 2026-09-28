@@ -17,6 +17,15 @@ export const releaseSlug = (r, i) => {
     return s || 'release-' + (i + 1);
 };
 
+// তালিকার উপরের কার্ডের ছোট সারাংশ — প্যানেলে না লিখলে লেখার শুরু থেকে
+export const summaryOf = (r) => {
+    if (r && r.summary) return r.summary;
+    const flat = String((r && r.body) || '').replace(/\s+/g, ' ').trim();
+    if (flat.length <= 220) return flat;
+    const cut = flat.slice(0, 220);
+    return cut.slice(0, cut.lastIndexOf(' ')) + '…';
+};
+
 // ফাঁকা লাইন দেখে অনুচ্ছেদ ভাগ
 export const paragraphs = (text) =>
     String(text || '')
@@ -26,7 +35,21 @@ export const paragraphs = (text) =>
 
 // অ্যাডমিন কিছু না বদলালে এগুলোই দেখা যায়
 export const PRESS_DEFAULTS = {
-    hero: { tag: 'Official Statements', title: 'Press', accent: 'Releases' },
+    hero: {
+        tag: 'Official Statements', title: 'Press', accent: 'Releases', tail: 'Announcements',
+        sub: 'Official statements, corporate declarations and announcements from Anwar Ispat board of directors.',
+    },
+    labels: { latest: 'Latest Release', all: 'All Releases', archive: 'Archive' },
+    readMore: 'Read More →',
+    readLabel: 'Read →',
+    pdfLabel: 'PDF',
+    // হাতে লেখা — বিজ্ঞপ্তি থেকে গোনা নয়
+    archive: [
+        { year: '2025', count: '12' },
+        { year: '2024', count: '10' },
+        { year: '2023', count: '9' },
+    ],
+    archiveUnit: 'Releases',
     stamp: 'Official Statement',
     imageNote: 'Official Image',
     immediate: 'For Immediate Release',
@@ -35,6 +58,18 @@ export const PRESS_DEFAULTS = {
     mediaTitle: 'Corporate Communications',
     mediaEmail: 'media@anwarispat.com',
     mediaPhone: '+880 2223 384037',
+    // বিজ্ঞপ্তির পাতার বাকি লেখা
+    crumbSection: 'Media Center',
+    crumbPage: 'Press Releases',
+    backBtn: 'Back to Press Releases',
+    backShort: 'Back to Press',
+    byline: 'Anwar Ispat',
+    dateline: 'Dhaka, Bangladesh — Anwar Ispat Limited',
+    company: 'Anwar Ispat Limited',
+    shareLabel: 'Share',
+    copyLabel: 'Copy',
+    copiedLabel: 'Copied',
+    relatedLabel: 'Related',
     releases: [
         {
             pr: "PR-2026-001",
@@ -42,6 +77,7 @@ export const PRESS_DEFAULTS = {
             title: "Anwar Ispat Announces Strategic Expansion and New Product Line Launch for 2026",
             date: "June 16, 2026",
             read: "3 min read",
+            summary: "The Board of Directors of Anwar Ispat Limited hereby announces a major strategic expansion initiative targeting 40% increase in production capacity alongside the ANWARS 500W TMT Bar launch.",
             body: "The Board of Directors of Anwar Ispat Limited hereby announces a major strategic expansion initiative targeting a 40% increase in production capacity, alongside the official launch of the ANWARS 500W TMT Bar series for the fiscal year 2026.\n\nThis expansion initiative includes the commissioning of new rolling mill lines and upgraded induction furnace systems at the Narayanganj production facility. The capital investment is estimated at BDT 850 crore, to be funded through a combination of retained earnings and long-term debt financing.\n\nThe Board has further resolved to launch the ANWARS 500W TMT Bar — a thermo-mechanically treated reinforcing bar engineered for high-rise structures and critical infrastructure projects across Bangladesh.\n\nManagement projects that the expanded capacity will enable Anwar Ispat to fulfill contracts for multiple large-scale government and private sector infrastructure projects simultaneously, while maintaining its hallmark quality standards certified under ISO 9001:2015 and BDS specifications.\n\nThe Board expresses its confidence that these strategic investments will consolidate Anwar Ispat's position as Bangladesh's most trusted steel manufacturer and deliver long-term value to all stakeholders.",
         },
         {
