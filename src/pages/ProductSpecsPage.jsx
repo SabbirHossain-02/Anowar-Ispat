@@ -23,6 +23,7 @@ const DEFAULTS = {
         title: 'Built for',
         accent: 'Strength',
     },
+    crumb: 'Product Specifications',
     intro: 'Every batch is tested on a spectrometer across 28 elements before it leaves the mill, to hold the tolerances that piling, slabs and columns are designed against.',
     apps: {
         eyebrow: 'APPLICATIONS',
@@ -49,35 +50,45 @@ const DEFAULTS = {
         eyebrow: 'SIZE CHART',
         title: 'Available diameters',
         note: '420DWR is not produced in 8 mm. For any diameter or quantity, send us the requirement and we will confirm availability.',
-        // টেবিলে কোন গ্রেডের কলাম দেখাবে — প্যানেল থেকে বদলানো যায়।
+        quoteBtn: 'Request a quotation',
+        // টেবিলের প্রতিটি গ্রেড একটি কলাম-জোড়া; সাইজগুলো বাঁ থেকে ডানে,
+        // উপর থেকে নিচে দুটি করে বসে। '—' মানে ওই ঘরে সাইজ তৈরি হয় না
+        // (যেমন 420DWR এ ৮ মি.মি.), সারি মিলিয়ে রাখতে ফাঁকা ঘর।
         // ক্লায়েন্টের অনুরোধে 500CWR আপাতত বাদ।
-        grades: ['500DWR', '420DWR'],
+        columns: [
+            { grade: '500DWR', sizes: ['8', '10', '12', '16', '20', '22', '25', '28', '32', '40'] },
+            { grade: '420DWR', sizes: ['—', '10', '12', '16', '20', '22', '25', '28', '32', '40'] },
+        ],
     },
 };
 
-// যেসব গ্রেডের সাইজ-তথ্য নিচে আছে
-const ALL_GRADES = ['500CWR', '500DWR', '420DWR'];
+// আগের সংস্করণে প্যানেলে শুধু গ্রেডের নাম থাকত (chart.grades), সাইজ কোডে।
+// সেভাবে সংরক্ষিত থাকলে সেই নামগুলো দিয়েই কলাম গড়ি।
+const OLD_SIZES = {
+    '500CWR': ['8', '10', '12', '16', '20', '22', '25', '28', '32', '40'],
+    '500DWR': ['8', '10', '12', '16', '20', '22', '25', '28', '32', '40'],
+    '420DWR': ['—', '10', '12', '16', '20', '22', '25', '28', '32', '40'],
+};
 
-// স্লাইডের টেবিলের হুবহু গঠন — প্রতিটি গ্রেডের নিচে দুই কলামে সাইজ।
-// 420DWR এর প্রথম ঘরটি ফাঁকা, ওই গ্রেডে ৮ মি.মি. তৈরি হয় না।
-const SIZE_ROWS = [
-    { '500CWR': [8, 10], '500DWR': [8, 10], '420DWR': [null, 10] },
-    { '500CWR': [12, 16], '500DWR': [12, 16], '420DWR': [12, 16] },
-    { '500CWR': [20, 22], '500DWR': [20, 22], '420DWR': [20, 22] },
-    { '500CWR': [25, 28], '500DWR': [25, 28], '420DWR': [25, 28] },
-    { '500CWR': [32, 40], '500DWR': [32, 40], '420DWR': [32, 40] },
-];
+const isBlank = (v) => v === null || v === undefined || /^\s*(—|-|–)?\s*$/.test(String(v));
 
 const ProductSpecsPage = () => {
     const rootRef = useRef(null);
     const c = useContent('products-specifications', DEFAULTS);
 
-    // প্যানেলের তালিকা থেকে কেবল চেনা গ্রেডগুলো, টেবিলের নিজের ক্রমে।
-    // ভুল বানান বা সব মুছে ফেললে টেবিলটাই যেন উধাও না হয়।
-    const wanted = (Array.isArray(c.chart.grades) ? c.chart.grades : [])
-        .map((g) => String(g).trim().toUpperCase());
-    const shown = ALL_GRADES.filter((g) => wanted.includes(g));
-    const GRADES = shown.length ? shown : DEFAULTS.chart.grades;
+    // প্যানেলের কলামগুলো; নাম ছাড়া কলাম বাদ। সব মুছে ফেললে টেবিলটাই
+    // যেন উধাও না হয়, তখন কোডের কলাম।
+    const saved = Array.isArray(c.chart.columns) && c.chart.columns.length
+        ? c.chart.columns
+        : (Array.isArray(c.chart.grades) && c.chart.grades.length
+            ? c.chart.grades.map((g) => ({ grade: String(g).trim().toUpperCase(), sizes: OLD_SIZES[String(g).trim().toUpperCase()] || [] }))
+            : DEFAULTS.chart.columns);
+    let COLUMNS = saved
+        .map((col) => ({ grade: String(col.grade || '').trim(), sizes: Array.isArray(col.sizes) ? col.sizes : [] }))
+        .filter((col) => col.grade);
+    if (!COLUMNS.length) COLUMNS = DEFAULTS.chart.columns;
+    // প্রতি সারিতে প্রতিটি গ্রেডের দুটি সাইজ
+    const rowCount = Math.max(1, ...COLUMNS.map((col) => Math.ceil(col.sizes.length / 2)));
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
@@ -134,7 +145,7 @@ const ProductSpecsPage = () => {
                 crumbs={[
                     { label: 'Home', to: '/' },
                     { label: 'Products', to: '/products' },
-                    { label: 'Product Specifications' },
+                    { label: c.crumb },
                 ]}
             />
 
@@ -173,8 +184,8 @@ const ProductSpecsPage = () => {
                         gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
                         gap: 'clamp(1.25rem, 2.5vw, 2.25rem)',
                     }}>
-                        {c.apps.items.map(({ image, name, text }, i) => (
-                            <article key={name} className="ps-reveal vmv-card">
+                        {(Array.isArray(c.apps.items) ? c.apps.items : []).map(({ image, name, text }, i) => (
+                            <article key={i} className="ps-reveal vmv-card">
                                 <div className="vmv-media">
                                     <img src={image} alt={name} loading="lazy" />
                                 </div>
@@ -216,31 +227,37 @@ const ProductSpecsPage = () => {
                         <table className="ps-table">
                             <thead>
                                 <tr>
-                                    {GRADES.map((g) => (
-                                        <th key={g} colSpan={2}>{g}</th>
+                                    {COLUMNS.map((col, ci) => (
+                                        <th key={ci} colSpan={2}>{col.grade}</th>
                                     ))}
                                 </tr>
                             </thead>
                             <tbody>
-                                {SIZE_ROWS.map((row, r) => (
+                                {Array.from({ length: rowCount }, (_, r) => (
                                     <tr key={r}>
-                                        {GRADES.map((g) =>
-                                            row[g].map((mm, c) => (
-                                                <td key={`${g}-${c}`}>
-                                                    {mm === null ? (
+                                        {COLUMNS.map((col, ci) =>
+                                            [col.sizes[r * 2], col.sizes[r * 2 + 1]].map((raw, k) => {
+                                                const v = isBlank(raw) ? null : String(raw).trim();
+                                                // শুধু সংখ্যা হলে পাশে mm বসে; নিজে লিখে দিলে যেমন আছে
+                                                const mm = v && /^\d+(\.\d+)?$/.test(v) ? Number(v) : v;
+                                                const label = typeof mm === 'number' ? `${mm} mm` : mm;
+                                                return (
+                                                <td key={`${ci}-${k}`}>
+                                                    {v === null ? (
                                                         <span className="ps-empty">—</span>
                                                     ) : (
                                                         <button
                                                             type="button"
                                                             className="ps-size"
-                                                            onClick={() => askForQuote(g, mm)}
-                                                            title={`Request a quotation for ${g} ${mm}mm`}
+                                                            onClick={() => askForQuote(col.grade, mm)}
+                                                            title={`Request a quotation for ${col.grade} ${label}`}
                                                         >
-                                                            {mm} mm
+                                                            {label}
                                                         </button>
                                                     )}
                                                 </td>
-                                            ))
+                                                );
+                                            })
                                         )}
                                     </tr>
                                 ))}
@@ -266,7 +283,7 @@ const ProductSpecsPage = () => {
                             textTransform: 'uppercase', cursor: 'pointer',
                         }}
                     >
-                        Request a quotation
+                        {c.chart.quoteBtn}
                     </button>
                 </div>
             </section>
