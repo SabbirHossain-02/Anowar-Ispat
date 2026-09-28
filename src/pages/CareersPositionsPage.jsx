@@ -6,6 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import PageBanner from '../components/PageBanner';
 import { useContent } from '../lib/content';
+import { onLive } from '../lib/live';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -22,6 +23,12 @@ const CONTAINER = {
 // বদলালে যা দেখা যায়।
 const DEFAULTS = {
     banner: { image: '/careers-banner.jpg', label: 'CAREERS', title: 'Open', accent: 'Positions' },
+    crumb: 'Open Positions',
+    applyBtn: 'Apply',
+    subjectPrefix: 'Application: ',
+    factExperience: 'Experience',
+    factEducation: 'Education',
+    factDeadline: 'Apply by',
     eyebrow: 'CAREER OPPORTUNITIES',
     statement: 'A chance for you to use your skills for future advancement.',
     lead: 'Anwar Ispat has been rolling steel in Bangladesh for over four decades. The mill runs on the people in it — engineers on the floor, inspectors at the spectrometer, and the teams behind them.',
@@ -67,20 +74,23 @@ const CareersPositionsPage = () => {
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
     const c = useContent('careers-positions', DEFAULTS);
-    const DISCIPLINES = c.disciplines;
-    const STEPS = c.steps;
+    const DISCIPLINES = Array.isArray(c.disciplines) ? c.disciplines : [];
+    const STEPS = Array.isArray(c.steps) ? c.steps : [];
     const APPLY_TO = c.email;
 
     // শূন্যপদ আসে অ্যাডমিন প্যানেল থেকে। কিছু না থাকলে পাতাটি খালি
     // দেখায় না — খোলা আবেদনের আহ্বানই থেকে যায়।
     useEffect(() => {
         let cancelled = false;
-        fetch('/api/jobs')
-            .then((r) => (r.ok ? r.json() : []))
-            .then((d) => { if (!cancelled) setJobs(Array.isArray(d) ? d : []); })
-            .catch(() => { if (!cancelled) setJobs([]); })
+        const load = () => fetch('/api/jobs', { cache: 'no-store' })
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => { if (!cancelled && Array.isArray(d)) setJobs(d); })
+            .catch(() => {})
             .finally(() => { if (!cancelled) setLoading(false); });
-        return () => { cancelled = true; };
+        load();
+        // Open Positions মেনুতে পদ যোগ, বদল বা মোছা হলে রিফ্রেশ ছাড়াই
+        const off = onLive('jobs', load);
+        return () => { cancelled = true; off(); };
     }, []);
 
     useGSAP(() => {
@@ -93,7 +103,7 @@ const CareersPositionsPage = () => {
     }, { scope: rootRef, dependencies: [jobs.length, loading], revertOnUpdate: true });
 
     const mailtoFor = (title) =>
-        `mailto:${APPLY_TO}?subject=${encodeURIComponent('Application: ' + title)}`;
+        `mailto:${APPLY_TO}?subject=${encodeURIComponent((c.subjectPrefix || '') + title)}`;
 
     return (
         <div
@@ -108,7 +118,7 @@ const CareersPositionsPage = () => {
                 crumbs={[
                     { label: 'Home', to: '/' },
                     { label: 'Careers' },
-                    { label: 'Open Positions' },
+                    { label: c.crumb },
                 ]}
             />
 
@@ -146,7 +156,7 @@ const CareersPositionsPage = () => {
                     {/* বাক্স বা কার্ড নয় — নামগুলোই বড় হরফে, একটানা */}
                     <p className="cr-reveal cr-disciplines">
                         {DISCIPLINES.map((d, i) => (
-                            <span key={d}>
+                            <span key={i}>
                                 {d}
                                 {i < DISCIPLINES.length - 1 && (
                                     <span className="cr-sep" aria-hidden="true">·</span>
@@ -178,7 +188,7 @@ const CareersPositionsPage = () => {
                                 <div className="cr-job-head">
                                     <h2 className="cr-job-title">{j.title}</h2>
                                     <a className="cr-job-apply" href={mailtoFor(j.title)}>
-                                        Apply <ArrowRight size={14} strokeWidth={2.2} />
+                                        {c.applyBtn} <ArrowRight size={14} strokeWidth={2.2} />
                                     </a>
                                 </div>
 
@@ -186,7 +196,7 @@ const CareersPositionsPage = () => {
                                     {[j.department, j.location, j.employment_type]
                                         .filter(Boolean)
                                         .map((t, i, arr) => (
-                                            <span key={t}>
+                                            <span key={i}>
                                                 {t}
                                                 {i < arr.length - 1 && (
                                                     <span className="cr-sep" aria-hidden="true">·</span>
@@ -200,13 +210,13 @@ const CareersPositionsPage = () => {
                                 {(j.experience || j.education || j.deadline) && (
                                     <dl className="cr-job-facts">
                                         {j.experience && (
-                                            <div><dt>Experience</dt><dd>{j.experience}</dd></div>
+                                            <div><dt>{c.factExperience}</dt><dd>{j.experience}</dd></div>
                                         )}
                                         {j.education && (
-                                            <div><dt>Education</dt><dd>{j.education}</dd></div>
+                                            <div><dt>{c.factEducation}</dt><dd>{j.education}</dd></div>
                                         )}
                                         {j.deadline && (
-                                            <div><dt>Apply by</dt><dd>{j.deadline}</dd></div>
+                                            <div><dt>{c.factDeadline}</dt><dd>{j.deadline}</dd></div>
                                         )}
                                     </dl>
                                 )}
@@ -235,7 +245,7 @@ const CareersPositionsPage = () => {
 
                     <ol className="cr-reveal cr-steps">
                         {STEPS.map((s, i) => (
-                            <li key={s.title}>
+                            <li key={i}>
                                 <span className="cr-step-n">{String(i + 1).padStart(2, '0')}</span>
                                 <div>
                                     <h3 className="cr-step-title">{s.title}</h3>

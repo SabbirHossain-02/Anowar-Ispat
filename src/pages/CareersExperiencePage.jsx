@@ -12,7 +12,17 @@ const tone = (i) => TONES[i % TONES.length];
 
 // অ্যাডমিন কিছু না বদলালে এগুলোই দেখা যায়
 const DEFAULTS = {
-    hero: { tag: 'Life at Anwar Ispat', title: 'Employee', accent: 'Experience' },
+    hero: {
+        tag: 'Life at Anwar Ispat', title: 'Employee', accent: 'Experience',
+        sub: 'A workplace built on trust, growth, and purpose. Discover what makes Anwar Ispat a great place to build your career.',
+    },
+    stats: [
+        { n: '2000+', l: 'Employees' },
+        { n: '48+', l: 'Years Legacy' },
+        { n: '95%', l: 'Retention Rate' },
+        { n: '5', l: 'Locations' },
+    ],
+    labels: { values: 'Our Values', perks: 'Benefits & Perks', stories: 'Employee Stories', photo: 'Employee Photo' },
     values: [
   {title:'Integrity', text:'Highest ethical standards in every interaction and decision we make.' },
   {title:'Teamwork', text:'Collaboration and mutual respect drive our collective success every day.' },
@@ -45,11 +55,22 @@ const CareersExperiencePage = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const values = Array.isArray(c.values) ? c.values : [];
+  const perks = Array.isArray(c.perks) ? c.perks : [];
+  const stories = Array.isArray(c.stories) ? c.stories : [];
+  const stats = Array.isArray(c.stats) ? c.stats : [];
+
+  // মাথার অংশ একবারই ফোটে
   useGSAP(() => {
     gsap.fromTo('.ce-hero-tag', { opacity:0, y:20 }, { opacity:1, y:0, duration:0.8, delay:0.2, ease:'power3.out' });
     gsap.fromTo('.ce-hero-title', { opacity:0, y:40 }, { opacity:1, y:0, duration:1, delay:0.3, ease:'power3.out' });
     gsap.fromTo('.ce-hero-sub', { opacity:0, y:20 }, { opacity:1, y:0, duration:0.8, delay:0.5, ease:'power3.out' });
     gsap.fromTo('.ce-stats', { opacity:0, y:20 }, { opacity:1, y:0, duration:0.8, delay:0.7, ease:'power3.out' });
+  }, { scope:containerRef });
+
+  // কার্ডগুলো শুরুতে অদৃশ্য, স্ক্রলে ফোটে — প্যানেল থেকে নতুন কার্ড এলে
+  // সেটাও যেন ফোটে, তাই সংখ্যা বদলালে আবার চলে
+  useGSAP(() => {
     gsap.utils.toArray('.ce-fade').forEach(el => {
       ScrollTrigger.create({ trigger:el, start:'top 88%', onEnter:() => gsap.to(el, { opacity:1, y:0, duration:0.7, delay:parseFloat(el.dataset.delay||0), ease:'power3.out' }) });
     });
@@ -62,7 +83,7 @@ const CareersExperiencePage = () => {
     gsap.utils.toArray('.ce-story').forEach((el, i) => {
       ScrollTrigger.create({ trigger:el, start:'top 88%', onEnter:() => gsap.to(el, { opacity:1, y:0, duration:0.7, delay:(i%2)*0.12, ease:'power3.out' }) });
     });
-  }, { scope:containerRef });
+  }, { scope:containerRef, dependencies:[values.length, perks.length, stories.length], revertOnUpdate:true });
 
   const secLabel = (text) => (
     <div className="ce-fade" data-delay="0" style={{ fontSize:'10px', letterSpacing:'3px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'20px', display:'flex', alignItems:'center', gap:'12px', opacity:0, transform:'translateY(20px)' }}>
@@ -82,10 +103,10 @@ const CareersExperiencePage = () => {
             {c.hero.title} <span style={{ color:'var(--accent)' }}>{c.hero.accent}</span>
           </h1>
           <p className="ce-hero-sub" style={{ fontSize:isMobile?'13px':'15px', color:'var(--subtext)', maxWidth:'500px', margin:'0 auto 24px', lineHeight:1.8, opacity:0 }}>
-            A workplace built on trust, growth, and purpose. Discover what makes Anwar Ispat a great place to build your career.
+            {c.hero.sub}
           </p>
           <div className="ce-stats" style={{ display:'flex', justifyContent:'center', gap:isMobile?'24px':'44px', flexWrap:'wrap', opacity:0 }}>
-            {[{n:'2000+',l:'Employees'},{n:'48+',l:'Years Legacy'},{n:'95%',l:'Retention Rate'},{n:'5',l:'Locations'}].map((s,i) => (
+            {stats.map((s,i) => (
               <div key={i} style={{ textAlign:'center' }}>
                 <div style={{ fontSize:'30px', fontWeight:900, color:'var(--accent)' }}>{s.n}</div>
                 <div style={{ fontSize:'9px', color:'var(--subtext)', letterSpacing:'2px', textTransform:'uppercase', marginTop:'4px' }}>{s.l}</div>
@@ -98,9 +119,9 @@ const CareersExperiencePage = () => {
       <div style={{ maxWidth:'960px', margin:'0 auto', padding:isMobile?'36px 24px 60px':'44px 40px 64px' }}>
 
         {/* VALUES */}
-        {secLabel('Our Values')}
+        {values.length > 0 && secLabel(c.labels.values)}
         <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)', gap:'14px', marginBottom:'44px' }}>
-          {c.values.map((v, i) => (
+          {values.map((v, i) => (
             <div key={i} className="ce-val"
               style={{ borderRadius:'12px', padding:'22px', border:'1px solid ' + tone(i)+'33', background:tone(i)+'14', position:'relative', overflow:'hidden', opacity:0, transform:'translateY(30px)' }}>
               <div style={{ position:'absolute', bottom:0, left:0, right:0, height:'2px', background:tone(i) }}/>
@@ -114,9 +135,9 @@ const CareersExperiencePage = () => {
         </div>
 
         {/* PERKS */}
-        {secLabel('Benefits & Perks')}
+        {perks.length > 0 && secLabel(c.labels.perks)}
         <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:'10px', marginBottom:'44px' }}>
-          {c.perks.map((p, i) => (
+          {perks.map((p, i) => (
             <div key={i} className="ce-perk"
               style={{ display:'flex', alignItems:'flex-start', gap:'14px', padding:'16px 18px', background:'var(--glass)', border:'1px solid var(--glass-border)', borderLeft:'3px solid ' + tone(i), borderRadius:'0 10px 10px 0', opacity:0, transform:'translateX(-20px)' }}>
               <div style={{ width:'8px', height:'8px', borderRadius:'50%', background:tone(i), flexShrink:0, marginTop:'4px' }}/>
@@ -129,21 +150,23 @@ const CareersExperiencePage = () => {
         </div>
 
         {/* EMPLOYEE STORIES */}
-        {secLabel('Employee Stories')}
+        {stories.length > 0 && secLabel(c.labels.stories)}
         <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:'16px' }}>
-          {c.stories.map((s, i) => (
+          {stories.map((s, i) => (
             <div key={i} className="ce-story"
               style={{ borderRadius:'14px', overflow:'hidden', border:'1px solid var(--glass-border)', background:'var(--glass)', opacity:0, transform:'translateY(30px)' }}>
               {/* IMAGE SLOT */}
-              <div style={{ position:'relative', width:'100%', height:'200px', background:s.avatarBg, overflow:'hidden' }}>
-                <img src={s.img} alt={s.name}
+              {/* ছবি থাকলে কেবল ছবি; না থাকলে বা না খুললে ফাঁকা ঘর — আগে ছবির উপরেও
+                  "Employee Photo" লেখাটা বসে থাকত */}
+              <div style={{ position:'relative', width:'100%', height:'200px', background:tone(i) + '1a', overflow:'hidden' }}>
+                {s.img && <img key={s.img} src={s.img} alt={s.name}
                   style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover', objectPosition:'top center', display:'block' }}
-                  onError={e => { e.target.style.display='none'; }} />
-                <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'10px' }}>
-                  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke={s.color + '40'} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+                  onError={e => { e.target.style.display='none'; if (e.target.nextSibling) e.target.nextSibling.style.display='flex'; }} />}
+                <div style={{ position:'absolute', inset:0, display:s.img ? 'none' : 'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'10px' }}>
+                  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke={tone(i) + '40'} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                   </svg>
-                  <span style={{ fontSize:'9px', letterSpacing:'2px', textTransform:'uppercase', color:s.color + '60' }}>Employee Photo</span>
+                  <span style={{ fontSize:'9px', letterSpacing:'2px', textTransform:'uppercase', color:tone(i) + '60' }}>{c.labels.photo}</span>
                 </div>
               </div>
               {/* CONTENT */}
@@ -151,14 +174,14 @@ const CareersExperiencePage = () => {
                 <div style={{ fontSize:'32px', color:'var(--accent)', lineHeight:0.7, marginBottom:'14px', fontWeight:900 }}>"</div>
                 <p style={{ fontSize:'13px', color:'var(--subtext)', lineHeight:1.85, fontStyle:'italic', marginBottom:'18px' }}>{s.quote}</p>
                 <div style={{ display:'flex', alignItems:'center', gap:'12px', paddingTop:'14px', borderTop:'1px solid var(--glass-border)' }}>
-                  <div style={{ width:'38px', height:'38px', borderRadius:'50%', background:s.avatarBg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:'13px', fontWeight:700, color:s.color, flexShrink:0 }}>
-                    {s.name.split(' ').map(n => n[0]).join('').slice(0,2)}
+                  <div style={{ width:'38px', height:'38px', borderRadius:'50%', background:tone(i) + '1a', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'13px', fontWeight:700, color:tone(i), flexShrink:0 }}>
+                    {String(s.name || '').split(' ').filter(Boolean).map(n => n[0]).join('').slice(0,2)}
                   </div>
                   <div>
                     <div style={{ fontSize:'13px', fontWeight:700 }}>{s.name}</div>
                     <div style={{ fontSize:'10px', color:'var(--subtext)', marginTop:'2px' }}>{s.role} · {s.years}</div>
                   </div>
-                  <div style={{ marginLeft:'auto', fontSize:'10px', color:s.color, fontWeight:700 }}>{s.years}</div>
+                  <div style={{ marginLeft:'auto', fontSize:'10px', color:tone(i), fontWeight:700 }}>{s.years}</div>
                 </div>
               </div>
             </div>
