@@ -1,6 +1,7 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { useContent } from '../lib/content';
+import { onLive } from '../lib/live';
 
 // অ্যাডমিন কিছু না বদলালে এগুলোই দেখা যায়
 const DEFAULTS = {
@@ -9,6 +10,8 @@ const DEFAULTS = {
     accent: 'ENDURANCE',
     intro: "Forged in extreme intensity. We provide exceptional structural solutions designed to act as the unyielding backbone of tomorrow's infrastructure. Explore our full range of premium grade TMT rebars and steel products.",
     empty: 'No products available yet.',
+    learnBtn: 'Learn More',
+    cardQuoteBtn: 'Get Quote',
     specLabel: 'KEY SPECIFICATIONS',
     specs: [
         'Ultimate Tensile Strength: 500 MPa',
@@ -26,15 +29,29 @@ const ProductsPage = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    fetch('/api/products')
+  }, []);
+
+  // Products মেনুতে পণ্য যোগ, বদল বা মোছা হলে রিফ্রেশ ছাড়াই নতুন তালিকা
+  useEffect(() => {
+    let cancelled = false;
+    const load = () => fetch('/api/products', { cache: 'no-store' })
       .then(r => r.json())
-      .then(data => setProducts(data.map(p => ({
-        id: p.id,
-        title: p.title,
-        desc: p.description || '',
-        img: p.image_url || '/product_image.png',
-      }))))
+      .then(data => {
+        if (cancelled || !Array.isArray(data)) return;
+        const list = data.map(p => ({
+          id: p.id,
+          title: p.title,
+          desc: p.description || '',
+          img: p.image_url || '/product_image.png',
+        }));
+        setProducts(list);
+        // খোলা পপ-আপের পণ্যটিও নতুন লেখা পায়; মুছে গেলে পপ-আপ বন্ধ
+        setSelectedProduct(sel => (sel ? (list.find(p => p.id === sel.id) || null) : sel));
+      })
       .catch(() => {});
+    load();
+    const off = onLive('products', load);
+    return () => { cancelled = true; off(); };
   }, []);
 
   useEffect(() => {
@@ -101,10 +118,10 @@ const ProductsPage = () => {
             </p>
             <div className="carousel-actions" style={{ marginTop: 'auto', width: '100%' }}>
               <button className="btn-learn-more" onClick={(e) => { e.stopPropagation(); setSelectedProduct(product); }}>
-                Learn More
+                {c.learnBtn}
               </button>
               <button className="btn-get-quote" onClick={(e) => { e.stopPropagation(); window.dispatchEvent(new CustomEvent('open-quote')); }}>
-                Get Quote
+                {c.cardQuoteBtn}
               </button>
             </div>
           </div>
@@ -125,7 +142,7 @@ const ProductsPage = () => {
             <div style={{ marginBottom: "1.5rem" }}>
               <h4 style={{ color: "var(--accent)", marginBottom: "0.8rem", letterSpacing: "0.1em", fontSize: "0.9rem", fontFamily: "var(--font-heading)" }}>{c.specLabel}</h4>
               <ul className="product-spec-list">
-                {c.specs.map((t) => <li key={t}>{t}</li>)}
+                {(Array.isArray(c.specs) ? c.specs : []).map((t, i) => <li key={i}>{t}</li>)}
               </ul>
             </div>
             <div className="product-modal-actions">
