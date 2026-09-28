@@ -34,6 +34,8 @@ const DEFAULTS = {
         title: 'Steering the',
         accent: 'Legacy',
     },
+    crumb: 'Leadership Team',
+    intro: 'Anwar Ispat is led by the third and fourth generations of the Anwar family, who carry the standards of a business trading since 1834 into a modern steel operation.',
     people: [
     {
         name: 'Manwar Hossain',
@@ -117,7 +119,7 @@ const LeadershipPage = () => {
                 crumbs={[
                     { label: 'Home', to: '/' },
                     { label: 'About us', to: '/about' },
-                    { label: 'Leadership Team' },
+                    { label: c.crumb },
                 ]}
             />
 
@@ -134,8 +136,7 @@ const LeadershipPage = () => {
                     lineHeight: 1.8, color: 'var(--text)',
                     margin: 0, maxWidth: '62ch',
                 }}>
-                    Anwar Ispat is led by the third and fourth generations of the Anwar family, who carry
-                    the standards of a business trading since 1834 into a modern steel operation.
+                    {c.intro}
                 </p>
             </section>
 
@@ -151,7 +152,7 @@ const LeadershipPage = () => {
                 <div style={CONTAINER}>
                     {c.people.map((person, i) => (
                         <article
-                            key={person.name}
+                            key={i}
                             className="ld-reveal"
                             style={{
                                 display: 'grid',
@@ -218,8 +219,8 @@ const LeadershipPage = () => {
                                     {person.org}
                                 </p>
 
-                                {person.bio.map((para) => (
-                                    <p key={para.slice(0, 40)} style={{
+                                {(Array.isArray(person.bio) ? person.bio : []).map((para, pi) => (
+                                    <p key={pi} style={{
                                         fontFamily: 'var(--font-main)',
                                         fontSize: 'clamp(0.93rem, 1.25vw, 1.02rem)',
                                         lineHeight: 1.85, color: 'var(--subtext)',
@@ -241,7 +242,7 @@ const LeadershipPage = () => {
                                         const { label, value } = splitFact(line);
                                         const Icon = FACT_ICONS[fi % FACT_ICONS.length];
                                         return (
-                                        <div key={line} style={{
+                                        <div key={fi} style={{
                                             display: 'grid',
                                             gridTemplateColumns: isMobile ? 'auto 1fr' : '18px 150px 1fr',
                                             gap: '0.9rem',
@@ -250,6 +251,7 @@ const LeadershipPage = () => {
                                             borderBottom: '1px solid var(--glass-border)',
                                         }}>
                                             <Icon size={15} color="var(--accent)" style={{ alignSelf: 'center' }} />
+                                            {label && (
                                             <dt style={{
                                                 fontFamily: 'var(--font-main)', fontSize: '0.72rem',
                                                 fontWeight: 700, letterSpacing: '0.14em',
@@ -258,10 +260,14 @@ const LeadershipPage = () => {
                                             }}>
                                                 {label}
                                             </dt>
+                                            )}
+                                            {/* শিরোনাম ছাড়া তথ্য হলে ফাঁকা শিরোনামের ঘরটা বাদ দিয়ে
+                                                লেখা আইকনের ঠিক পরেই শুরু হয় — আগে ১৫০px ফাঁকা থেকে
+                                                ডানে চেপে যেত */}
                                             <dd style={{
                                                 fontFamily: 'var(--font-main)', fontSize: '0.93rem',
                                                 lineHeight: 1.6, color: 'var(--text)', margin: 0,
-                                                gridColumn: isMobile ? '2' : 'auto',
+                                                gridColumn: isMobile ? '2' : (label ? 'auto' : '2 / -1'),
                                             }}>
                                                 {value}
                                             </dd>
