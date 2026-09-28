@@ -42,7 +42,7 @@ const FeaturedGrid = ({ imgBg, photos }) => (
     <div style={{ position:'relative', aspectRatio:'1/1' }}><ImgSlot bg="rgba(227,24,45,0.07)" iconSize={22} /></div>
     <div style={{ position:'relative', aspectRatio:'1/1' }}>
       <ImgSlot bg="rgba(227,24,45,0.05)" iconSize={22} />
-      <div style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.6)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'20px', fontWeight:900, color:'var(--accent)' }}>+{photos - 4}</div>
+      <div style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.6)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'20px', fontWeight:900, color:'var(--accent)' }}>+{Math.max(0, (parseInt(photos, 10) || 0) - 4)}</div>
     </div>
   </div>
 );
