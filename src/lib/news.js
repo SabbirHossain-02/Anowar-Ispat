@@ -37,7 +37,7 @@ export const readTime = (text) => {
 };
 
 export const fetchNews = () =>
-    fetch('/api/media')
+    fetch('/api/media', { cache: 'no-store' })
         .then((r) => {
             if (!r.ok) throw new Error(`HTTP ${r.status}`);
             return r.json();

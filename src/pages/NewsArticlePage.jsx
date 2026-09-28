@@ -8,6 +8,7 @@ import {
     articleSlug, idFromSlug, paragraphs, excerpt, readTime, fetchNews,
 } from '../lib/news';
 import { useContent } from '../lib/content';
+import { onLive } from '../lib/live';
 
 // খবরের তালিকার পাতা যে লেখা দেখায়, ভেতরের পাতাও সেখান থেকেই পড়ে
 const DEFAULTS = {
@@ -17,6 +18,9 @@ const DEFAULTS = {
     artGoneText: 'It may have been removed from the newsroom, or the link may be incomplete.',
     artBack: 'All news',
     artMore: 'MORE FROM THE NEWSROOM',
+    artRead: 'Read',
+    artCopy: 'Copy link',
+    artCopied: 'Link copied',
 };
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -48,11 +52,14 @@ const NewsArticlePage = () => {
 
     useEffect(() => {
         let cancelled = false;
-        fetchNews()
+        const load = () => fetchNews()
             .then((d) => { if (!cancelled) setPosts(d); })
-            .catch(() => { if (!cancelled) setPosts([]); })
+            .catch(() => { if (!cancelled) setPosts((p) => p); })
             .finally(() => { if (!cancelled) setLoading(false); });
-        return () => { cancelled = true; };
+        load();
+        // খোলা খবরটি প্যানেলে বদলালে রিফ্রেশ ছাড়াই নতুন লেখা
+        const off = onLive('media', load);
+        return () => { cancelled = true; off(); };
     }, []);
 
     // স্লাগের শুরুতে id, তাই শিরোনাম বদলালেও পুরোনো লিংক মেলে
@@ -141,8 +148,8 @@ const NewsArticlePage = () => {
                             ))}
                             <button type="button" className="na-copy" onClick={copyLink}>
                                 {copied
-                                    ? <><Check size={13} strokeWidth={2.4} /> Link copied</>
-                                    : <><Link2 size={13} strokeWidth={2.2} /> Copy link</>}
+                                    ? <><Check size={13} strokeWidth={2.4} /> {c.artCopied}</>
+                                    : <><Link2 size={13} strokeWidth={2.2} /> {c.artCopy}</>}
                             </button>
                         </span>
                     </div>
@@ -184,7 +191,7 @@ const NewsArticlePage = () => {
                                 <div className="nw-meta">
                                     {p.event_date && <span>{String(p.event_date).toUpperCase()}</span>}
                                     <span className="nw-more">
-                                        Read <ArrowRight size={13} strokeWidth={2.2} />
+                                        {c.artRead} <ArrowRight size={13} strokeWidth={2.2} />
                                     </span>
                                 </div>
                             </article>

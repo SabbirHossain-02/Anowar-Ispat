@@ -7,11 +7,14 @@ import { useGSAP } from '@gsap/react';
 import PageBanner from '../components/PageBanner';
 import { articleSlug, excerpt, readTime, fetchNews } from '../lib/news';
 import { useContent } from '../lib/content';
+import { onLive } from '../lib/live';
 
 // অ্যাডমিন কিছু না বদলালে এগুলোই দেখা যায়। খবরগুলো নিজে আসে
 // Media & Events সেকশন থেকে।
 const DEFAULTS = {
     banner: { image: '/latest-news-banner.jpg', label: 'MEDIA CENTER', title: 'Latest', accent: 'News' },
+    crumb: 'News & Articles',
+    readStory: 'Read the story',
     lead: 'LEAD STORY',
     more: 'MORE STORIES',
     ticker: 'LATEST',
@@ -42,11 +45,14 @@ const MediaNewsPage = () => {
 
     useEffect(() => {
         let cancelled = false;
-        fetchNews()
-            .then((d) => { if (!cancelled) setPosts(d); })
+        const load = () => fetchNews()
+            .then((d) => { if (!cancelled) { setPosts(d); setFailed(false); } })
             .catch(() => { if (!cancelled) setFailed(true); })
             .finally(() => { if (!cancelled) setLoading(false); });
-        return () => { cancelled = true; };
+        load();
+        // Media & Events এ খবর যোগ, বদল বা মোছা হলে রিফ্রেশ ছাড়াই
+        const off = onLive('media', load);
+        return () => { cancelled = true; off(); };
     }, []);
 
     // বিভাগগুলো ডেটা থেকেই আসে — হাতে লেখা তালিকা রাখলে ব্যাকএন্ডে
@@ -55,6 +61,11 @@ const MediaNewsPage = () => {
         const set = [...new Set(posts.map((p) => p.category).filter(Boolean))];
         return set.length > 1 ? ['All', ...set] : [];
     }, [posts]);
+
+    // বাছাই করা বিভাগের শেষ খবরটি মুছে গেলে বিভাগটাই আর থাকে না — তখন সব
+    useEffect(() => {
+        if (active !== 'All' && !categories.includes(active)) setActive('All');
+    }, [categories, active]);
 
     const shown = useMemo(
         () => (active === 'All' ? posts : posts.filter((p) => p.category === active)),
@@ -90,7 +101,7 @@ const MediaNewsPage = () => {
                 crumbs={[
                     { label: 'Home', to: '/' },
                     { label: 'Media Center' },
-                    { label: 'News & Articles' },
+                    { label: c.crumb },
                 ]}
             />
 
@@ -170,7 +181,7 @@ const MediaNewsPage = () => {
                                     {lead.event_date && <span>{String(lead.event_date).toUpperCase()}</span>}
                                     <span>{readTime(lead.description)}</span>
                                     <span className="nw-more">
-                                        Read the story <ArrowRight size={14} strokeWidth={2.2} />
+                                        {c.readStory} <ArrowRight size={14} strokeWidth={2.2} />
                                     </span>
                                 </div>
                             </div>
