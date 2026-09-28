@@ -103,6 +103,24 @@ const EraTimeline = ({ era, index }) => {
             const items = Array.from(track.querySelectorAll('.tl-item'));
             if (!items.length) return;
 
+            // ঘটনা কম হলে (যেমন প্রথম যুগে তিনটি) সারিটি পর্দার এক-তৃতীয়াংশে
+            // থেমে যেত, ঢেউও সেখানেই শেষ হত। তখন প্রতিটি ঘটনার জায়গা
+            // চওড়া করে সারিটিকে পুরো প্রস্থে ছড়িয়ে দিই। বেশি ঘটনার যুগে
+            // স্বাভাবিক প্রস্থই থাকে, কারণ সেখানে সারি এমনিতেই পর্দা ছাড়ায়।
+            const view = viewRef.current;
+            if (view) {
+                const cs = getComputedStyle(track);
+                const pad = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+                const vw = window.innerWidth;
+                const base = vw <= 700 ? 175 : Math.min(250, Math.max(200, vw * 0.2));
+                const fill = (view.clientWidth - pad) / items.length;
+                const want = fill > base ? `${Math.floor(fill)}px` : '';
+                if (track.style.getPropertyValue('--hr-item-w') !== want) {
+                    if (want) track.style.setProperty('--hr-item-w', want);
+                    else track.style.removeProperty('--hr-item-w');
+                }
+            }
+
             const W = track.scrollWidth;
             const H = track.offsetHeight;
             const centres = items.map((el) => el.offsetLeft + el.offsetWidth / 2);

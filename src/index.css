@@ -1470,6 +1470,17 @@ body.light-mode .hero-title.muted {
   will-change: transform;
 }
 
+/* ঘটনা কম হলে JS --hr-item-w বসিয়ে সারিটিকে পুরো প্রস্থে ছড়ায় */
+.hr-track .tl-item {
+  width: var(--hr-item-w, clamp(200px, 20vw, 250px));
+}
+
+@media (max-width: 700px) {
+  .hr-track .tl-item {
+    width: var(--hr-item-w, 175px);
+  }
+}
+
 /* এখানে ঢেউ স্ক্রলের সাথে সরাসরি চলে — এবাউটের মতো গড়িয়ে যাওয়ার
    transition থাকলে স্ক্রলের পিছে পিছে দেরিতে আসত */
 .hr-line path {
