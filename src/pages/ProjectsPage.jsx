@@ -20,6 +20,7 @@ const CONTAINER = {
 // অ্যাডমিন কিছু না বদলালে এগুলোই দেখা যায়
 const DEFAULTS = {
     banner: { image: '/gallery-banner.jpg', label: 'PROJECT GALLERY', title: 'Built with', accent: 'Anwar Ispat' },
+    crumb: 'Project Gallery',
     eyebrow: 'PROJECT GALLERY',
     title: 'Twelve structures the country depends on',
     lead: 'Bridges, expressways, ports and power — each one carrying rebar rolled at our mill. Select any project to see it full size.',
@@ -42,8 +43,15 @@ const DEFAULTS = {
 const ProjectsPage = () => {
     const rootRef = useRef(null);
     const c = useContent('projects', DEFAULTS);
-    const PROJECTS = c.items;
+    const PROJECTS = Array.isArray(c.items) ? c.items : [];
     const [open, setOpen] = useState(null);
+    // {count} লিখলে সেখানে প্রজেক্টের সংখ্যা বসে — যোগ বা মুছলে নিজেই ঠিক থাকে
+    const fill = (t) => String(t ?? '').replace(/\{count\}/g, PROJECTS.length);
+
+    // প্যানেল থেকে প্রজেক্ট মুছে গেলে খোলা ছবিটি হয়তো আর নেই — তখন বন্ধ
+    useEffect(() => {
+        if (open !== null && open >= PROJECTS.length) setOpen(PROJECTS.length ? PROJECTS.length - 1 : null);
+    }, [open, PROJECTS.length]);
 
     useGSAP(() => {
         gsap.utils.toArray('.gal-item').forEach((el, i) => {
@@ -55,9 +63,11 @@ const ProjectsPage = () => {
         });
     }, { scope: rootRef });
 
+    // আগে প্রথম তালিকার দৈর্ঘ্যই মনে রাখত — প্রজেক্ট যোগ বা মুছলে
+    // আগে-পরে যাওয়া ভুল জায়গায় যেত
     const step = useCallback((d) => {
-        setOpen((i) => (i === null ? i : (i + d + PROJECTS.length) % PROJECTS.length));
-    }, []);
+        setOpen((i) => (i === null || !PROJECTS.length ? i : (i + d + PROJECTS.length) % PROJECTS.length));
+    }, [PROJECTS.length]);
 
     // লাইটবক্স খোলা থাকলে পেছনের স্মুথ স্ক্রল থামে, নইলে ছবির
     // পেছনে পেজ নড়তে থাকে
@@ -91,7 +101,7 @@ const ProjectsPage = () => {
                 crumbs={[
                     { label: 'Home', to: '/' },
                     { label: 'Landmarks' },
-                    { label: 'Project Gallery' },
+                    { label: c.crumb },
                 ]}
             />
 
@@ -103,21 +113,21 @@ const ProjectsPage = () => {
             }}>
                 <div className="gal-head">
                     <span className="gal-eyebrow">{c.eyebrow}</span>
-                    <h2 className="gal-title">{c.title}</h2>
-                    <p className="gal-lead">{c.lead}</p>
+                    <h2 className="gal-title">{fill(c.title)}</h2>
+                    <p className="gal-lead">{fill(c.lead)}</p>
                 </div>
 
                 <div className="gal-grid">
                     {PROJECTS.map((p, i) => (
                         <button
-                            key={p.img}
+                            key={i}
                             type="button"
                             className="gal-item"
                             onClick={() => setOpen(i)}
                             aria-label={'View ' + p.name}
                         >
                             <span className="gal-media">
-                                <img className="gal-img" src={p.img} alt={p.name} loading="lazy" />
+                                {p.img && <img className="gal-img" src={p.img} alt={p.name} loading="lazy" />}
                                 <span className="gal-zoom" aria-hidden="true"><Maximize2 size={16} /></span>
                             </span>
 
