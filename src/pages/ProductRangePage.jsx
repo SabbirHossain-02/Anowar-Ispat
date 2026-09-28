@@ -5,6 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import PageBanner from '../components/PageBanner';
 import { useContent } from '../lib/content';
+import { onLive } from '../lib/live';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -23,10 +24,12 @@ const DEFAULTS = {
         title: 'Reinforcement built for',
         accent: 'Strength',
     },
+    crumb: 'Our Product Range',
     intro: 'Anwar Ispat produces deformed reinforcement bars using patented TMT technology from Belgium, tested batch by batch and certified to BSTI and ISO standards.',
     grades: {
         eyebrow: 'OUR GRADES',
         title: 'Two grades, two jobs',
+        quoteBtn: 'Request a quotation',
         items: [
     {
         name: 'ANWARS 500DWR',
@@ -54,7 +57,7 @@ const DEFAULTS = {
     },
 ],
     },
-    catalogue: { eyebrow: 'CATALOGUE', title: 'From our product line' },
+    catalogue: { eyebrow: 'CATALOGUE', title: 'From our product line', quoteBtn: 'Get a quote', loading: 'Loading products…' },
 };
 
 
@@ -69,12 +72,15 @@ const ProductRangePage = () => {
 
     useEffect(() => {
         let cancelled = false;
-        fetch('/api/products')
+        const load = () => fetch('/api/products', { cache: 'no-store' })
             .then((r) => r.json())
             .then((data) => { if (!cancelled && Array.isArray(data)) setProducts(data); })
             .catch(() => {})
             .finally(() => { if (!cancelled) setLoadingProducts(false); });
-        return () => { cancelled = true; };
+        load();
+        // Products মেনুতে যোগ, বদল বা মোছা হলে রিফ্রেশ ছাড়াই নতুন তালিকা
+        const off = onLive('products', load);
+        return () => { cancelled = true; off(); };
     }, []);
     // ─────────────────────────────────────────────────────────────────
 
@@ -130,7 +136,7 @@ const ProductRangePage = () => {
                 crumbs={[
                     { label: 'Home', to: '/' },
                     { label: 'Products', to: '/products' },
-                    { label: 'Our Product Range' },
+                    { label: c.crumb },
                 ]}
             />
 
@@ -170,8 +176,8 @@ const ProductRangePage = () => {
                         gap: 'clamp(1rem, 2vw, 1.75rem)',
                         alignItems: 'start',
                     }}>
-                        {c.grades.items.map((g) => (
-                            <article key={g.name} className="pr-reveal" style={{
+                        {(Array.isArray(c.grades.items) ? c.grades.items : []).map((g, gi) => (
+                            <article key={gi} className="pr-reveal" style={{
                                 background: 'var(--surface)',
                                 border: '1px solid var(--glass-border)',
                                 borderTop: '3px solid var(--accent)',
@@ -194,8 +200,8 @@ const ProductRangePage = () => {
                                 </p>
 
                                 <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-                                    {g.advantages.map((a) => (
-                                        <li key={a} style={{
+                                    {(Array.isArray(g.advantages) ? g.advantages : []).map((a, ai) => (
+                                        <li key={ai} style={{
                                             display: 'grid', gridTemplateColumns: '18px 1fr',
                                             gap: '0.7rem', alignItems: 'start',
                                             padding: '0.55rem 0',
@@ -223,7 +229,7 @@ const ProductRangePage = () => {
                                         textTransform: 'uppercase', cursor: 'pointer',
                                     }}
                                 >
-                                    Request a quotation
+                                    {c.grades.quoteBtn}
                                 </button>
                             </article>
                         ))}
@@ -247,7 +253,7 @@ const ProductRangePage = () => {
 
                         {loadingProducts ? (
                             <p style={{ color: 'var(--subtext)', fontSize: '0.95rem', margin: 0 }}>
-                                Loading products…
+                                {c.catalogue.loading}
                             </p>
                         ) : (
                             <div style={{
@@ -310,7 +316,7 @@ const ProductRangePage = () => {
                                                     textTransform: 'uppercase', cursor: 'pointer',
                                                 }}
                                             >
-                                                Get a quote
+                                                {c.catalogue.quoteBtn}
                                             </button>
                                         </div>
                                     </article>
