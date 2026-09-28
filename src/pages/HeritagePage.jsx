@@ -83,18 +83,27 @@ const HeritagePage = () => {
         const grids = Array.from(document.querySelectorAll('.hr-grid'));
         if (!grids.length) return;
 
+        // নথির ক্রমেই সালের ক্রম — প্রথম যুগ থেকে শেষ পর্যন্ত
+        const items = Array.from(document.querySelectorAll('.hr-row'));
+        if (!items.length) return;
+
+        let rows = [];        // প্রতিটি দৃশ্যমান সারি: বাঁক ও তার দৈর্ঘ্যের হিসাব
+        let area = { top: 0, height: 1 };
         let sig = '';
+        let frame = 0;
 
         const layout = () => {
             const next = [];
+            rows = [];
+            let base = 0;     // এই গ্রিডের আগে কতগুলি ঘটনা পেরিয়ে এসেছি
 
             grids.forEach((grid, gi) => {
-                const rows = Array.from(grid.querySelectorAll('.hr-row'));
-                if (!rows.length) return;
+                const own = Array.from(grid.querySelectorAll('.hr-row'));
+                if (!own.length) return;
 
                 // একই offsetTop মানে একই সারি
                 const byTop = new Map();
-                rows.forEach((el) => {
+                own.forEach((el) => {
                     const top = Math.round(el.offsetTop);
                     if (!byTop.has(top)) byTop.set(top, []);
                     byTop.get(top).push(el);
@@ -106,28 +115,21 @@ const HeritagePage = () => {
                     const key = gi + '-' + r;
 
                     group.forEach((el, i) => {
-                        el.style.setProperty('--hr-delay', `${i * 0.08}s`);
-                        // জোড় ঘর চূড়ায়, বিজোড় খাদে
+                        // জোড় ঘর ঢেউয়ের চূড়ায়, লেখা উপরে; বিজোড় খাদে, লেখা নিচে
                         el.style.setProperty('--hr-wave', `${i % 2 === 0 ? -HR_AMP : HR_AMP}px`);
-                        // জোড় ঘরের লেখা রেখার উপরে, বিজোড়ের নিচে
                         el.classList.toggle('is-above', i % 2 === 0);
                         el.classList.toggle('is-below', i % 2 !== 0);
-                        el.dataset.wave = key;
                     });
 
-                    // একটিমাত্র ঘটনা থাকলে ঢেউ আঁকার কিছু নেই
+                    const first = items.indexOf(group[0]);
+
                     if (group.length > 1) {
-                        // offsetLeft এর offsetParent কে, সেটা নিশ্চিত নয় — .hr-row
-                        // এর position static, তাই ভেতরের .hr-entry গ্রিড থেকেই মাপে।
-                        // দুটো যোগ করলে দূরত্ব দ্বিগুণ হয়ে ঢেউ টানটান হয়ে যেত।
-                        // তাই rect দিয়ে, গ্রিডের সাপেক্ষে।
                         const gr = grid.getBoundingClientRect();
-                        // বিন্দু ঘরের অনুভূমিক কেন্দ্রে, উল্লম্বভাবে মাঝ বরাবর
                         const dots = group.map((el) => {
-                            const r = el.getBoundingClientRect();
+                            const rc = el.getBoundingClientRect();
                             return {
-                                x: r.left - gr.left + r.width / 2,
-                                y: r.top - gr.top + r.height / 2,
+                                x: rc.left - gr.left + rc.width / 2,
+                                y: rc.top - gr.top + rc.height / 2,
                             };
                         });
 
@@ -137,56 +139,91 @@ const HeritagePage = () => {
                         const mid = HR_AMP;
                         const y = (x) => mid - HR_AMP * Math.cos((Math.PI * x) / L);
 
-                        let d = '', len = 0, px = 0, py = y(0);
+                        // এবাউটের মতো: আঁকতে আঁকতে দৈর্ঘ্য জমাই, আর প্রতিটি
+                        // বিন্দুতে পৌঁছালে সেই মুহূর্তের দৈর্ঘ্য টুকে রাখি
+                        const xs = dots.map((d) => d.x - x0);
+                        const lenAt = [];
+                        let d = '', len = 0, px = 0, py = y(0), ci = 0;
                         for (let x = 0; x <= W; x += 4) {
                             const yy = y(x);
                             if (x) len += Math.hypot(x - px, yy - py);
                             d += (x ? ' L' : 'M') + x.toFixed(1) + ' ' + yy.toFixed(2);
+                            while (ci < xs.length && x >= xs[ci]) { lenAt.push(len); ci += 1; }
                             px = x; py = yy;
                         }
+                        while (ci < xs.length) { lenAt.push(len); ci += 1; }
 
-                        next.push({
-                            key,
-                            left: x0,
-                            top: dots[0].y - HR_AMP,
-                            w: W,
-                            h: HR_AMP * 2,
-                            d,
-                            len,
-                        });
+                        next.push({ key, left: x0, top: dots[0].y - HR_AMP, w: W, h: HR_AMP * 2, d, len });
+                        rows.push({ key, first, count: group.length, lenAt, total: len });
+                    } else {
+                        rows.push({ key, first, count: group.length, lenAt: [], total: 0 });
                     }
                     r += 1;
                 });
+
+                base += own.length;
             });
 
-            // একই ফল হলে আবার রেন্ডার করিয়ে লাভ নেই
-            const s = next.map((w) => w.key + w.left + w.top + w.w).join('|');
-            if (s !== sig) { sig = s; setWaves(next); }
+            // পুরো টাইমলাইন অংশটি পাতায় কোথায়, কতটা লম্বা
+            const firstR = items[0].getBoundingClientRect();
+            const lastR = items[items.length - 1].getBoundingClientRect();
+            area = {
+                top: firstR.top + window.scrollY,
+                height: Math.max(1, lastR.bottom + window.scrollY - (firstR.top + window.scrollY)),
+            };
+
+            const k = next.map((w) => w.key + w.left + w.top + w.w).join('|');
+            if (k !== sig) { sig = k; setWaves(next); }
         };
 
-        layout();
+        // এবাউটের সাথে এক নিয়ম: স্ক্রলের দূরত্ব গুনে একটা একটা করে ফোটে।
+        // সেখানে এক ধাপ ১২০px, কিন্তু সেটি ছিল ভেতরের আড়াআড়ি স্ক্রল।
+        // এখানে পুরো অংশটুকু যতটা লম্বা, তাকে ঘটনার সংখ্যা দিয়ে ভাগ করি —
+        // তাই শেষ ঘটনাটিও অংশ ছাড়ার আগেই ফুটে ওঠে।
+        const apply = () => {
+            frame = 0;
+            const step = Math.max(60, area.height / items.length);
+            // অংশটি পর্দার ৮০% পর্যন্ত উঠে এলে গোনা শুরু
+            const from = area.top - window.innerHeight * 0.8;
+            const due = Math.max(0, Math.min(
+                items.length,
+                Math.floor((window.scrollY - from) / step) + 1,
+            ));
 
-        const io = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                if (!entry.isIntersecting) return;
-                entry.target.classList.add('is-in');
-                // এই সারির ঢেউটিও আঁকা শুরু হোক
-                const key = entry.target.dataset.wave;
-                if (key) {
-                    const path = document.querySelector(`.hr-wave[data-wave="${key}"] path`);
-                    if (path) path.style.strokeDashoffset = '0';
-                }
-                io.unobserve(entry.target);
+            // যতগুলি ফুটেছে, প্রতিটি সারির ঢেউ ততদূর আঁকা
+            rows.forEach((row) => {
+                const path = document.querySelector(`.hr-wave[data-wave="${row.key}"] path`);
+                if (!path || !row.total) return;
+                const shown = Math.max(0, Math.min(row.count, due - row.first));
+                const upto = shown > 0 ? (row.lenAt[shown - 1] ?? row.total) : 0;
+                path.style.strokeDashoffset = String(row.total - upto);
             });
-        }, { rootMargin: '0px 0px -12% 0px' });
 
-        grids.forEach((g) => g.querySelectorAll('.hr-row').forEach((el) => io.observe(el)));
+            let newly = 0;
+            for (let i = 0; i < due; i += 1) {
+                const el = items[i];
+                if (el.classList.contains('is-in')) continue;
+                // দ্রুত গড়ালে একসাথে কয়েকটি পাওনা হয়ে যায় — তখনও একটু পরপর
+                el.style.setProperty('--hr-delay', `${newly * 0.08}s`);
+                el.classList.add('is-in');
+                newly += 1;
+            }
+        };
 
-        // কলামের সংখ্যা বদলালে সারি বদলায় — ঢেউ নতুন করে
-        const ro = new ResizeObserver(layout);
+        const onScroll = () => { if (!frame) frame = requestAnimationFrame(apply); };
+
+        layout();
+        apply();
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        const ro = new ResizeObserver(() => { layout(); apply(); });
         grids.forEach((g) => ro.observe(g));
 
-        return () => { io.disconnect(); ro.disconnect(); };
+        return () => {
+            window.removeEventListener('scroll', onScroll);
+            ro.disconnect();
+            if (frame) cancelAnimationFrame(frame);
+        };
     }, [eras.length]);
 
     return (
