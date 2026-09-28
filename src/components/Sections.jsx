@@ -9,6 +9,7 @@ import { Canvas } from "@react-three/fiber";
 import ForgeThread3D from "./three/ForgeThread3D";
 import { useContent } from "../lib/content";
 import { onLive } from "../lib/live";
+import { socialLinks } from "../lib/social";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -127,7 +128,7 @@ const HOME_DEFAULTS = {
         contactBtn: 'CONTACT US',
         quick: ['Product & Service | #product-service', 'Better Tomorrow | #better-tomorrow', 'Career | #career', 'Media & Events | #media-events'],
         legal: ['Privacy Policy | #', 'Terms of Service | #'],
-        social: ['Facebook | #', 'LinkedIn | #', 'Twitter | #'],
+        social: [{ platform: 'facebook', url: '#' }, { platform: 'linkedin', url: '#' }, { platform: 'x', url: '#' }],
         copyright: 'Anwar Ispat. All Rights Reserved.',
     },
 };
@@ -1437,9 +1438,11 @@ export const Footer = ({ onOpenContact }) => {
           pkgit.net
         </a>
       </p>
-      <div style={{ display: "flex", gap: "1rem" }}>
-        {(Array.isArray(home.footer.social) ? home.footer.social : []).map((line) => { const at = line.indexOf("|"); const label = at < 0 ? line.trim() : line.slice(0, at).trim(); const href = at < 0 ? "#" : line.slice(at + 1).trim(); return (
-          <a key={label} href={href} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noopener noreferrer" : undefined} style={{ color: "var(--subtext)", textDecoration: "none", fontSize: "0.8rem" }}>{label}</a>
+      <div className="footer-social">
+        {socialLinks(home.footer.social).map((s) => { const out = /^https?:/i.test(s.href); return (
+          <a key={s.id} href={s.href} target={out ? "_blank" : undefined} rel={out ? "noopener noreferrer" : undefined} aria-label={s.name} title={s.name}>
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d={s.path} /></svg>
+          </a>
         ); })}
       </div>
     </div>

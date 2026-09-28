@@ -2123,6 +2123,32 @@ body.light-mode button[style*="border: 1px solid rgba(255,255,255,0.2)"] {
   .cs-ring-main { transition: none; stroke-dashoffset: 0; }
 }
 
+/* ফুটারের সোশ্যাল আইকন — প্যানেল থেকে যতগুলো যোগ হয় */
+.footer-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.footer-social a {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--glass-border);
+  color: var(--subtext);
+  transition: color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+}
+
+.footer-social a:hover,
+.footer-social a:focus-visible {
+  color: var(--accent);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
 /* CoreStrengths Labels */
 .strength-label {
   display: flex;
