@@ -1470,7 +1470,8 @@ export const CoreStrengths = () => {
 
   // ফোন না বড় পর্দা
   useEffect(() => {
-    const mq = window.matchMedia('(max-width: 640px)');
+    // সরু পর্দা, বা এত কম উচ্চতা যে কক্ষপথের লেখা ৯px এর নিচে নামত — দুই ক্ষেত্রেই তালিকা
+    const mq = window.matchMedia('(max-width: 767px), (max-height: 560px)');
     const on = () => setCompact(mq.matches);
     on();
     mq.addEventListener('change', on);
@@ -1497,9 +1498,20 @@ export const CoreStrengths = () => {
 
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const n = items.length || 1;
-    let W = stage.clientWidth;
-    let H = stage.clientHeight;
-    const ro = new ResizeObserver(() => { W = stage.clientWidth; H = stage.clientHeight; });
+    // পুরো নকশা মঞ্চের সাথে একসাথে ছোট-বড় হয়: ১০০০px চওড়া মঞ্চে
+    // আসল মাপ, ছোট মঞ্চে সেই অনুপাতে। লেবেল নিজের মাপে থাকলে ছোট
+    // পর্দায় একটার গায়ে আরেকটা উঠে যেত।
+    let W = 0;
+    let H = 0;
+    let k = 1;
+    const measure = () => {
+      W = stage.clientWidth;
+      H = stage.clientHeight;
+      k = Math.max(0.55, Math.min(1, W / 1000));
+      stage.style.setProperty('--cs-k', String(k));
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
     ro.observe(stage);
 
     let raf = 0;
@@ -1515,7 +1527,7 @@ export const CoreStrengths = () => {
         const x = (0.5 + (ORBIT_RX / 100) * spread * Math.cos(a)) * W;
         const y = (0.5 + (ORBIT_RY / 100) * spread * Math.sin(a)) * H;
         const depth = (Math.sin(a) + 1) / 2;        // 0 = পেছনে (উপরে), 1 = সামনে (নিচে)
-        const scale = 0.8 + 0.2 * depth;
+        const scale = k * (0.8 + 0.2 * depth);
         el.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
         el.style.opacity = String(inView ? 0.5 + 0.5 * depth : 0);
         el.style.zIndex = depth > 0.45 ? '6' : '2';  // কেন্দ্রের কার্ড ৪ এ
@@ -1554,7 +1566,7 @@ export const CoreStrengths = () => {
     <section
       ref={sectionRef}
       className="cs-section"
-      style={{ minHeight: '100vh', width: '100%', position: 'relative', background: 'var(--bg-section, rgba(11, 11, 11, 0.7))', backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', borderTop: '1px solid rgba(255, 60, 0, 0.1)', borderBottom: '1px solid rgba(255, 60, 0, 0.1)', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '30px 5%' }}
+      style={{ minHeight: '100vh', width: '100%', position: 'relative', background: 'var(--bg-section, rgba(11, 11, 11, 0.7))', backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)', borderTop: '1px solid rgba(255, 60, 0, 0.1)', borderBottom: '1px solid rgba(255, 60, 0, 0.1)', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '96px 5% 30px' }}
     >
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at center, rgba(227, 24, 45, 0.03) 0%, transparent 60%)', pointerEvents: 'none', zIndex: 1 }} />
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '150px', background: 'linear-gradient(to bottom, var(--primary) 0%, transparent 100%)', pointerEvents: 'none', zIndex: 2 }} />

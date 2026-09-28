@@ -1963,7 +1963,8 @@ body.light-mode button[style*="border: 1px solid rgba(255,255,255,0.2)"] {
 .cs-stage {
   position: relative;
   z-index: 3;
-  width: min(1040px, 100%, calc(80vh * 1.6));
+  /* উপরের নেভবার বাদ দিয়ে যতটা উচ্চতা থাকে তাতেই ধরে */
+  width: min(1040px, 100%, calc((100vh - 150px) * 1.6));
   aspect-ratio: 16 / 10;
 }
 
@@ -2002,7 +2003,7 @@ body.light-mode button[style*="border: 1px solid rgba(255,255,255,0.2)"] {
   left: 50%;
   top: 50%;
   z-index: 4;
-  transform: translate(-50%, -50%) scale(0.85);
+  transform: translate(-50%, -50%) scale(calc(var(--cs-k, 1) * 0.85));
   opacity: 0;
   transition: opacity 0.9s ease 0.5s, transform 1s cubic-bezier(0.19, 1, 0.22, 1) 0.5s;
   display: grid;
@@ -2011,12 +2012,12 @@ body.light-mode button[style*="border: 1px solid rgba(255,255,255,0.2)"] {
 
 .cs-core.is-in {
   opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
+  transform: translate(-50%, -50%) scale(var(--cs-k, 1));
 }
 
 .cs-orb {
   position: absolute;
-  width: clamp(120px, 16vw, 190px);
+  width: 190px;
   aspect-ratio: 1;
   border-radius: 50%;
   background: radial-gradient(circle at 35% 30%, rgba(227, 24, 45, 0.55), rgba(227, 24, 45, 0.12) 55%, transparent 72%);
@@ -2045,7 +2046,7 @@ body.light-mode button[style*="border: 1px solid rgba(255,255,255,0.2)"] {
 
 .cs-card-brand {
   color: var(--text);
-  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  font-size: 2rem;
   font-weight: 900;
   letter-spacing: 0.05em;
   line-height: 1;
@@ -2103,7 +2104,7 @@ body.light-mode button[style*="border: 1px solid rgba(255,255,255,0.2)"] {
 }
 
 .cs-node-label .strength-title {
-  font-size: clamp(0.62rem, 0.95vw, 0.85rem);
+  font-size: 0.85rem;
 }
 
 /* ফোন: কেন্দ্রের কার্ড, নিচে তালিকা */
