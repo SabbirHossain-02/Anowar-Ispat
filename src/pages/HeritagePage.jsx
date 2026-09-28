@@ -72,41 +72,108 @@ const HeritagePage = () => {
         });
     }, { scope: rootRef });
 
-    // এবাউট পাতার টাইমলাইনের মতোই — বিন্দু ফোটে, তারপর রেখা নামে,
-    // শেষে লেখা উঠে আসে। একই সারির ঘটনাগুলো একসাথে না ফুটে বাঁ থেকে
-    // ডানে একটু পরপর, তাই offsetTop দেখে সারি চিনে নিয়ে দেরি বসাই।
-    useEffect(() => {
-        const rows = Array.from(document.querySelectorAll('.hr-row'));
-        if (!rows.length) return;
+    // এবাউট পাতার টাইমলাইনের মতোই — বিন্দুগুলো ঢেউয়ের উপর বসে, ঢেউ
+    // স্ক্রলের সাথে বাঁ থেকে ডানে আঁকা হয়, তারপর বিন্দু → রেখা → লেখা
+    // ধাপে ধাপে ফোটে। সেখানে এক ঢেউ = দুটি ঘটনা; এখানে গ্রিডের এক
+    // সারিতে যতগুলো ঘটনা, তাদের উপর দিয়েই এক ঢেউ যায়।
+    const HR_AMP = 14;
+    const [waves, setWaves] = useState([]);
 
-        const stagger = () => {
-            const byTop = new Map();
-            rows.forEach((el) => {
-                const top = Math.round(el.offsetTop);
-                if (!byTop.has(top)) byTop.set(top, []);
-                byTop.get(top).push(el);
+    useEffect(() => {
+        const grids = Array.from(document.querySelectorAll('.hr-grid'));
+        if (!grids.length) return;
+
+        let sig = '';
+
+        const layout = () => {
+            const next = [];
+
+            grids.forEach((grid, gi) => {
+                const rows = Array.from(grid.querySelectorAll('.hr-row'));
+                if (!rows.length) return;
+
+                // একই offsetTop মানে একই সারি
+                const byTop = new Map();
+                rows.forEach((el) => {
+                    const top = Math.round(el.offsetTop);
+                    if (!byTop.has(top)) byTop.set(top, []);
+                    byTop.get(top).push(el);
+                });
+
+                let r = 0;
+                byTop.forEach((group) => {
+                    group.sort((a, b) => a.offsetLeft - b.offsetLeft);
+                    const key = gi + '-' + r;
+
+                    group.forEach((el, i) => {
+                        el.style.setProperty('--hr-delay', `${i * 0.08}s`);
+                        // জোড় ঘর চূড়ায়, বিজোড় খাদে
+                        el.style.setProperty('--hr-wave', `${i % 2 === 0 ? -HR_AMP : HR_AMP}px`);
+                        el.dataset.wave = key;
+                    });
+
+                    // একটিমাত্র ঘটনা থাকলে ঢেউ আঁকার কিছু নেই
+                    if (group.length > 1) {
+                        // বিন্দুগুলোর অনুভূমিক অবস্থান — .hr-entry এর বাঁ কিনারা
+                        const xs = group.map((el) => {
+                            const entry = el.querySelector('.hr-entry');
+                            return (entry ? entry.offsetLeft + el.offsetLeft : el.offsetLeft);
+                        });
+                        const x0 = xs[0];
+                        const L = xs[1] - xs[0];
+                        const W = xs[xs.length - 1] - x0;
+                        const mid = HR_AMP;
+                        const y = (x) => mid - HR_AMP * Math.cos((Math.PI * x) / L);
+
+                        let d = '', len = 0, px = 0, py = y(0);
+                        for (let x = 0; x <= W; x += 4) {
+                            const yy = y(x);
+                            if (x) len += Math.hypot(x - px, yy - py);
+                            d += (x ? ' L' : 'M') + x.toFixed(1) + ' ' + yy.toFixed(2);
+                            px = x; py = yy;
+                        }
+
+                        next.push({
+                            key,
+                            left: x0,
+                            // বিন্দুর মাঝবরাবর: .hr-entry::before এর top 0.5rem = 8px, ব্যাসার্ধ 6px
+                            top: Math.round(group[0].offsetTop) + 14 - HR_AMP,
+                            w: W,
+                            h: HR_AMP * 2,
+                            d,
+                            len,
+                        });
+                    }
+                    r += 1;
+                });
             });
-            byTop.forEach((group) => {
-                group
-                    .sort((a, b) => a.offsetLeft - b.offsetLeft)
-                    .forEach((el, i) => el.style.setProperty('--hr-delay', `${i * 0.08}s`));
-            });
+
+            // একই ফল হলে আবার রেন্ডার করিয়ে লাভ নেই
+            const s = next.map((w) => w.key + w.left + w.top + w.w).join('|');
+            if (s !== sig) { sig = s; setWaves(next); }
         };
-        stagger();
+
+        layout();
 
         const io = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
                 if (!entry.isIntersecting) return;
                 entry.target.classList.add('is-in');
+                // এই সারির ঢেউটিও আঁকা শুরু হোক
+                const key = entry.target.dataset.wave;
+                if (key) {
+                    const path = document.querySelector(`.hr-wave[data-wave="${key}"] path`);
+                    if (path) path.style.strokeDashoffset = '0';
+                }
                 io.unobserve(entry.target);
             });
         }, { rootMargin: '0px 0px -12% 0px' });
 
-        rows.forEach((el) => io.observe(el));
+        grids.forEach((g) => g.querySelectorAll('.hr-row').forEach((el) => io.observe(el)));
 
-        // কলামের সংখ্যা বদলালে সারিও বদলায়, দেরিগুলো নতুন করে
-        const ro = new ResizeObserver(stagger);
-        if (rows[0].parentElement) ro.observe(rows[0].parentElement);
+        // কলামের সংখ্যা বদলালে সারি বদলায় — ঢেউ নতুন করে
+        const ro = new ResizeObserver(layout);
+        grids.forEach((g) => ro.observe(g));
 
         return () => { io.disconnect(); ro.disconnect(); };
     }, [eras.length]);
@@ -156,7 +223,7 @@ const HeritagePage = () => {
                 paddingLeft: 0, paddingRight: 0,
             }}>
                 <div style={CONTAINER}>
-                    {eras.map((era) => (
+                    {eras.map((era, eraIndex) => (
                         <div key={era.span} style={{ paddingTop: SECTION_PAD }}>
                             {/* যুগের শিরোনাম — ডেস্কটপে স্ক্রলের সাথে আটকে থাকে,
                                 তাই লম্বা তালিকা পড়ার সময়ও কোন যুগ চলছে বোঝা যায় */}
@@ -200,6 +267,30 @@ const HeritagePage = () => {
                                 নিজেই সারি-ক্রমে সাজায়, তাই সালের ধারাবাহিকতা
                                 অটুট থাকে। */}
                             <div className="hr-grid">
+                                {waves
+                                    .filter((w) => w.key.startsWith(`${eraIndex}-`))
+                                    .map((w) => (
+                                        <svg
+                                            key={w.key}
+                                            className="hr-wave"
+                                            data-wave={w.key}
+                                            aria-hidden="true"
+                                            width={w.w}
+                                            height={w.h}
+                                            viewBox={`0 0 ${w.w} ${w.h}`}
+                                            style={{ left: w.left, top: w.top }}
+                                        >
+                                            <path
+                                                d={w.d}
+                                                fill="none"
+                                                stroke="var(--glass-border)"
+                                                strokeWidth="2"
+                                                strokeDasharray={w.len}
+                                                strokeDashoffset={w.len}
+                                            />
+                                        </svg>
+                                    ))}
+
                                 {era.events.map((e) => (
                                     <div
                                         key={`${e.year}-${e.name}`}

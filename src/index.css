@@ -1413,6 +1413,7 @@ body.light-mode .hero-title.muted {
 /* ঘটনাগুলো পাশাপাশি — জায়গা থাকলে তিনটি, সরু পর্দায় কমে আসে।
    auto-fill + minmax, তাই আলাদা করে ব্রেকপয়েন্ট বাঁধতে হয় না। */
 .hr-grid {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
   gap: clamp(1.1rem, 2.2vw, 1.9rem) clamp(1.25rem, 2.5vw, 2.25rem);
@@ -1421,6 +1422,19 @@ body.light-mode .hero-title.muted {
 
 .hr-row {
   padding: 0.15rem 0;
+}
+
+/* সারির বিন্দুগুলোর উপর দিয়ে যাওয়া ঢেউ। দৃশ্যে এলে বাঁ থেকে ডানে
+   আঁকা হয় — এবাউট পাতার টাইমলাইনের মতোই। */
+.hr-wave {
+  position: absolute;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 0;
+}
+
+.hr-wave path {
+  transition: stroke-dashoffset 0.9s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* সাল এখন নামের পাশে নয়, উপরে — কলাম সরু, পাশে রাখলে লেখা চেপে যেত */
@@ -1448,7 +1462,7 @@ body.light-mode .hero-title.muted {
   content: '';
   position: absolute;
   left: 0;
-  top: 0;
+  top: calc(0.5rem + var(--hr-wave, 0px));
   bottom: 0;
   width: 1px;
   background: var(--glass-border);
@@ -1462,7 +1476,7 @@ body.light-mode .hero-title.muted {
   content: '';
   position: absolute;
   left: -4.5px;
-  top: 0.5rem;
+  top: calc(0.5rem + var(--hr-wave, 0px));
   width: 8px;
   height: 8px;
   border-radius: 50%;
