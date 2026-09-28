@@ -49,10 +49,14 @@ const DEFAULTS = {
         eyebrow: 'SIZE CHART',
         title: 'Available diameters',
         note: '420DWR is not produced in 8 mm. For any diameter or quantity, send us the requirement and we will confirm availability.',
+        // টেবিলে কোন গ্রেডের কলাম দেখাবে — প্যানেল থেকে বদলানো যায়।
+        // ক্লায়েন্টের অনুরোধে 500CWR আপাতত বাদ।
+        grades: ['500DWR', '420DWR'],
     },
 };
 
-const GRADES = ['500CWR', '500DWR', '420DWR'];
+// যেসব গ্রেডের সাইজ-তথ্য নিচে আছে
+const ALL_GRADES = ['500CWR', '500DWR', '420DWR'];
 
 // স্লাইডের টেবিলের হুবহু গঠন — প্রতিটি গ্রেডের নিচে দুই কলামে সাইজ।
 // 420DWR এর প্রথম ঘরটি ফাঁকা, ওই গ্রেডে ৮ মি.মি. তৈরি হয় না।
@@ -67,6 +71,13 @@ const SIZE_ROWS = [
 const ProductSpecsPage = () => {
     const rootRef = useRef(null);
     const c = useContent('products-specifications', DEFAULTS);
+
+    // প্যানেলের তালিকা থেকে কেবল চেনা গ্রেডগুলো, টেবিলের নিজের ক্রমে।
+    // ভুল বানান বা সব মুছে ফেললে টেবিলটাই যেন উধাও না হয়।
+    const wanted = (Array.isArray(c.chart.grades) ? c.chart.grades : [])
+        .map((g) => String(g).trim().toUpperCase());
+    const shown = ALL_GRADES.filter((g) => wanted.includes(g));
+    const GRADES = shown.length ? shown : DEFAULTS.chart.grades;
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
