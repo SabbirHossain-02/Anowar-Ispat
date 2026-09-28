@@ -114,14 +114,20 @@ const HeritagePage = () => {
 
                     // একটিমাত্র ঘটনা থাকলে ঢেউ আঁকার কিছু নেই
                     if (group.length > 1) {
-                        // বিন্দুগুলোর অনুভূমিক অবস্থান — .hr-entry এর বাঁ কিনারা
-                        const xs = group.map((el) => {
-                            const entry = el.querySelector('.hr-entry');
-                            return (entry ? entry.offsetLeft + el.offsetLeft : el.offsetLeft);
+                        // offsetLeft এর offsetParent কে, সেটা নিশ্চিত নয় — .hr-row
+                        // এর position static, তাই ভেতরের .hr-entry গ্রিড থেকেই মাপে।
+                        // দুটো যোগ করলে দূরত্ব দ্বিগুণ হয়ে ঢেউ টানটান হয়ে যেত।
+                        // তাই rect দিয়ে, গ্রিডের সাপেক্ষে।
+                        const gr = grid.getBoundingClientRect();
+                        const dots = group.map((el) => {
+                            const entry = el.querySelector('.hr-entry') || el;
+                            const r = entry.getBoundingClientRect();
+                            return { x: r.left - gr.left, y: r.top - gr.top };
                         });
-                        const x0 = xs[0];
-                        const L = xs[1] - xs[0];
-                        const W = xs[xs.length - 1] - x0;
+
+                        const x0 = dots[0].x;
+                        const L = dots[1].x - dots[0].x;
+                        const W = dots[dots.length - 1].x - x0;
                         const mid = HR_AMP;
                         const y = (x) => mid - HR_AMP * Math.cos((Math.PI * x) / L);
 
@@ -136,8 +142,8 @@ const HeritagePage = () => {
                         next.push({
                             key,
                             left: x0,
-                            // বিন্দুর মাঝবরাবর: .hr-entry::before এর top 0.5rem = 8px, ব্যাসার্ধ 6px
-                            top: Math.round(group[0].offsetTop) + 14 - HR_AMP,
+                            // বিন্দুর মাঝবরাবর: ::before এর top 0.5rem (8px) + ব্যাসার্ধ 6px
+                            top: dots[0].y + 14 - HR_AMP,
                             w: W,
                             h: HR_AMP * 2,
                             d,
