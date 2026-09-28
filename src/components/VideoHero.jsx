@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react'
+import { onLive } from '../lib/live'
 
 // অ্যাডমিন থেকে কোনো স্লাইড যোগ না করা থাকলে বা API না পেলে এগুলো দেখানো হয়
 const defaultSlides = [
@@ -46,11 +47,12 @@ const VideoHero = () => {
     // ── API: অ্যাডমিন থেকে আপলোড করা হিরো ব্যানার ──────────────────────────
     useEffect(() => {
         let cancelled = false;
-        fetch('/api/hero')
+        const load = () => fetch('/api/hero', { cache: 'no-store' })
             .then((r) => r.json())
             .then((data) => {
-                if (cancelled || !Array.isArray(data) || data.length === 0) return;
-                setSlides(data.map((h) => ({
+                if (cancelled || !Array.isArray(data)) return;
+                // সব স্লাইড মুছে দিলে কোডের স্লাইডগুলো ফেরে, ফাঁকা থাকে না
+                setSlides(data.length === 0 ? defaultSlides : data.map((h) => ({
                     media: h.media_url,
                     type: h.media_type,
                     poster: h.poster_url || undefined,
@@ -62,7 +64,10 @@ const VideoHero = () => {
                 setVisibleVideos([0]);
             })
             .catch(() => {});
-        return () => { cancelled = true; };
+        load();
+        // প্যানেলে স্লাইড যোগ, বদল বা মোছা হলে রিফ্রেশ ছাড়াই নতুনটা
+        const off = onLive('hero', load);
+        return () => { cancelled = true; off(); };
     }, []);
     // ─────────────────────────────────────────────────────────────────────
 

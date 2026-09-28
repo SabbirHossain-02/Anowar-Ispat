@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { onLive } from './live';
 
 /* অ্যাডমিন থেকে বদলানো লেখা এখানে এসে কোডের ডিফল্টের উপর বসে।
 
@@ -9,15 +10,31 @@ import { useState, useEffect } from 'react';
       আইটেম মুছলে ডিফল্টেরটা ফিরে আসত, ডিলিট কাজই করত না। */
 
 let pending = null;
+const listeners = new Set();
+
+const fetchAll = () =>
+    fetch('/api/content', { cache: 'no-store' })
+        .then((r) => (r.ok ? r.json() : {}))
+        .then((d) => (d && typeof d === 'object' ? d : {}))
+        .catch(() => ({}));
 
 export const loadContent = () => {
-    if (!pending) {
-        pending = fetch('/api/content')
-            .then((r) => (r.ok ? r.json() : {}))
-            .then((d) => (d && typeof d === 'object' ? d : {}))
-            .catch(() => ({}));
-    }
+    if (!pending) pending = fetchAll();
     return pending;
+};
+
+// প্যানেলে লেখা সংরক্ষণ হলে খোলা পাতার সব অংশ নতুন লেখা পায়
+let unsubscribe = null;
+const watchLive = () => {
+    if (unsubscribe) return;
+    unsubscribe = onLive('content', () => {
+        fetchAll().then((d) => {
+            // নেটওয়ার্ক ব্যর্থ হলে {} আসে — তখন যা দেখাচ্ছে তা-ই থাক
+            if (!d || Object.keys(d).length === 0) return;
+            pending = Promise.resolve(d);
+            listeners.forEach((l) => l(d));
+        });
+    });
 };
 
 const isPlain = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
@@ -44,14 +61,16 @@ export const useContent = (pageKey, defaults) => {
 
     useEffect(() => {
         let cancelled = false;
-        loadContent().then((all) => {
+        const apply = (all) => {
             if (cancelled) return;
             const stored = all?.[pageKey];
-            if (stored && Object.keys(stored).length > 0) {
-                setData(merge(defaults, stored));
-            }
-        });
-        return () => { cancelled = true; };
+            // পেজটি রিসেট করা হলে সংরক্ষিত কিছু থাকে না — তখন কোডের লেখা
+            setData(stored && Object.keys(stored).length > 0 ? merge(defaults, stored) : defaults);
+        };
+        loadContent().then(apply);
+        listeners.add(apply);
+        watchLive();
+        return () => { cancelled = true; listeners.delete(apply); };
     }, [pageKey]);
 
     return data;

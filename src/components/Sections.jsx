@@ -8,6 +8,7 @@ import { useGSAP } from "@gsap/react";
 import { Canvas } from "@react-three/fiber";
 import ForgeThread3D from "./three/ForgeThread3D";
 import { useContent } from "../lib/content";
+import { onLive } from "../lib/live";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -72,6 +73,7 @@ const HOME_DEFAULTS = {
         title: 'PRODUCT & SERVICE',
         intro: "Forged in extreme intensity. We provide exceptional structural solutions designed to act as the unyielding backbone of tomorrow's infrastructure.",
         learnBtn: 'Learn More',
+        cardQuoteBtn: 'Get Quote',
         quoteBtn: 'REQUEST A QUOTE',
         specLabel: 'KEY SPECIFICATIONS',
         specs: [
@@ -125,6 +127,8 @@ const HOME_DEFAULTS = {
         contactBtn: 'CONTACT US',
         quick: ['Product & Service | #product-service', 'Better Tomorrow | #better-tomorrow', 'Career | #career', 'Media & Events | #media-events'],
         legal: ['Privacy Policy | #', 'Terms of Service | #'],
+        social: ['Facebook | #', 'LinkedIn | #', 'Twitter | #'],
+        copyright: 'Anwar Ispat. All Rights Reserved.',
     },
 };
 
@@ -149,10 +153,10 @@ export const ProductService = () => {
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/products")
+    const load = () => fetch("/api/products", { cache: "no-store" })
       .then((r) => r.json())
       .then((data) => {
-        if (!cancelled) {
+        if (!cancelled && Array.isArray(data)) {
           setProducts(
             data.map((p) => ({
               id: p.id,
@@ -163,11 +167,16 @@ export const ProductService = () => {
                 : "/product_image.png",
             }))
           );
+          // একটা পণ্য মুছে গেলে চলতি কার্ডের ক্রম তালিকার বাইরে চলে যেতে পারে
+          setActiveIndex((i) => (data.length ? Math.min(i, data.length - 1) : 0));
         }
       })
       .catch(() => {})
       .finally(() => { if (!cancelled) setLoadingProducts(false); });
-    return () => { cancelled = true; };
+    load();
+    // প্যানেলে পণ্য যোগ, বদল বা মোছা হলে রিফ্রেশ ছাড়াই
+    const off = onLive("products", load);
+    return () => { cancelled = true; off(); };
   }, []);
   // ─────────────────────────────────────────────────────────────────────────
 
@@ -334,7 +343,7 @@ export const ProductService = () => {
                           window.dispatchEvent(new CustomEvent('open-quote'));
                         }}
                       >
-                        Get Quote
+                        {home.ps.cardQuoteBtn}
                       </button>
                     </div>
                   </div>
@@ -1182,10 +1191,10 @@ export const MediaEvents = () => {
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/media")
+    const load = () => fetch("/api/media", { cache: "no-store" })
       .then((r) => r.json())
       .then((data) => {
-        if (cancelled) return;
+        if (cancelled || !Array.isArray(data)) return;
         setBroadcastData(
           data.map((m) => ({
             id: m.id,
@@ -1202,7 +1211,10 @@ export const MediaEvents = () => {
       })
       .catch(() => {})
       .finally(() => { if (!cancelled) setLoadingMedia(false); });
-    return () => { cancelled = true; };
+    load();
+    // Media & Events এ পোস্ট যোগ, বদল বা মোছা হলে রিফ্রেশ ছাড়াই
+    const off = onLive("media", load);
+    return () => { cancelled = true; off(); };
   }, []);
   // ─────────────────────────────────────────────────────────────────────────
 
@@ -1411,7 +1423,7 @@ export const Footer = ({ onOpenContact }) => {
       </div>
     </div>
     <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "2rem", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
-      <p style={{ color: "var(--subtext)", fontSize: "0.8rem" }}>&copy; {new Date().getFullYear()} Anwar Ispat. All Rights Reserved.</p>
+      <p style={{ color: "var(--subtext)", fontSize: "0.8rem" }}>&copy; {new Date().getFullYear()} {home.footer.copyright}</p>
       {/* কপিরাইট ও সোশ্যাল লিংকের ঠিক মাঝে — space-between এ তিনটি
           সন্তান থাকলে মাঝেরটি নিজে থেকেই কেন্দ্রে বসে */}
       <p style={{ color: "var(--subtext)", fontSize: "0.8rem" }}>
@@ -1426,7 +1438,9 @@ export const Footer = ({ onOpenContact }) => {
         </a>
       </p>
       <div style={{ display: "flex", gap: "1rem" }}>
-        {["Facebook","LinkedIn","Twitter"].map(s=><a key={s} href="#" style={{ color: "var(--subtext)", textDecoration: "none", fontSize: "0.8rem" }}>{s}</a>)}
+        {(Array.isArray(home.footer.social) ? home.footer.social : []).map((line) => { const at = line.indexOf("|"); const label = at < 0 ? line.trim() : line.slice(0, at).trim(); const href = at < 0 ? "#" : line.slice(at + 1).trim(); return (
+          <a key={label} href={href} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noopener noreferrer" : undefined} style={{ color: "var(--subtext)", textDecoration: "none", fontSize: "0.8rem" }}>{label}</a>
+        ); })}
       </div>
     </div>
   </footer>
