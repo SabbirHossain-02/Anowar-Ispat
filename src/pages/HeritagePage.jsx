@@ -76,7 +76,7 @@ const HeritagePage = () => {
     // স্ক্রলের সাথে বাঁ থেকে ডানে আঁকা হয়, তারপর বিন্দু → রেখা → লেখা
     // ধাপে ধাপে ফোটে। সেখানে এক ঢেউ = দুটি ঘটনা; এখানে গ্রিডের এক
     // সারিতে যতগুলো ঘটনা, তাদের উপর দিয়েই এক ঢেউ যায়।
-    const HR_AMP = 14;
+    const HR_AMP = 26;
     const [waves, setWaves] = useState([]);
 
     useEffect(() => {
@@ -109,6 +109,9 @@ const HeritagePage = () => {
                         el.style.setProperty('--hr-delay', `${i * 0.08}s`);
                         // জোড় ঘর চূড়ায়, বিজোড় খাদে
                         el.style.setProperty('--hr-wave', `${i % 2 === 0 ? -HR_AMP : HR_AMP}px`);
+                        // জোড় ঘরের লেখা রেখার উপরে, বিজোড়ের নিচে
+                        el.classList.toggle('is-above', i % 2 === 0);
+                        el.classList.toggle('is-below', i % 2 !== 0);
                         el.dataset.wave = key;
                     });
 
@@ -119,10 +122,13 @@ const HeritagePage = () => {
                         // দুটো যোগ করলে দূরত্ব দ্বিগুণ হয়ে ঢেউ টানটান হয়ে যেত।
                         // তাই rect দিয়ে, গ্রিডের সাপেক্ষে।
                         const gr = grid.getBoundingClientRect();
+                        // বিন্দু ঘরের অনুভূমিক কেন্দ্রে, উল্লম্বভাবে মাঝ বরাবর
                         const dots = group.map((el) => {
-                            const entry = el.querySelector('.hr-entry') || el;
-                            const r = entry.getBoundingClientRect();
-                            return { x: r.left - gr.left, y: r.top - gr.top };
+                            const r = el.getBoundingClientRect();
+                            return {
+                                x: r.left - gr.left + r.width / 2,
+                                y: r.top - gr.top + r.height / 2,
+                            };
                         });
 
                         const x0 = dots[0].x;
@@ -142,8 +148,7 @@ const HeritagePage = () => {
                         next.push({
                             key,
                             left: x0,
-                            // বিন্দুর মাঝবরাবর: ::before এর top 0.5rem (8px) + ব্যাসার্ধ 6px
-                            top: dots[0].y + 14 - HR_AMP,
+                            top: dots[0].y - HR_AMP,
                             w: W,
                             h: HR_AMP * 2,
                             d,
@@ -302,13 +307,15 @@ const HeritagePage = () => {
                                         key={`${e.year}-${e.name}`}
                                         className="hr-row"
                                     >
-                                        <div className="hr-entry">
+                                        <div className="hr-card">
                                             <span className="hr-year">{e.year}</span>
                                             <h3 className={`hr-name${e.highlight ? ' hr-name-accent' : ''}`}>
                                                 {e.name}
                                             </h3>
                                             <p className="hr-text">{e.text}</p>
                                         </div>
+                                        <span className="hr-stem" aria-hidden="true" />
+                                        <span className="hr-dot" aria-hidden="true" />
                                     </div>
                                 ))}
                             </div>

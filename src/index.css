@@ -1420,8 +1420,11 @@ body.light-mode .hero-title.muted {
   padding-top: 0.6rem;
 }
 
+/* এবাউটের .tl-item এর মতো — রেখা ঘরের মাঝ বরাবর, লেখা তার উপরে
+   বা নিচে। তাই ঘরের উচ্চতা নির্দিষ্ট রাখতে হয়। */
 .hr-row {
-  padding: 0.15rem 0;
+  position: relative;
+  height: 290px;
 }
 
 /* সারির বিন্দুগুলোর উপর দিয়ে যাওয়া ঢেউ। দৃশ্যে এলে বাঁ থেকে ডানে
@@ -1437,7 +1440,7 @@ body.light-mode .hero-title.muted {
   transition: stroke-dashoffset 0.9s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* সাল এখন নামের পাশে নয়, উপরে — কলাম সরু, পাশে রাখলে লেখা চেপে যেত */
+/* সাল নামের উপরে, কার্ডের মাঝে */
 .hr-year {
   display: block;
   font-family: var(--font-heading);
@@ -1449,60 +1452,75 @@ body.light-mode .hero-title.muted {
   transition: color 0.3s ease;
 }
 
-/* বাঁ পাশের উল্লম্ব রেখা ও প্রতিটি ঘটনার বিন্দু।
-   রেখাটি border নয়, ::after — border কে transform করা যায় না, আর
-   এখানে সেটি উপর থেকে নিচে নেমে আসে। */
-.hr-entry {
-  position: relative;
-  padding-left: clamp(1.1rem, 2vw, 1.6rem);
-  padding-bottom: 0.15rem;
-}
-
-.hr-entry::after {
-  content: '';
+/* ঢেউয়ের উপরের বিন্দু */
+.hr-dot {
   position: absolute;
-  left: 0;
-  top: calc(0.5rem + var(--hr-wave, 0px));
-  bottom: 0;
-  width: 1px;
-  background: var(--glass-border);
-  transform: scaleY(0);
-  transform-origin: top center;
-  transition: transform 0.4s ease;
-  transition-delay: calc(var(--hr-delay, 0s) + 0.12s);
-}
-
-.hr-entry::before {
-  content: '';
-  position: absolute;
-  left: -4.5px;
-  top: calc(0.5rem + var(--hr-wave, 0px));
-  width: 8px;
-  height: 8px;
+  top: calc(50% + var(--hr-wave, 0px));
+  left: 50%;
+  width: 11px;
+  height: 11px;
+  margin: -5.5px 0 0 -5.5px;
   border-radius: 50%;
   background: var(--primary);
-  border: 2px solid var(--glass-border);
-  z-index: 1;
+  border: 2px solid var(--accent);
+  z-index: 2;
   opacity: 0;
   transform: scale(0);
   transition: opacity 0.35s ease,
               transform 0.45s cubic-bezier(0.34, 1.4, 0.5, 1),
-              border-color 0.3s ease, background 0.3s ease;
+              background 0.3s ease;
   transition-delay: var(--hr-delay, 0s);
 }
 
-/* সাল, নাম, বর্ণনা — রেখার পরে উঠে আসে */
-.hr-entry > * {
+/* বিন্দু থেকে লেখা পর্যন্ত বোঁটা */
+.hr-stem {
+  position: absolute;
+  left: 50%;
+  width: 1px;
+  height: 30px;
+  margin-left: -0.5px;
+  background: var(--glass-border);
   opacity: 0;
-  transform: translateY(12px);
+  transform: scaleY(0);
+  transition: opacity 0.3s ease, transform 0.4s ease;
+  transition-delay: calc(var(--hr-delay, 0s) + 0.12s);
+}
+
+.hr-row.is-above .hr-stem {
+  bottom: calc(50% - var(--hr-wave, 0px));
+  transform-origin: bottom center;
+}
+
+.hr-row.is-below .hr-stem {
+  top: calc(50% + var(--hr-wave, 0px));
+  transform-origin: top center;
+}
+
+.hr-card {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding: 0 0.6rem;
+  text-align: center;
+  opacity: 0;
   transition: opacity 0.55s ease,
               transform 0.6s cubic-bezier(0.2, 0.7, 0.3, 1);
   transition-delay: calc(var(--hr-delay, 0s) + 0.24s);
 }
 
-.hr-row.is-in .hr-entry::before { opacity: 1; transform: scale(1); }
-.hr-row.is-in .hr-entry::after { transform: scaleY(1); }
-.hr-row.is-in .hr-entry > * { opacity: 1; transform: none; }
+.hr-row.is-above .hr-card {
+  bottom: calc(50% + 30px - var(--hr-wave, 0px));
+  transform: translateY(16px);
+}
+
+.hr-row.is-below .hr-card {
+  top: calc(50% + 30px + var(--hr-wave, 0px));
+  transform: translateY(-16px);
+}
+
+.hr-row.is-in .hr-dot { opacity: 1; transform: scale(1); }
+.hr-row.is-in .hr-stem { opacity: 1; transform: scaleY(1); }
+.hr-row.is-in .hr-card { opacity: 1; transform: translateY(0); }
 
 .hr-name {
   font-family: var(--font-heading);
@@ -1532,15 +1550,19 @@ body.light-mode .hero-title.muted {
     color: var(--accent);
   }
 
-  .hr-row:hover .hr-entry::before {
+  /* হোভার ফোটার পরে — নইলে reveal এর transform একে ছাপিয়ে যেত */
+  .hr-row.is-in:hover .hr-dot {
     background: var(--accent);
-    border-color: var(--accent);
+    transform: scale(1.35);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hr-year,
-  .hr-entry::before {
+  .hr-dot,
+  .hr-stem,
+  .hr-card,
+  .hr-wave path {
     transition: none;
   }
 }
