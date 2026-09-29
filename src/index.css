@@ -4070,6 +4070,22 @@ body.light-mode .floating-quote-btn:hover {
   width: max-content;
 }
 
+/* About পাতায় আনোয়ার ইস্পাতের ছয়টি ঘটনা — পুরো চওড়া জুড়ে সমান
+   ভাগে, স্লাইডের মতো। জায়গা না ধরলে (ফোনে) আগের মতোই পাশে গড়ায়।
+   Heritage পাতার যুগের টাইমলাইনে এই ক্লাস নেই, সেগুলো যেমন ছিল */
+.tl-track.tl-fit {
+  width: 100%;
+  min-width: max-content;
+}
+
+/* width: auto — নইলে পুরনো স্থির প্রস্থটাই ন্যূনতম ধরা হত আর ছোট
+   ল্যাপটপেও পাশে গড়াত */
+.tl-track.tl-fit .tl-item {
+  flex: 1 1 0;
+  width: auto;
+  min-width: 150px;
+}
+
 /* গাছের ডাল — এখন sine ঢেউ, SVG দিয়ে আঁকা। path টি JS হিসাব করে
    কারণ চূড়া-খাদ আইটেমের মাঝবরাবর পড়া চাই, আর আইটেমের প্রস্থ
    পর্দার মাপে বদলায়। */
@@ -4248,6 +4264,10 @@ body.light-mode .floating-quote-btn:hover {
 
   .tl-item {
     width: 175px;
+  }
+
+  .tl-track.tl-fit .tl-item {
+    flex: 0 0 175px;
   }
 }
 

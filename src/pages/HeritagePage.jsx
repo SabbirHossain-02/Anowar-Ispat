@@ -24,11 +24,10 @@ const DEFAULTS = {
         { span: '1995 — 2001', title: 'Diversification', note: 'Galvanising, jute, textiles, cement, real estate and agriculture within seven years.', from: '1995', to: '2001' },
         { span: '2004 — 2022', title: 'The modern group', note: 'Anwar Ispat is founded, and the group extends into polymers, automotive and technology.', from: '2004', to: '2022' },
     ],
+    // আনোয়ার গ্রুপের পুরো ইতিহাস এই পাতার নিজস্ব — About Us পাতার
+    // টাইমলাইনে এখন শুধু আনোয়ার ইস্পাতের নিজের মাইলফলক
+    milestones: MILESTONES,
 };
-
-// মাইলফলকের তালিকা About Us পাতার সাথে ভাগ করা — দুই জায়গায় দুটি
-// কপি রাখলে একটিতে সাল বদলে অন্যটি পুরোনো থেকে যেত
-const ABOUT_FALLBACK = { timeline: { items: MILESTONES } };
 
 const SECTION_PAD = 'clamp(2.25rem, 4vw, 3.5rem)';
 const CONTAINER = {
@@ -271,11 +270,9 @@ const EraTimeline = ({ era, index }) => {
 const HeritagePage = () => {
     const rootRef = useRef(null);
     const c = useContent('about-heritage', DEFAULTS);
-    // একই অনুরোধ থেকেই আসে, তাই দ্বিতীয়বার নেটওয়ার্কে যায় না
-    const about = useContent('about', ABOUT_FALLBACK);
 
     // যুগের সীমা ধরে মাইলফলকগুলো ভাগ করা
-    const milestones = about.timeline?.items || [];
+    const milestones = Array.isArray(c.milestones) ? c.milestones : [];
     const eras = (c.eras || []).map((era) => ({
         ...era,
         events: milestones.filter((m) => {

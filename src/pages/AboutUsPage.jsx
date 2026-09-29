@@ -4,7 +4,6 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import PageBanner from '../components/PageBanner';
-import { MILESTONES } from '../lib/heritage';
 import { useContent } from '../lib/content';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -26,10 +25,19 @@ const DEFAULTS = {
     crumb: 'About us',
     intro: "As a proud concern of the century-old Anwar Group, Anwar Ispat has led the mild steel industry since 1978. We were the first to introduce 60-grade steel to Bangladesh and have consistently upgraded our facilities to bring the world's most advanced technology to the local market. From the tallest skyscrapers to complex nuclear power plants, our commitment to quality ensures that every structure built with Anwar Ispat is resilient, durable, and safe.",
     timeline: {
-        title: 'A legacy to value in the present, and to pass on to future generations',
+        title: 'A Legacy Value',
         // {count}, {first}, {last} — তালিকা থেকে নিজেই বসে
-        note: '{count} milestones from {first} to {last}. Scroll to follow the line.',
-        items: MILESTONES,
+        note: '',
+        // আনোয়ার ইস্পাতের নিজের পথচলা, ক্লায়েন্টের স্লাইড অনুযায়ী।
+        // গ্রুপের পুরো ইতিহাস Heritage পাতার নিজস্ব তালিকায়
+        items: [
+            { year: '1978', name: 'Founded Khaled Iron', text: '' },
+            { year: '1985', name: 'Anwar Group Introduced 60-Grade Bar in Bangladesh', text: '' },
+            { year: '2004', name: "Rebranded Khaled Iron to 'Anwar Ispat'", text: '' },
+            { year: '2009', name: 'Anwar Ispat Introduced 500W TMT Box in Bangladesh', text: '' },
+            { year: '2018', name: 'Enhanced Production Capacity for Anwar Ispat', text: '' },
+            { year: '2020', name: 'Launched 500 DWR & 420 DWR Bars', text: '' },
+        ],
     },
     why: {
         eyebrow: 'WHY ANWAR ISPAT',
@@ -90,7 +98,9 @@ const AboutUsPage = () => {
 
         const draw = () => {
             const items = Array.from(track.querySelectorAll('.tl-item'));
-            const W = track.scrollWidth;
+            // scrollWidth নয় — তাতে আগের আঁকা ঢেউটাও ধরা পড়ে, জানালা ছোট
+            // করলে পুরনো চওড়া ঢেউ ট্র্যাককে চওড়া রেখে দিত, আর কমত না
+            const W = track.offsetWidth;
             const H = track.offsetHeight;
             if (!items.length || !W || !H) return;
 
@@ -132,43 +142,10 @@ const AboutUsPage = () => {
     }, [c.timeline.items.length]);
     const [isMobile, setIsMobile] = useState(false);
 
-    // মাউসের চাকা ঘোরালে টাইমলাইন পাশে সরে। Lenis (স্মুথ স্ক্রল)
-    // window এ bubble ফেজে শোনে, তাই এখানে stopPropagation করলে
-    // পেজটা আর নড়ে না। দুই প্রান্তে পৌঁছে গেলে ইভেন্ট ছেড়ে দিই —
-    // নইলে ব্যবহারকারী টাইমলাইনে আটকে যেত, পেজ স্ক্রল করতে পারত না।
-    useEffect(() => {
-        const el = timelineRef.current;
-        if (!el) return;
-
-        const onWheel = (e) => {
-            // ট্র্যাকপ্যাডে আড়াআড়ি সোয়াইপ হলে ব্রাউজারকেই করতে দিই
-            if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-
-            const max = el.scrollWidth - el.clientWidth;
-            if (max <= 0) return;
-
-            const atStart = e.deltaY < 0 && el.scrollLeft <= 0;
-            const atEnd = e.deltaY > 0 && el.scrollLeft >= max - 1;
-            if (atStart || atEnd) return;
-
-            // deltaMode 1 = লাইন, 2 = পাতা। কিছু মাউস পিক্সেলের বদলে
-            // লাইন সংখ্যা পাঠায় (যেমন ৩), তখন সরণ চোখেই পড়ত না
-            const unit = e.deltaMode === 1 ? 24 : e.deltaMode === 2 ? el.clientWidth : 1;
-            const step = e.deltaY * unit;
-
-            e.preventDefault();
-            e.stopPropagation();
-            el.scrollLeft = Math.min(max, Math.max(0, el.scrollLeft + step));
-        };
-
-        el.addEventListener('wheel', onWheel, { passive: false });
-        return () => el.removeEventListener('wheel', onWheel);
-    }, []);
-
-    // ঘটনাগুলো ফোটে স্ক্রলের দূরত্ব ধরে, অবস্থান ধরে নয়। কারণ শুরুতে
-    // পর্দার সাতটা ঘটনাই "দৃশ্যমান অবস্থানে" থাকে — অবস্থান দেখলে
-    // সবগুলোই একসাথে খুলে যেত। প্রতি REVEAL_STEP পিক্সেল গড়ালে
-    // পরেরটি ফোটে, তাই একটা স্ক্রলে একটাই।
+    // ঘটনাগুলো ফোটে পাতা নিচে গড়ানোর সাথে — মাউস যেখানেই থাকুক।
+    // টাইমলাইনের মাথা পর্দার ৭৫% এ পৌঁছালে প্রথমটি, তলা ৫৫% এ
+    // পৌঁছানোর আগেই শেষটি; মাঝের পথ সমান ভাগে, তাই একেক ধাপে একেকটি।
+    // একবার ফুটলে আর নিভে যায় না, উপরে ফিরে গেলেও।
     // প্যানেল থেকে সাল যোগ বা বদল হলে পাতা রিফ্রেশ হয় না — তখন নতুন
     // ঘটনাগুলোকেও একই নিয়মে ফোটাতে হয়, তাই apply বাইরে থেকে ডাকা যায়
     const revealRef = useRef(null);
@@ -177,20 +154,17 @@ const AboutUsPage = () => {
         const el = timelineRef.current;
         if (!el) return;
 
-        const REVEAL_STEP = 120; // মাউসের এক ধাপের কাছাকাছি
-        let started = false;
-        let frame = 0;
-
-        const apply = () => {
-            frame = 0;
+        let shown = 0;
+        const apply = (progress) => {
             // প্রতিবার নতুন করে খুঁজি — লেখা বদলালে React পুরনো ঘটনার
             // জায়গায় নতুন ঘটনা বসায়, আগের তালিকা তখন আর পাতায় নেই
             const items = Array.from(el.querySelectorAll('.tl-item'));
             if (items.length === 0) return;
             const due = Math.min(
                 items.length,
-                Math.floor(el.scrollLeft / REVEAL_STEP) + 1,
+                Math.max(shown, Math.floor(progress * items.length) + 1),
             );
+            shown = due;
 
             drawTo(due);
 
@@ -206,28 +180,22 @@ const AboutUsPage = () => {
             }
         };
 
-        const onScroll = () => {
-            if (!frame) frame = requestAnimationFrame(apply);
-        };
+        const st = ScrollTrigger.create({
+            trigger: el,
+            start: 'top 75%',
+            end: 'bottom 55%',
+            onUpdate: (self) => apply(self.progress),
+            // লাফ দিয়ে নিচে গেলে (লিংক বা রিফ্রেশে) বাকিগুলোও ফোটে
+            onEnter: (self) => apply(self.progress),
+            onLeave: () => apply(1),
+        });
+        // পাতা খোলার সময়েই টাইমলাইন পার হয়ে থাকলে
+        if (st.progress > 0) apply(st.progress);
 
-        // পাতা নিচে নেমে টাইমলাইন চোখে আসার আগে কিছুই ফোটে না
-        const io = new IntersectionObserver(
-            ([entry]) => {
-                if (!entry.isIntersecting || started) return;
-                started = true;
-                apply();
-                el.addEventListener('scroll', onScroll, { passive: true });
-            },
-            { threshold: 0.2 },
-        );
-
-        io.observe(el);
-        revealRef.current = () => { if (started && !frame) frame = requestAnimationFrame(apply); };
+        revealRef.current = () => { if (st.progress > 0 || st.isActive) apply(st.progress); };
         return () => {
             revealRef.current = null;
-            io.disconnect();
-            el.removeEventListener('scroll', onScroll);
-            if (frame) cancelAnimationFrame(frame);
+            st.kill();
         };
     }, []);
 
@@ -318,7 +286,7 @@ const AboutUsPage = () => {
 
                 {/* পুরো চওড়া জুড়ে — কনটেইনারে আটকালে রেখাটা ছোট দেখাত */}
                 <div className="tl-scroll" ref={timelineRef}>
-                    <ol className="tl-track">
+                    <ol className="tl-track tl-fit">
                         {wave.d && (
                             <svg
                                 className="tl-line"
@@ -366,7 +334,7 @@ const AboutUsPage = () => {
                                 <div className="tl-card">
                                     <span className="tl-year">{m.year}</span>
                                     <h3 className="tl-name">{m.name}</h3>
-                                    <p className="tl-text">{m.text}</p>
+                                    {m.text && <p className="tl-text">{m.text}</p>}
                                 </div>
                                 <span className="tl-stem" aria-hidden="true" />
                                 <span className="tl-dot" aria-hidden="true" />
