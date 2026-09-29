@@ -229,9 +229,13 @@ const VideoHero = () => {
                                 alignItems: 'center'
                             }}
                         >
+                            {/* শিরোনাম ফাঁকা রাখলে ফাঁকা জায়গাও থাকে না — শুধু লোগো ও ভিডিও */}
+                            {(slide.prefix || slide.accent) && (
                             <h1 className="video-hero-title" style={{ transform: 'translateZ(40px)', textAlign: 'center' }}>
                                 {slide.prefix} <span className="accent-text">{slide.accent}</span>
                             </h1>
+                            )}
+                            {slide.subtitle && (
                             <p className="video-hero-subtitle" style={{
                                 marginTop: 'clamp(0.5rem, 2vh, 1.5rem)',
                                 maxWidth: 'min(600px, 90vw)',
@@ -244,6 +248,7 @@ const VideoHero = () => {
                             }}>
                                 {slide.subtitle}
                             </p>
+                            )}
                         </div>
                     ))}
                 </div>
