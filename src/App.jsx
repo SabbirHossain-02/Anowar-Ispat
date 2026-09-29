@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState, lazy, Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
 import Lenis from 'lenis'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import Scene from './components/three/Scene'
 import VideoHero from './components/VideoHero'
@@ -111,6 +112,25 @@ function App() {
         return () => {
             lenis.destroy()
         }
+    }, [])
+
+    // পণ্য, লেখা, ছবি দেরিতে এলে পাতা লম্বা হয় — তখন পিনের শুরু-শেষ নতুন করে
+    // মাপা হয়, নইলে লিডারশিপের মতো পিন করা অংশ ভুল জায়গায় ঝাঁকি দিয়ে আটকায়
+    useEffect(() => {
+        let lastH = document.body.scrollHeight
+        let timer = null
+        const ro = new ResizeObserver(() => {
+            const h = document.body.scrollHeight
+            if (h === lastH) return
+            lastH = h
+            clearTimeout(timer)
+            timer = setTimeout(() => {
+                ScrollTrigger.refresh()
+                lastH = document.body.scrollHeight
+            }, 150)
+        })
+        ro.observe(document.body)
+        return () => { ro.disconnect(); clearTimeout(timer) }
     }, [])
 
     useEffect(() => {

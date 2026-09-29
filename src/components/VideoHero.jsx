@@ -37,8 +37,14 @@ const defaultSlides = [
     },
 ];
 
+// ছবির স্লাইড কতক্ষণ থাকবে; ভিডিও থাকে তার নিজের দৈর্ঘ্য পর্যন্ত
+const IMAGE_SLIDE_MS = 8000;
+// পটভূমির ক্রস-ফেড ১ সেকেন্ডের — ভিডিওর শেষ সেকেন্ডেই পরেরটা ভেসে ওঠে
+const FADE_S = 1;
+
 const VideoHero = () => {
     const contentRef = useRef(null);
+    const videoRefs = useRef([]);
     const [slides, setSlides] = useState(defaultSlides);
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -71,13 +77,57 @@ const VideoHero = () => {
     }, []);
     // ─────────────────────────────────────────────────────────────────────
 
+    // প্রতিটি স্লাইড তার ভিডিওর দৈর্ঘ্য অনুযায়ী থাকে — ভিডিও শেষ হওয়ার ঠিক আগে
+    // পরেরটায় যায়, তাই মাঝপথে কাটা পড়ে না, আবার শেষ ফ্রেমে থেমেও থাকে না
     useEffect(() => {
-        if (slides.length < 2) return;
-        const interval = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % slides.length);
-        }, 8000);
-        return () => clearInterval(interval);
-    }, [slides.length]);
+        const n = slides.length;
+        if (n === 0) return;
+        const slide = slides[currentSlide];
+        const next = () => setCurrentSlide((prev) => (prev + 1) % n);
+
+        // বিদায়ী ভিডিও ক্রস-ফেডের সময়টুকু চলতে থাকে, তারপর থামে;
+        // ফিরে এলে আবার শুরু থেকে চলে
+        const pauseOthers = setTimeout(() => {
+            videoRefs.current.forEach((el, i) => { if (el && i !== currentSlide) el.pause(); });
+        }, FADE_S * 1000);
+
+        const v = videoRefs.current[currentSlide];
+        if (slide.type === 'image' || !slide.media || !v) {
+            if (n < 2) return () => clearTimeout(pauseOthers);
+            const t = setTimeout(next, IMAGE_SLIDE_MS);
+            return () => { clearTimeout(t); clearTimeout(pauseOthers); };
+        }
+
+        let done = false;
+        let fallback = null;
+        const advance = () => {
+            if (done || n < 2) return;
+            done = true;
+            next();
+        };
+        // ভিডিও চালানো না গেলে (ব্রাউজার আটকালে বা ফাইল ভাঙা হলে) ছবির সময় ধরে এগোয়
+        const stuck = () => { if (!fallback && n > 1) fallback = setTimeout(advance, IMAGE_SLIDE_MS); };
+        const onTime = () => {
+            const d = v.duration;
+            if (!d || !isFinite(d)) return;
+            if (d - v.currentTime <= Math.min(FADE_S, d / 4)) advance();
+        };
+
+        try { v.currentTime = 0; } catch { /* মেটাডেটা আসার আগে */ }
+        const p = v.play();
+        if (p && p.catch) p.catch((e) => { if (e && e.name === 'NotAllowedError') stuck(); });
+
+        v.addEventListener('timeupdate', onTime);
+        v.addEventListener('ended', advance);
+        v.addEventListener('error', stuck);
+        return () => {
+            v.removeEventListener('timeupdate', onTime);
+            v.removeEventListener('ended', advance);
+            v.removeEventListener('error', stuck);
+            clearTimeout(fallback);
+            clearTimeout(pauseOthers);
+        };
+    }, [currentSlide, slides]);
 
     // চলতি ও ঠিক পরের স্লাইডটুকুই লোড রাখি — সব ভিডিও একসাথে নামানো ঠেকাতে
     useEffect(() => {
@@ -126,7 +176,8 @@ const VideoHero = () => {
     return (
         <section className="video-hero" style={{ position: 'relative', overflow: 'hidden' }}>
             {slides.map((slide, index) => {
-                const isVisible = visibleVideos.includes(index);
+                // চলতি স্লাইডের ফাইল একই রেন্ডারেই বসে — ডট চেপে দূরের স্লাইডে গেলেও
+                const isVisible = index === currentSlide || visibleVideos.includes(index);
                 return (
                     <div
                         key={slide.media || index}
@@ -159,8 +210,9 @@ const VideoHero = () => {
                             />
                         ) : (
                             <video
-                                autoPlay
-                                loop
+                                ref={(el) => { videoRefs.current[index] = el; }}
+                                autoPlay={index === currentSlide}
+                                loop={slides.length < 2}
                                 muted
                                 playsInline
                                 preload={isVisible ? 'auto' : 'none'}
