@@ -195,23 +195,7 @@ const VideoHero = () => {
                     position: 'relative'
                 }}
             >
-                <img
-                    src="/logo-badge.jpeg"
-                    alt="Anwar Ispat Logo"
-                    width="300"
-                    height="80"
-                    style={{
-                        marginBottom: 'clamp(0.5rem, 3vh, 2rem)',
-                        height: 'clamp(40px, min(8vw, 12vh), 100px)',
-                        width: 'auto',
-                        objectFit: 'contain',
-                        borderRadius: '6px',
-                        filter: 'drop-shadow(0 0 45px rgba(227, 24, 45, 1))',
-                        transform: 'translateZ(60px)',
-                        transition: 'transform 0.3s ease'
-                    }}
-                />
-
+                {/* মাঝখানের লোগো ক্লায়েন্টের অনুরোধে সরানো — উপরের নেভবারে লোগো আছেই */}
                 <div style={{ position: 'relative', width: '100%' }}>
                     {slides.map((slide, index) => (
                         <div
@@ -229,7 +213,7 @@ const VideoHero = () => {
                                 alignItems: 'center'
                             }}
                         >
-                            {/* শিরোনাম ফাঁকা রাখলে ফাঁকা জায়গাও থাকে না — শুধু লোগো ও ভিডিও */}
+                            {/* শিরোনাম ফাঁকা রাখলে ফাঁকা জায়গাও থাকে না — শুধু ভিডিও বা ছবি */}
                             {(slide.prefix || slide.accent) && (
                             <h1 className="video-hero-title" style={{ transform: 'translateZ(40px)', textAlign: 'center' }}>
                                 {slide.prefix} <span className="accent-text">{slide.accent}</span>
