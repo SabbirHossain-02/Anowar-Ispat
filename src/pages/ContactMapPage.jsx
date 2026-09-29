@@ -48,12 +48,18 @@ const ContactMapPage = () => {
     </div>
   );
 
-  const active = locations[activeMap];
+  // আগে এখানে কোথাও না থাকা 'locations' পড়া হত — পাতাটি খোলামাত্র ভেঙে সাদা হয়ে যেত
+  const locations = Array.isArray(c.locations) ? c.locations : [];
+  const activeIndex = Math.min(activeMap, Math.max(0, locations.length - 1));
+  const active = locations[activeIndex] || { title: '', address: '', mapUrl: '' };
+  const color = tone(activeIndex);
+  // প্যানেলে মানচিত্রের লিংক না দিলে ঠিকানা দিয়েই মানচিত্র দেখাই
+  const mapSrc = active.mapUrl || (active.address ? 'https://maps.google.com/maps?q=' + encodeURIComponent(active.address) + '&output=embed' : '');
 
   return (
     <div ref={containerRef} style={{ background:'var(--primary)', color:'var(--text)', minHeight:'100vh', paddingTop:'80px', overflowX:'hidden' }}>
 
-      <section style={{ padding:isMobile?'16px 24px 16px':'20px 40px 16px', borderBottom:'1px solid var(--glass-border)', position:'relative', overflow:'hidden', textAlign:'center' }}>
+      <section style={{ padding:isMobile?'32px 24px 32px':'40px 40px 36px', borderBottom:'1px solid var(--glass-border)', position:'relative', overflow:'hidden', textAlign:'center' }}>
         <div style={{ position:'absolute', bottom:0, left:'50%', transform:'translateX(-50%)', width:'600px', height:'220px', background:'radial-gradient(ellipse, rgba(227,24,45,0.12) 0%, transparent 70%)', pointerEvents:'none' }}/>
         <div style={{ maxWidth:'860px', margin:'0 auto' }}>
           <div className="cm-hero-tag" style={{ fontSize:'10px', letterSpacing:'4px', color:'var(--accent)', textTransform:'uppercase', marginBottom:'14px' }}>{c.hero.tag}</div>
@@ -71,7 +77,7 @@ const ContactMapPage = () => {
         {/* LOCATION TABS */}
         {secLabel('Select Location')}
         <div className="cm-fade" data-delay="0.1" style={{ display:'grid', gridTemplateColumns:isMobile?'1fr 1fr':'repeat(4,1fr)', gap:'10px', marginBottom:'24px', opacity:0, transform:'translateY(20px)' }}>
-          {c.locations.map((loc, i) => (
+          {locations.map((loc, i) => (
             <button key={i} onClick={() => setActiveMap(i)}
               style={{ padding:'14px 16px', border:'1px solid ' + (activeMap===i ? tone(i) + '60' : 'var(--glass-border)'), borderRadius:'10px', background: activeMap===i ? tone(i) + '10' : 'var(--glass)', cursor:'pointer', transition:'all 0.2s', textAlign:'left' }}>
               <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'6px' }}>
@@ -84,10 +90,10 @@ const ContactMapPage = () => {
         </div>
 
         {/* MAP EMBED */}
-        <div className="cm-fade" data-delay="0.2" style={{ borderRadius:'14px', overflow:'hidden', border:'1px solid ' + active.color + '30', marginBottom:'20px', opacity:0, transform:'translateY(20px)' }}>
+        <div className="cm-fade" data-delay="0.2" style={{ borderRadius:'14px', overflow:'hidden', border:'1px solid ' + color + '30', marginBottom:'20px', opacity:0, transform:'translateY(20px)' }}>
           <iframe
             key={activeMap}
-            src={active.mapUrl}
+            src={mapSrc || undefined}
             width="100%"
             height={isMobile ? '300' : '420'}
             style={{ border:0, display:'block' }}
@@ -99,10 +105,10 @@ const ContactMapPage = () => {
         </div>
 
         {/* ACTIVE LOCATION INFO */}
-        <div className="cm-fade" data-delay="0.3" style={{ padding:'20px 22px', background: active.color + '08', border:'1px solid ' + active.color + '25', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:'14px', marginBottom:'36px', opacity:0, transform:'translateY(20px)' }}>
+        <div className="cm-fade" data-delay="0.3" style={{ padding:'20px 22px', background: color + '08', border:'1px solid ' + color + '25', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:'14px', marginBottom:'36px', opacity:0, transform:'translateY(20px)' }}>
           <div style={{ display:'flex', alignItems:'center', gap:'14px' }}>
-            <div style={{ width:'48px', height:'48px', borderRadius:'12px', background: active.color + '15', display:'flex', alignItems:'center', justifyContent:'center' }}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active.color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <div style={{ width:'48px', height:'48px', borderRadius:'12px', background: color + '15', display:'flex', alignItems:'center', justifyContent:'center' }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
               </svg>
             </div>
@@ -121,7 +127,7 @@ const ContactMapPage = () => {
         {/* ALL PINS */}
         {secLabel('All Locations')}
         <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:'10px' }}>
-          {c.locations.map((loc, i) => (
+          {locations.map((loc, i) => (
             <div key={i} onClick={() => setActiveMap(i)}
               style={{ display:'flex', gap:'12px', padding:'14px 16px', background:'var(--glass)', border:'1px solid ' + (activeMap===i ? tone(i) + '40' : 'var(--glass-border)'), borderRadius:'10px', cursor:'pointer', transition:'all 0.2s', alignItems:'flex-start' }}
               onMouseEnter={e => { e.currentTarget.style.borderColor=tone(i) + '40'; }}
