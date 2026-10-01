@@ -1101,7 +1101,9 @@ export const ProjectShowcase = () => {
           className="project-video"
           poster={proj.poster || undefined}
           src={proj.video || undefined}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', filter: isHovered ? 'grayscale(0%) brightness(1)' : 'grayscale(80%) brightness(0.6)', transition: 'all 0.5s ease' }}
+          // সবসময় আসল রঙে — আগে সাদা-কালো ও অন্ধকার থাকত, রঙ আসত শুধু মাউস রাখলে।
+          // নামের লেখা পড়া যায় নিচের কালো আভার জন্য, তাই ছবি অন্ধকার করার দরকার নেই
+          style={{ width: '100%', height: '100%', objectFit: 'cover', filter: isHovered ? 'brightness(1.05)' : 'none', transition: 'all 0.5s ease' }}
         />
         <div className="project-overlay" style={{ position: 'absolute', inset: 0, background: isHovered ? 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(227,24,45,0.2) 100%)' : 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 60%)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '1.5rem', transition: 'all 0.3s ease' }}>
           <h3 style={{ color: '#fff', textShadow: '0 2px 12px rgba(0,0,0,1), 0 0 30px rgba(0,0,0,1)', fontSize: 'clamp(1rem, 2vw, 1.3rem)', fontFamily: 'var(--font-heading)', marginBottom: '0.5rem', textTransform: 'uppercase', transform: isHovered ? 'translateY(0)' : 'translateY(10px)', transition: 'transform 0.4s ease' }} className="project-title">{proj.title}</h3>
@@ -1150,7 +1152,7 @@ export const ProjectShowcase = () => {
         @media (max-width: 900px) { .project-grid { grid-template-columns: repeat(2, 1fr) !important; } }
         @media (max-width: 600px) {
           .project-grid { grid-template-columns: 1fr !important; }
-          .project-card .project-video { filter: grayscale(0%) brightness(0.8) !important; }
+          .project-card .project-video { filter: none !important; }
           .project-card .project-desc { opacity: 1 !important; transform: translateY(0) !important; }
           .project-card .project-title { transform: translateY(0) !important; color: #fff !important; text-shadow: 0 2px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.7) !important; }
         }
