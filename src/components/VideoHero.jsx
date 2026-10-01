@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect, useState, useMemo } from 'react'
 import { onLive } from '../lib/live'
 
 // অ্যাডমিন থেকে কোনো স্লাইড যোগ না করা থাকলে বা API না পেলে এগুলো দেখানো হয়
@@ -41,11 +41,23 @@ const defaultSlides = [
 const IMAGE_SLIDE_MS = 8000;
 // পটভূমির ক্রস-ফেড ১ সেকেন্ডের — ভিডিওর শেষ সেকেন্ডেই পরেরটা ভেসে ওঠে
 const FADE_S = 1;
+// এর চেয়ে সরু পর্দা = ফোন; সেখানে স্লাইডের মোবাইল ভার্সন দেখায়
+const MOBILE_QUERY = '(max-width: 767px)';
 
 const VideoHero = () => {
     const contentRef = useRef(null);
     const videoRefs = useRef([]);
-    const [slides, setSlides] = useState(defaultSlides);
+    const [rawSlides, setSlides] = useState(defaultSlides);
+    const [isMobile, setIsMobile] = useState(
+        () => typeof window !== 'undefined' && window.matchMedia(MOBILE_QUERY).matches
+    );
+    // ফোনে মোবাইল ভার্সন থাকলে সেটাই, কম্পিউটারে সবসময় মূল ব্যানার।
+    // কোনো স্লাইডে মোবাইল ভার্সন না দিলে ফোনেও মূলটাই থাকে — ফাঁকা নয়
+    const slides = useMemo(() => rawSlides.map((s) => (
+        isMobile && s.mobileMedia
+            ? { ...s, media: s.mobileMedia, type: s.mobileType || 'image', poster: undefined }
+            : s
+    )), [rawSlides, isMobile]);
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isLoaded, setIsLoaded] = useState(false);
     const [visibleVideos, setVisibleVideos] = useState([0]);
@@ -64,7 +76,9 @@ const VideoHero = () => {
                     poster: h.poster_url || undefined,
                     prefix: h.title_prefix || '',
                     accent: h.title_accent || '',
-                    subtitle: h.subtitle || ''
+                    subtitle: h.subtitle || '',
+                    mobileMedia: h.mobile_media_url || '',
+                    mobileType: h.mobile_media_type || ''
                 })));
                 setCurrentSlide(0);
                 setVisibleVideos([0]);
@@ -76,6 +90,15 @@ const VideoHero = () => {
         return () => { cancelled = true; off(); };
     }, []);
     // ─────────────────────────────────────────────────────────────────────
+
+    // ফোন ঘোরালে বা জানালা ছোট-বড় করলে ঠিক ভার্সনে বদলায়
+    useEffect(() => {
+        const mq = window.matchMedia(MOBILE_QUERY);
+        const onChange = () => setIsMobile(mq.matches);
+        onChange();
+        mq.addEventListener('change', onChange);
+        return () => mq.removeEventListener('change', onChange);
+    }, []);
 
     // প্রতিটি স্লাইড তার ভিডিওর দৈর্ঘ্য অনুযায়ী থাকে — ভিডিও শেষ হওয়ার ঠিক আগে
     // পরেরটায় যায়, তাই মাঝপথে কাটা পড়ে না, আবার শেষ ফ্রেমে থেমেও থাকে না
